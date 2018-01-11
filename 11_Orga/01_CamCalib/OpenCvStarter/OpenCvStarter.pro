@@ -6,10 +6,9 @@
 
 QT       += core gui widgets
 
-INCLUDEPATH += "C:/opencv/build/include"
-LIBS += "-LC:/opencv/build/x64/vc14/lib" \
-    #-lopencv_world331
-    -lopencv_world340
+INCLUDEPATH += "D:\opencv\build\include"
+
+LIBS += -LD:/opencv/build/x64/vc14/lib -lopencv_world340
 
 
 TARGET = OpenCvStarter
