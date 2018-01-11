@@ -33,6 +33,6 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-INCLUDEPATH += "E:\Uni-Software\opencv\build\include"
+INCLUDEPATH += "E:\Programme\opencv\build\include"
 
-LIBS += -LE:/Uni-Software/opencv/build/x64/vc14/lib -lopencv_world340
+LIBS += -LE:/Programme/opencv/build/x64/vc14/lib -lopencv_world340
