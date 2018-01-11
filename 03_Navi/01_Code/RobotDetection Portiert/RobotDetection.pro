@@ -46,13 +46,13 @@ SOURCES += main.cpp\
         robotdetectionmainwindow.cpp \
     myudp.cpp \
     imgtask.cpp \
-    viewtask.cpp
+    viewworker.cpp
 
 HEADERS  += robotdetectionmainwindow.h \
     myudp.h \
     imgtask.h \
     constants.h \
-    viewtask.h
+    viewworker.h
 
 FORMS    += robotdetectionmainwindow.ui
 

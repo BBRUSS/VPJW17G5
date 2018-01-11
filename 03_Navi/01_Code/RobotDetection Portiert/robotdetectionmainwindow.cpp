@@ -16,10 +16,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace cv;
-
-
-
 RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RobotDetectionMainWindow),
@@ -86,7 +82,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
     for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
     {
-        robotLocations.append(Point3f(0.0, 0.0, 0.0));
+        robotLocations.append(cv::Point3f(0.0, 0.0, 0.0));
     }
 
     // open threadpool for image analysis
@@ -193,7 +189,7 @@ void RobotDetectionMainWindow::operate()
     QList<double> temp;
 
     //Read Settings
-    cv::Ptr<aruco::DetectorParameters> arucoParameters = cv::aruco::DetectorParameters::create();
+    cv::Ptr<cv::aruco::DetectorParameters> arucoParameters = cv::aruco::DetectorParameters::create();
 
     //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
 //    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
@@ -248,7 +244,7 @@ void RobotDetectionMainWindow::operate()
         }
         else     // no camera connected, use black image
         {
-            Mat blackImage(CAMERA_IMG_HEIGTH, CAMERA_IMG_WIDTH, CV_8UC3);
+            cv::Mat blackImage(CAMERA_IMG_HEIGTH, CAMERA_IMG_WIDTH, CV_8UC3);
             blackImage.setTo(COLOR_BLACK);
             cameraImages[i] = blackImage;
         }
@@ -317,7 +313,7 @@ void RobotDetectionMainWindow::operate()
 
 
     // Display either camera images or white background
-    Mat guiImage(GUI_HEIGTH, GUI_WIDTH, CV_8UC3);
+    cv::Mat guiImage(GUI_HEIGTH, GUI_WIDTH, CV_8UC3);
     if (ui->checkBoxLiveView->isChecked())   // show real frames
     {
         guiImage.setTo(COLOR_BLACK);
@@ -333,22 +329,22 @@ void RobotDetectionMainWindow::operate()
         {
             if (i % 5 == 0)
             {
-                line(guiImage, Point(i * 200 / GUI_SCALING, 0), Point(i * 200 / GUI_SCALING, guiImage.rows), COLOR_DARK_GREY,  1, 8, 0);
+                cv::line(guiImage, cv::Point(i * 200 / GUI_SCALING, 0), cv::Point(i * 200 / GUI_SCALING, guiImage.rows), COLOR_DARK_GREY,  1, 8, 0);
             }
             else
             {
-                line(guiImage, Point(i * 200 / GUI_SCALING, 0), Point(i * 200 / GUI_SCALING, guiImage.rows), COLOR_LIGHT_GREY, 1, 8, 0);
+                cv::line(guiImage, cv::Point(i * 200 / GUI_SCALING, 0), cv::Point(i * 200 / GUI_SCALING, guiImage.rows), COLOR_LIGHT_GREY, 1, 8, 0);
             }
         }
         for (unsigned int i = 0; i < 20; i++)
         {
             if (i % 5 == 0)
             {
-                line(guiImage, Point(0, i * 200 / GUI_SCALING), Point(guiImage.cols, i * 200 / GUI_SCALING), COLOR_DARK_GREY,  1, 8, 0);
+                cv::line(guiImage, cv::Point(0, i * 200 / GUI_SCALING), cv::Point(guiImage.cols, i * 200 / GUI_SCALING), COLOR_DARK_GREY,  1, 8, 0);
             }
             else
             {
-                line(guiImage, Point(0, i * 200 / GUI_SCALING), Point(guiImage.cols, i * 200 / GUI_SCALING), COLOR_LIGHT_GREY, 1, 8, 0);
+                cv::line(guiImage, cv::Point(0, i * 200 / GUI_SCALING), cv::Point(guiImage.cols, i * 200 / GUI_SCALING), COLOR_LIGHT_GREY, 1, 8, 0);
             }
         }
     }
@@ -356,7 +352,7 @@ void RobotDetectionMainWindow::operate()
     // init locations with zeros
     for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
     {
-        robotLocations[i] = Point3f(0, 0, 0);
+        robotLocations[i] = cv::Point3f(0, 0, 0);
     }
 
     //Check all Robots of double detections
@@ -386,7 +382,7 @@ void RobotDetectionMainWindow::operate()
 
         for(int i =0;i < doubledetecterobots.size();i++)
         {
-            robotLocations[doubledetecterobots.at(i)] = Point3f(0, 0, 0);
+            robotLocations[doubledetecterobots.at(i)] = cv::Point3f(0, 0, 0);
         }
     }
 
@@ -422,14 +418,14 @@ void RobotDetectionMainWindow::operate()
         if(robotLocations[i].x != 0)
         {
 
-            Point2f centerPoint = Point2f(robotLocations[i].x, FIELD_HEIGTH - robotLocations[i].y);
+            cv::Point2f centerPoint = cv::Point2f(robotLocations[i].x, FIELD_HEIGTH - robotLocations[i].y);
             double centerRadius = ROBOT_RADIUS;
             double angledegree = 2*3.14159265359-(robotLocations[i].z*3.14159265359/180);
-            Point2f directionPoint = Point2f(scaleToGui(centerPoint).x + scaleToGui(ROBOT_RADIUS)*cos(angledegree ), scaleToGui(centerPoint).y + scaleToGui(ROBOT_RADIUS)*sin(angledegree));
+            cv::Point2f directionPoint = cv::Point2f(scaleToGui(centerPoint).x + scaleToGui(ROBOT_RADIUS)*cos(angledegree ), scaleToGui(centerPoint).y + scaleToGui(ROBOT_RADIUS)*sin(angledegree));
 
             //Draw circles and lines for center and orientation circles
-            circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius), COLOR_GREEN, 2, CV_AA);
-            line  (guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
+            cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius), COLOR_GREEN, 2, CV_AA);
+            cv::line  (guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
         }
     }
 
@@ -465,7 +461,7 @@ void RobotDetectionMainWindow::operate()
             {
                 x = 60 + 2 * GUI_WIDTH / 3;
             }
-            putText(guiImage, str2, Point2f(x, y), CV_FONT_HERSHEY_PLAIN, 1, COLOR_DARK_GREY, 1, 8, false);
+            cv::putText(guiImage, str2, cv::Point2f(x, y), CV_FONT_HERSHEY_PLAIN, 1, COLOR_DARK_GREY, 1, 8, false);
         }
     }
 
@@ -512,13 +508,13 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable()
 
 void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage)
 {
-    Point2f offset = Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
+    cv::Point2f offset = cv::Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
     for (unsigned int i = 0; i < MAX_NR_OF_ROBOTS; i++)
     {
-        Point2f center = Point2f(robotLocations.at(i).x, FIELD_HEIGTH - robotLocations.at(i).y);
+        cv::Point2f center = cv::Point2f(robotLocations.at(i).x, FIELD_HEIGTH - robotLocations.at(i).y);
         if (center.y != FIELD_HEIGTH)
         {
-            putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offset),
+            cv::putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offset),
                      CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
         }
     }
@@ -529,14 +525,14 @@ double RobotDetectionMainWindow::distanceBetweenPoints(cv::Point2f a, cv::Point2
     return sqrt( (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) );
 }
 
-Point2f RobotDetectionMainWindow::scaleToGui(Point2f srcDot)
+cv::Point2f RobotDetectionMainWindow::scaleToGui(cv::Point2f srcDot)
 {
-    return Point2f( (srcDot.x / GUI_SCALING) , (srcDot.y / GUI_SCALING) );
+    return cv::Point2f( (srcDot.x / GUI_SCALING) , (srcDot.y / GUI_SCALING) );
 }
 
-Point3f RobotDetectionMainWindow::scaleToGui(Point3f srcDot)
+cv::Point3f RobotDetectionMainWindow::scaleToGui(cv::Point3f srcDot)
 {
-    return Point3f( (srcDot.x / GUI_SCALING) , (srcDot.y / GUI_SCALING) , (srcDot.z / GUI_SCALING));
+    return cv::Point3f( (srcDot.x / GUI_SCALING) , (srcDot.y / GUI_SCALING) , (srcDot.z / GUI_SCALING));
 }
 
 double RobotDetectionMainWindow::scaleToGui(double value)
@@ -614,14 +610,14 @@ void RobotDetectionMainWindow::readXmlCalibrationFile()
         attribSettings = cameraList.at(i)["Settings"];
 
         // build cameraMatrix
-        cameraMatrix.insert(i, Mat::eye(3, 3, CV_64F));
+        cameraMatrix.insert(i, cv::Mat::eye(3, 3, CV_64F));
         cameraMatrix[i].at<double>(0, 0) = attribMatrix.value("fx").toDouble();
         cameraMatrix[i].at<double>(0, 2) = attribMatrix.value("cx").toDouble();
         cameraMatrix[i].at<double>(1, 1) = attribMatrix.value("fy").toDouble();
         cameraMatrix[i].at<double>(1, 2) = attribMatrix.value("cy").toDouble();
 
         // build distCoeffs
-        distCoeffs.insert(i, Mat::zeros(8, 1, CV_64F));
+        distCoeffs.insert(i, cv::Mat::zeros(8, 1, CV_64F));
         distCoeffs[i].at<double>(0) = attribLensDist.value("k1").toDouble();
         distCoeffs[i].at<double>(1) = attribLensDist.value("k2").toDouble();
         distCoeffs[i].at<double>(2) = attribLensDist.value("p1").toDouble();
@@ -629,7 +625,7 @@ void RobotDetectionMainWindow::readXmlCalibrationFile()
         distCoeffs[i].at<double>(4) = attribLensDist.value("k3").toDouble();
 
         // build perspective transformation matrix
-        perspTransfMatrix.insert(i, Mat::eye(3, 3, CV_64F));
+        perspTransfMatrix.insert(i, cv::Mat::eye(3, 3, CV_64F));
         perspTransfMatrix[i].at<double>(0, 0) = attribTrafoMatrix.value("t1").toDouble();
         perspTransfMatrix[i].at<double>(0, 1) = attribTrafoMatrix.value("t2").toDouble();
         perspTransfMatrix[i].at<double>(0, 2) = attribTrafoMatrix.value("t3").toDouble();
