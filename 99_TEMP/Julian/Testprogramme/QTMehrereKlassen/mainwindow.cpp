@@ -1,6 +1,8 @@
 /** Testprogramm zur Veranschaulichung, wie mehrere Klassen in QT eingebunden werden
   * und die anderen Klassen auf das Mainwindow zugreifen können, z.B. um Texte zu ändern.
   * Funktioniert, Stand 11.01.2018 12:18
+  *
+  * Quelle: https://www.c-plusplus.net/forum/283030-full
   **/
 
 
