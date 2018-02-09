@@ -5,10 +5,12 @@
   * Quelle: https://www.c-plusplus.net/forum/283030-full
   **/
 
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "world.h"
+#include "settings.h"
+#include "camera.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,13 +19,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->labelGer->setText(" ");
     ui->labelWorld->setText(" ");
+    ui->labelDebug->setText(" ");
     ui->pushButtonGer->setText("Germany");
     ui->pushButtonWorld->setText("World");
 
     // Erstellen eines Pointer auf die Klasse World, bei der der Pointer auf das Ui übergaben wird.
     world *myWorld = new world(ui);
+    Camera *cam1 = new Camera(1, ui);
     // Durch connect wird der Button mit der Funktion aus der Klasse World verbunden.
     connect(ui->pushButtonWorld,SIGNAL(clicked()),myWorld,SLOT(pushWorld()));
+    connect(ui->pushButtonCalib, SIGNAL(clicked(bool)), cam1, SLOT(calibrate()));
 }
 
 MainWindow::~MainWindow()
@@ -34,5 +39,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButtonGer_clicked()
 {
-   ui->labelGer->setText("Hello Germany");
+    ui->labelGer->setText("Hello Germany");
 }
+
+
+

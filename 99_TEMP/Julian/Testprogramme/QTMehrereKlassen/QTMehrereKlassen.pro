@@ -26,11 +26,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    world.cpp
+    world.cpp \
+    camera.cpp
 
 HEADERS += \
         mainwindow.h \
-    world.h
+    world.h \
+    settings.h \
+    camera.h
 
 FORMS += \
         mainwindow.ui

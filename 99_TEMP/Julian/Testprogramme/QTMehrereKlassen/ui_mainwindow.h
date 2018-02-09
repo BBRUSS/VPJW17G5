@@ -32,6 +32,8 @@ public:
     QLabel *labelWorld;
     QPushButton *pushButtonGer;
     QPushButton *pushButtonWorld;
+    QPushButton *pushButtonCalib;
+    QLabel *labelDebug;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -45,16 +47,22 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         labelGer = new QLabel(centralWidget);
         labelGer->setObjectName(QStringLiteral("labelGer"));
-        labelGer->setGeometry(QRect(50, 40, 47, 13));
+        labelGer->setGeometry(QRect(50, 40, 111, 16));
         labelWorld = new QLabel(centralWidget);
         labelWorld->setObjectName(QStringLiteral("labelWorld"));
-        labelWorld->setGeometry(QRect(210, 40, 47, 13));
+        labelWorld->setGeometry(QRect(210, 40, 141, 16));
         pushButtonGer = new QPushButton(centralWidget);
         pushButtonGer->setObjectName(QStringLiteral("pushButtonGer"));
-        pushButtonGer->setGeometry(QRect(50, 140, 75, 23));
+        pushButtonGer->setGeometry(QRect(50, 140, 101, 23));
         pushButtonWorld = new QPushButton(centralWidget);
         pushButtonWorld->setObjectName(QStringLiteral("pushButtonWorld"));
-        pushButtonWorld->setGeometry(QRect(220, 140, 75, 23));
+        pushButtonWorld->setGeometry(QRect(220, 140, 111, 23));
+        pushButtonCalib = new QPushButton(centralWidget);
+        pushButtonCalib->setObjectName(QStringLiteral("pushButtonCalib"));
+        pushButtonCalib->setGeometry(QRect(50, 190, 101, 23));
+        labelDebug = new QLabel(centralWidget);
+        labelDebug->setObjectName(QStringLiteral("labelDebug"));
+        labelDebug->setGeometry(QRect(10, 230, 381, 16));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -79,6 +87,8 @@ public:
         labelWorld->setText(QApplication::translate("MainWindow", "TextLabel", nullptr));
         pushButtonGer->setText(QApplication::translate("MainWindow", "PushButtonGer", nullptr));
         pushButtonWorld->setText(QApplication::translate("MainWindow", "PushButtonWorld", nullptr));
+        pushButtonCalib->setText(QApplication::translate("MainWindow", "PushButtonCalib", nullptr));
+        labelDebug->setText(QApplication::translate("MainWindow", "TextLabel", nullptr));
     } // retranslateUi
 
 };
