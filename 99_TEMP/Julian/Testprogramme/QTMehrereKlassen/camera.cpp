@@ -73,7 +73,7 @@ bool Camera::runCalibration( Settings& s, Size& imageSize, Mat& cameraMatrix, Ma
     vector<vector<Point3f> > objectPoints(1);
     calcBoardCornerPositions(s.boardSize, s.squareSize, objectPoints[0], s.calibrationPattern);
 
-    objectPoints.resize(imagePoints.size(),objectPoints[0]);
+    objectPoints.resize(imagePoints.size(), objectPoints[0]);
 
     //Find intrinsic and extrinsic camera parameters
     double rms = calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix,

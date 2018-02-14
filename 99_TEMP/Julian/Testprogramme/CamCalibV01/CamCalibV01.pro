@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-12-21T16:30:18
+# Project created by QtCreator 2018-02-09T12:02:06
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = cameraCalibrationCircles
+TARGET = CamCalibV01
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -26,13 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-        testclass.cpp \
-        camcalibration.cpp
+        settings.cpp \
+        camera.cpp
 
 HEADERS += \
         mainwindow.h \
-        testclass.h \
-        camcalibration.h
+        settings.h \
+        camera.h
 
 FORMS += \
         mainwindow.ui

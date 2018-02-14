@@ -19,6 +19,11 @@
 using namespace cv;
 using namespace std;
 
+/*
+ * TODO: Settings 1 Instanz global für alle gültig
+ *
+ * */
+
 class Settings
 {
 public:
