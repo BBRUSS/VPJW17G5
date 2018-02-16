@@ -1,7 +1,11 @@
 /** CAMERA Class
   * used for calibrating camera
   *
+  * Sources:
   * https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#calibratecamera
+  * https://docs.opencv.org/3.0-beta/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html
+  * https://www.youtube.com/watch?v=GYIQiV9Aw74&t=305s
+  * http://aishack.in/tutorials/calibrating-undistorting-opencv-oh-yeah/
   *
   */
 
@@ -26,42 +30,31 @@ class Camera : public QMainWindow
 public:
     Camera();
     Camera(int id, Ui::MainWindow *ui, Settings *s);
-    Mat getInputPic();
-    Mat getUndistortedPic();
-    bool calibrate();
-    void showChessboardPattern(Size imageSize, Mat view);
+
 
     // According to George Lecaces Youtube video "OpenCV Basics"
     void createKnownBoardPositions(vector<Point3f>& corners);
-    void getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
-    void cameraCalibration(vector<Mat> calibrationImages, Size boardSize/*, Mat& cameraMatrix, Mat& distCoeffs*/);
+    bool getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
+    void cameraCalibration(vector<Mat> calibrationImages, Size boardSize);
     int doCalibration();
     void saveCameraCalibrationParameters();
+    Mat showUndistorted(Mat distorted);
+    // Mat getBlackWhiteOptimatedPicture()
+    // TODO: Reprojection-Error calculation
 
 
 
 private:
-    bool runCalibration();
-    void calcBoardCornerPositions(vector<Point3f>& corners);
-    Mat nextImage();
-
     int id;
     Ui::MainWindow *ui;
     Settings *s;
 
-    Mat cameraMatrix;       // intrinsic parameters
-    Mat distCoeffs;         // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
-    //bool found;             // found calibration pattern?
-    VideoCapture inputCapture;
-    //vector<vector<Point3f> > objectPoints;   // hold position of calibration pattern objects
-    vector<vector<Point2f> > imagePoints;       // projection if calibration pattern points
-    Size imageSize;                             // view image size (used to initialize the intrinsic camera matrix
-    vector<Mat> rvecs;                          // rotation vectors estimated for each pattern view
-    vector<Mat> tvecs;                          // translation vectors estimated for each pattern view
+    Mat cameraMatrix;           // intrinsic parameters
+    Mat distCoeffs;             // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
+    vector<Mat> rvecs;          // rotation vectors estimated for each pattern view
+    vector<Mat> tvecs;          // translation vectors estimated for each pattern view
 
-    // According to George Lecaces Youtube video "OpenCV Basics"
-    //vector<Point3f> corners;        // store information of corner position in calibration pattern (world space)
-    //vector<Vec2f> foundPoints;      // store cornerpoints found in video image (image space)
+    // TODO: Weitere Variablen für Kontrasteinstellung etc.
 };
 
 #endif // CAMERA_H

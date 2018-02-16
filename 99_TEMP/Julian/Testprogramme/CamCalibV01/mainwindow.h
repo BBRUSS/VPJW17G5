@@ -17,9 +17,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     Camera *cam1;
+    Settings *s;
 
 private slots:
     void on_pushButtonCalib_clicked();
+    void changedValue();
 
 private:
     Ui::MainWindow *ui;

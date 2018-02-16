@@ -20,7 +20,8 @@ public:
     Pattern calibrationPattern;     // One of the Chessboard, circles, or asymmetric circle pattern
     float squareSize;               // The size of a square in your defined unit (point, millimeter,etc).
     int nrFrames;                   // The number of frames to use from the input for calibration
-    float aspectRatio;              // The aspect ratio
+    //float aspectRatio;              // The aspect ratio
+    bool calibFixAspectratio;       // Assume fix aspect ratio (usual for lens cameras)
     bool calibZeroTangentDist;      // Assume zero tangential distortion
     bool calibFixPrincipalPoint;    // Fix the principal point at the center
     string outputFileName;          // The name of the file where to write
@@ -32,9 +33,9 @@ public:
     bool goodInput;
     int calibFlag;                  // Flag(s) for calibration
 
-    /*if(calibFixPrincipalPoint) flag |= CV_CALIB_FIX_PRINCIPAL_POINT;
-    if(calibZeroTangentDist)   flag |= CV_CALIB_ZERO_TANGENT_DIST;
-    if(aspectRatio)            flag |= CV_CALIB_FIX_ASPECT_RATIO;*/
+    /*if(calibFixPrincipalPoint)    flag |= CV_CALIB_FIX_PRINCIPAL_POINT;
+    if(calibZeroTangentDist)        flag |= CV_CALIB_ZERO_TANGENT_DIST;
+    if(calibFixAspectratio)         flag |= CV_CALIB_FIX_ASPECT_RATIO;*/
 
 };
 

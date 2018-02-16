@@ -17,7 +17,9 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
@@ -28,6 +30,9 @@ class Ui_MainWindow
 public:
     QWidget *centralWidget;
     QPushButton *pushButtonCalib;
+    QTextEdit *textEditCalibPattern;
+    QTextEdit *textEdit;
+    QSlider *horizontalSliderCalibPattern;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -36,16 +41,29 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(400, 300);
+        MainWindow->resize(418, 313);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         pushButtonCalib = new QPushButton(centralWidget);
         pushButtonCalib->setObjectName(QStringLiteral("pushButtonCalib"));
-        pushButtonCalib->setGeometry(QRect(90, 200, 211, 31));
+        pushButtonCalib->setGeometry(QRect(20, 200, 211, 31));
+        textEditCalibPattern = new QTextEdit(centralWidget);
+        textEditCalibPattern->setObjectName(QStringLiteral("textEditCalibPattern"));
+        textEditCalibPattern->setGeometry(QRect(217, 50, 151, 31));
+        textEditCalibPattern->setAutoFillBackground(true);
+        textEditCalibPattern->setFrameShape(QFrame::NoFrame);
+        textEdit = new QTextEdit(centralWidget);
+        textEdit->setObjectName(QStringLiteral("textEdit"));
+        textEdit->setGeometry(QRect(217, 10, 201, 31));
+        textEdit->setFrameShape(QFrame::NoFrame);
+        horizontalSliderCalibPattern = new QSlider(centralWidget);
+        horizontalSliderCalibPattern->setObjectName(QStringLiteral("horizontalSliderCalibPattern"));
+        horizontalSliderCalibPattern->setGeometry(QRect(370, 50, 41, 31));
+        horizontalSliderCalibPattern->setOrientation(Qt::Horizontal);
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 400, 20));
+        menuBar->setGeometry(QRect(0, 0, 418, 20));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -63,6 +81,16 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
         pushButtonCalib->setText(QApplication::translate("MainWindow", "Calibrate", nullptr));
+        textEditCalibPattern->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", nullptr));
+        textEdit->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Calibration pattern</p></body></html>", nullptr));
     } // retranslateUi
 
 };
