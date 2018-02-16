@@ -20,7 +20,8 @@ public:
     Settings *s;
 
 private slots:
-    void on_pushButtonCalib_clicked();
+    void on_pushButtonCalibIntrinsics_clicked();
+    void on_pushButtonCalibExtrinsics_clicked();
     void changedValue();
 
 private:

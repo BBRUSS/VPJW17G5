@@ -21,6 +21,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -29,10 +30,13 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QPushButton *pushButtonCalib;
     QTextEdit *textEditCalibPattern;
     QTextEdit *textEdit;
     QSlider *horizontalSliderCalibPattern;
+    QWidget *verticalLayoutWidget;
+    QVBoxLayout *verticalLayout;
+    QPushButton *pushButtonCalibIntrinsics;
+    QPushButton *pushButtonCalibExtrinsics;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -44,9 +48,6 @@ public:
         MainWindow->resize(418, 313);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        pushButtonCalib = new QPushButton(centralWidget);
-        pushButtonCalib->setObjectName(QStringLiteral("pushButtonCalib"));
-        pushButtonCalib->setGeometry(QRect(20, 200, 211, 31));
         textEditCalibPattern = new QTextEdit(centralWidget);
         textEditCalibPattern->setObjectName(QStringLiteral("textEditCalibPattern"));
         textEditCalibPattern->setGeometry(QRect(217, 50, 151, 31));
@@ -60,6 +61,24 @@ public:
         horizontalSliderCalibPattern->setObjectName(QStringLiteral("horizontalSliderCalibPattern"));
         horizontalSliderCalibPattern->setGeometry(QRect(370, 50, 41, 31));
         horizontalSliderCalibPattern->setOrientation(Qt::Horizontal);
+        verticalLayoutWidget = new QWidget(centralWidget);
+        verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
+        verticalLayoutWidget->setGeometry(QRect(10, 190, 160, 51));
+        verticalLayout = new QVBoxLayout(verticalLayoutWidget);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        pushButtonCalibIntrinsics = new QPushButton(verticalLayoutWidget);
+        pushButtonCalibIntrinsics->setObjectName(QStringLiteral("pushButtonCalibIntrinsics"));
+
+        verticalLayout->addWidget(pushButtonCalibIntrinsics);
+
+        pushButtonCalibExtrinsics = new QPushButton(verticalLayoutWidget);
+        pushButtonCalibExtrinsics->setObjectName(QStringLiteral("pushButtonCalibExtrinsics"));
+
+        verticalLayout->addWidget(pushButtonCalibExtrinsics);
+
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -79,8 +98,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
-        pushButtonCalib->setText(QApplication::translate("MainWindow", "Calibrate", nullptr));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Camera Calibration", nullptr));
         textEditCalibPattern->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -91,6 +109,8 @@ public:
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Calibration pattern</p></body></html>", nullptr));
+        pushButtonCalibIntrinsics->setText(QApplication::translate("MainWindow", "Get intrinsic parameters", nullptr));
+        pushButtonCalibExtrinsics->setText(QApplication::translate("MainWindow", "Get extrinsic parameters", nullptr));
     } // retranslateUi
 
 };

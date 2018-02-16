@@ -29,12 +29,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButtonCalib_clicked()
+void MainWindow::on_pushButtonCalibIntrinsics_clicked()
 {
-    qDebug() << "clicked";
-    cam1->doCalibration();  // intrinsic parameters
+    qDebug() << "Starting intrinsic calibration...";
+    cam1->doCalibrationIntrinsics();  // intrinsic parameters
     // Wenn Kalibrierung neu: flag = CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5
     // Wenn Kalibierung vorhanden: flag = CV_CALIB_USE_INTRINSIC_GUESS|CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5
+}
+
+
+void MainWindow::on_pushButtonCalibExtrinsics_clicked()
+{
     // how to get extrinsics:
     // Pro Camera (4?) 6* Bilder mit dem "Punkt-Ständer" in jeweils einer Ecke aufnehmen, Bilder Schwarz-weiß mit Kontrast so einstellen,
     // dass alles schwarz ist und nur der Punkt (Kreis) weiß ist.
@@ -52,6 +57,9 @@ void MainWindow::on_pushButtonCalib_clicked()
     // +----------+
     //
     // * 6 Bilder sind besser als 4, da für getChessboadCorners() / getCircleGrid() empfohlen wird, eine gerade und eine ungerade Dimension zu haben.
+
+    qDebug() << "Starting extrinsic calibration...";
+    cam1->doCalibrationExtrinsics();
 }
 
 void MainWindow::changedValue()

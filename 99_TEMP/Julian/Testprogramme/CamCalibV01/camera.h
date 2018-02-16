@@ -36,9 +36,10 @@ public:
     void createKnownBoardPositions(vector<Point3f>& corners);
     bool getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
     void cameraCalibration(vector<Mat> calibrationImages, Size boardSize);
-    int doCalibration();
-    void saveCameraCalibrationParameters();
-    Mat showUndistorted(Mat distorted);
+    int doCalibrationIntrinsics();              // Function to get intrinsics
+    int doCalibrationExtrinsics();              // Function to get extrinsics
+    void saveCameraCalibrationParameters();     // Save parameters to XML file
+    Mat showUndistorted(Mat distorted);         // geet and show undistorted picture to compare to distorted one
     // Mat getBlackWhiteOptimatedPicture()
     // TODO: Reprojection-Error calculation
 

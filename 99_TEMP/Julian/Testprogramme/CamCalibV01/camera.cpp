@@ -124,7 +124,7 @@ bool Camera::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& a
  * @brief Camera::doCalibration
  * @return 0 if successfull, -1 if no camera was found
  */
-int Camera::doCalibration()
+int Camera::doCalibrationIntrinsics()
 {
     Mat frame;                              // Original video frame
     Mat drawToFrame;                        // Copy of original frame to draw found patterns within it
@@ -159,7 +159,7 @@ int Camera::doCalibration()
         {
         case Settings::CHESSBOARD:
             found = findChessboardCorners(frame, s->boardSize, foundPoints,
-                                               CV_CALIB_CB_ADAPTIVE_THRESH|CV_CALIB_CB_NORMALIZE_IMAGE|CV_CALIB_CB_FAST_CHECK);
+                                          CV_CALIB_CB_ADAPTIVE_THRESH|CV_CALIB_CB_NORMALIZE_IMAGE|CV_CALIB_CB_FAST_CHECK);
             break;
         case Settings::CIRCLES_GRID:
             found = findCirclesGrid(frame, s->boardSize, foundPoints );
@@ -219,6 +219,99 @@ int Camera::doCalibration()
 }
 
 
+/** Process to obtain extrinsic parameters.
+ * You will need to take 6 shots, with the calibration device switching to the 6 known points.
+ * TODO: Merge both functions and use an input-parameter to switch between extrinsic and intrinsic calibration?
+ * e.g.: void Camera::doCalibration(int mode)
+ * @brief Camera::doCalibrationExtrinsics
+ * @return 0 if successfull, -1 if no camera was found
+ */
+int Camera::doCalibrationExtrinsics()
+{
+    Mat frame;                              // Original video frame
+    Mat drawToFrame;                        // Copy of original frame to draw found patterns within it
+    cameraMatrix = Mat::eye(3,3,CV_64F);    // Initialize intrinsic parameters
+    distCoeffs = Mat::zeros(8,1,CV_64F);    // Initialize distortion coefficients
+    vector<Mat> savedImages;                // Vector for saving snapshots with found patterns
+    VideoCapture vid(id);
+    Size calibSize(3,2);
+
+    if(!vid.isOpened())
+    {
+        qInfo() << "Cam" << id << "not found!" << endl;
+        return -1;
+    }
+
+    int framesPerSecond = 20;
+
+    namedWindow("Webcam", CV_WINDOW_AUTOSIZE);
+
+    while(true)
+    {
+        if(!vid.read(frame)) break;
+
+        // find and show calibration pattern corners
+        // TODO: convert frame to black and white with high contrast (see CalibResizing.pro)
+        vector<Vec2f> foundPoints;
+        bool found = findCirclesGrid(frame, calibSize, foundPoints );
+
+
+        frame.copyTo(drawToFrame);
+        drawChessboardCorners(drawToFrame, calibSize, foundPoints, found);
+        if(found)
+        {
+            imshow("Webcam", drawToFrame);
+        }
+        else
+        {
+            imshow("Webcam", frame);
+        }
+        // save images for calibration, and calibrate if enough good images
+        char key = waitKey(1000 / framesPerSecond);
+
+        switch(key)
+        {
+        case SPACE_KEY:
+            // save image
+            if(found)
+            {
+                Mat temp;
+                frame.copyTo(temp);
+                savedImages.push_back(temp);
+                qInfo() << "saving image...(" << savedImages.size() << "/" << 6 << ")" << endl;
+            }
+            break;
+
+        case ENTER_KEY:
+            // start calibration
+            if(savedImages.size() > 6-1)
+            {
+                // TODO: Put all 6 images together with bitwise-OR
+                qInfo() << "calibrating cam" << "<" <<id << ">" << endl;
+                Mat origCameraMatrix, origDistCoeffs;
+                cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
+                distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
+                cameraCalibration(savedImages, calibSize);
+                // TODO: calculate reprojection error with new camera matrix, compare to original ones
+                // and decide, which to use
+                origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
+                origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
+            }
+            break;
+
+        case ESC_KEY:
+            // exit
+            qInfo() << "bye bye" << endl;
+            destroyWindow("Webcam");
+            return 0;
+            break;
+        }
+    }
+    return 0;
+
+}
+
+
 /**
  * undistorts the given frame, puts both frames together via horizontal
  * concatenation and shows the new frame for comparison.
@@ -247,13 +340,13 @@ void Camera::saveCameraCalibrationParameters()
 {
     qInfo() << "Camera Matrix (cout):" << endl;
     cout << " " << cameraMatrix << endl;
-//    for(int r=0; r<cameraMatrix.rows;r++)
-//    {
-//        for(int c=0;c<cameraMatrix.cols;c++)
-//        {
-//            //qInfo() << cameraMatrix.at<double>(r,c);
-//        }
-//    }
+    //    for(int r=0; r<cameraMatrix.rows;r++)
+    //    {
+    //        for(int c=0;c<cameraMatrix.cols;c++)
+    //        {
+    //            //qInfo() << cameraMatrix.at<double>(r,c);
+    //        }
+    //    }
 
     // Testoutput in matrix form
     // (remember: fx, fy are focal length in pixels, so fx = f/px with f = focal length in mm and px = pixel width
@@ -276,18 +369,18 @@ void Camera::saveCameraCalibrationParameters()
         }
     }
 
-//    qInfo() << "rotational vectors:" << endl;
+    //    qInfo() << "rotational vectors:" << endl;
 
-//        for(int r=0; r<rvecs.size(); r++)
-//        {
-//            qInfo() << rvecs.at(r);
-//        }
+    //        for(int r=0; r<rvecs.size(); r++)
+    //        {
+    //            qInfo() << rvecs.at(r);
+    //        }
 
-//    qInfo() << "translational vectors:" << endl;
+    //    qInfo() << "translational vectors:" << endl;
 
-//        for(int r=0; r<tvecs.size(); r++)
-//        {
-//            qInfo() << tvecs.at(r);
-//        }
+    //        for(int r=0; r<tvecs.size(); r++)
+    //        {
+    //            qInfo() << tvecs.at(r);
+    //        }
 
 }
