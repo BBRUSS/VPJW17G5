@@ -14,15 +14,18 @@
 
 #include <QMainWindow>
 #include <QObject>
+#include <QDebug>
 //#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "settings.h"
+//#include "cameracontrast.h"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 
 using namespace cv;
 using namespace std;
+
 
 class Camera : public QMainWindow
 {
@@ -42,18 +45,41 @@ public:
     Mat showUndistorted(Mat distorted);         // geet and show undistorted picture to compare to distorted one
     // Mat getBlackWhiteOptimatedPicture()
     // TODO: Reprojection-Error calculation
+    int getID()
+    {
+        return id;
+    }
+    void setContrast(int blackWhiteThreshold, int maxValue)
+    {
+        this->blackWhiteThreshold = blackWhiteThreshold;
+        this->maxValue = maxValue;
+        qInfo() <<"Cam" << this->id << " B/W Thr.:" << this->blackWhiteThreshold << ", Max val: " << this->maxValue;
+    }
+
+//    void setUI(CameraContrast *ui)
+//    {
+//        this->ui = ui;
+//    }
+
+
+
+private slots:
 
 
 
 private:
     int id;
     Ui::MainWindow *ui;
+    //CameraContrast *ui;
     Settings *s;
 
     Mat cameraMatrix;           // intrinsic parameters
     Mat distCoeffs;             // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
     vector<Mat> rvecs;          // rotation vectors estimated for each pattern view
     vector<Mat> tvecs;          // translation vectors estimated for each pattern view
+
+    int blackWhiteThreshold;    // Threshold gained by slider in "Contrast Window"
+    int maxValue;               // Max value gained by slider in "Contrast Window"
 
     // TODO: Weitere Variablen für Kontrasteinstellung etc.
 };

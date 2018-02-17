@@ -210,7 +210,6 @@ Makefile: CalibResizing.pro E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\win32-msv
 		E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\qt_config.prf \
 		E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\win32-msvc\qmake.conf \
 		E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\spec_post.prf \
-		.qmake.stash \
 		E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\exclusive_builds.prf \
 		E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\common\msvc-version.conf \
 		E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\toolchain.prf \
@@ -375,7 +374,6 @@ E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\qt_functions.prf:
 E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\qt_config.prf:
 E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\win32-msvc\qmake.conf:
 E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\spec_post.prf:
-.qmake.stash:
 E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\exclusive_builds.prf:
 E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\common\msvc-version.conf:
 E:\Programme\Qt\5.10.0\msvc2015_64\mkspecs\features\toolchain.prf:

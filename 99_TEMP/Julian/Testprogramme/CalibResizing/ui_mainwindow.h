@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.9.3
+** Created by: Qt User Interface Compiler version 5.10.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -78,6 +78,7 @@ public:
         spinBoxCaptureID = new QSpinBox(centralWidget);
         spinBoxCaptureID->setObjectName(QStringLiteral("spinBoxCaptureID"));
         spinBoxCaptureID->setMinimum(-1);
+        spinBoxCaptureID->setValue(1);
 
         gridLayout->addWidget(spinBoxCaptureID, 2, 2, 1, 1);
 
@@ -121,12 +122,12 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Camera Calibration", Q_NULLPTR));
-        stopCameraButton->setText(QApplication::translate("MainWindow", "Stop Camera", Q_NULLPTR));
-        startCameraButton->setText(QApplication::translate("MainWindow", "Start Camera (F5)", Q_NULLPTR));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Camera Calibration", nullptr));
+        stopCameraButton->setText(QApplication::translate("MainWindow", "Stop Camera", nullptr));
+        startCameraButton->setText(QApplication::translate("MainWindow", "Start Camera (F5)", nullptr));
         labelImage->setText(QString());
-        lineEdit_2->setText(QApplication::translate("MainWindow", "Max-Value", Q_NULLPTR));
-        lineEdit->setText(QApplication::translate("MainWindow", "Black/White Treshold", Q_NULLPTR));
+        lineEdit_2->setText(QApplication::translate("MainWindow", "Max-Value", nullptr));
+        lineEdit->setText(QApplication::translate("MainWindow", "Black/White Treshold", nullptr));
     } // retranslateUi
 
 };

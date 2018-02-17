@@ -13,9 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    cameracalibrator.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    cameracalibrator.h
 
 FORMS    += mainwindow.ui
 
@@ -23,7 +25,7 @@ FORMS    += mainwindow.ui
 
 INCLUDEPATH += "E:\Programme\opencv\build\include"
 
-LIBS += -LE:/Programme/opencv/build/x64/vc14/lib -lopencv_world331
+LIBS += -LE:/Programme/opencv/build/x64/vc14/lib -lopencv_world340
 
 #DESTDIR = ./dist
 #CONFIG += c++11

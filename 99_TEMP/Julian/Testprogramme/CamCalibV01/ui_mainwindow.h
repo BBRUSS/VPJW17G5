@@ -35,8 +35,7 @@ public:
     QSlider *horizontalSliderCalibPattern;
     QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout;
-    QPushButton *pushButtonCalibIntrinsics;
-    QPushButton *pushButtonCalibExtrinsics;
+    QPushButton *pushButtonSetContrast;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -53,31 +52,28 @@ public:
         textEditCalibPattern->setGeometry(QRect(217, 50, 151, 31));
         textEditCalibPattern->setAutoFillBackground(true);
         textEditCalibPattern->setFrameShape(QFrame::NoFrame);
+        textEditCalibPattern->setReadOnly(true);
         textEdit = new QTextEdit(centralWidget);
         textEdit->setObjectName(QStringLiteral("textEdit"));
         textEdit->setGeometry(QRect(217, 10, 201, 31));
         textEdit->setFrameShape(QFrame::NoFrame);
+        textEdit->setReadOnly(true);
         horizontalSliderCalibPattern = new QSlider(centralWidget);
         horizontalSliderCalibPattern->setObjectName(QStringLiteral("horizontalSliderCalibPattern"));
         horizontalSliderCalibPattern->setGeometry(QRect(370, 50, 41, 31));
         horizontalSliderCalibPattern->setOrientation(Qt::Horizontal);
         verticalLayoutWidget = new QWidget(centralWidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(10, 190, 160, 51));
+        verticalLayoutWidget->setGeometry(QRect(10, 220, 160, 31));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
-        pushButtonCalibIntrinsics = new QPushButton(verticalLayoutWidget);
-        pushButtonCalibIntrinsics->setObjectName(QStringLiteral("pushButtonCalibIntrinsics"));
+        pushButtonSetContrast = new QPushButton(verticalLayoutWidget);
+        pushButtonSetContrast->setObjectName(QStringLiteral("pushButtonSetContrast"));
 
-        verticalLayout->addWidget(pushButtonCalibIntrinsics);
-
-        pushButtonCalibExtrinsics = new QPushButton(verticalLayoutWidget);
-        pushButtonCalibExtrinsics->setObjectName(QStringLiteral("pushButtonCalibExtrinsics"));
-
-        verticalLayout->addWidget(pushButtonCalibExtrinsics);
+        verticalLayout->addWidget(pushButtonSetContrast);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -98,7 +94,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Camera Calibration", nullptr));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Camera Navigation", nullptr));
         textEditCalibPattern->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -109,8 +105,7 @@ public:
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Calibration pattern</p></body></html>", nullptr));
-        pushButtonCalibIntrinsics->setText(QApplication::translate("MainWindow", "Get intrinsic parameters", nullptr));
-        pushButtonCalibExtrinsics->setText(QApplication::translate("MainWindow", "Get extrinsic parameters", nullptr));
+        pushButtonSetContrast->setText(QApplication::translate("MainWindow", "Calibrate", nullptr));
     } // retranslateUi
 
 };

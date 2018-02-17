@@ -103,87 +103,87 @@ void MainWindow::on_stopCameraButton_clicked()
 }
 
 
-void MainWindow::cameraCalibration(vector<Mat> calibrationImages, Size boardSize, float squareEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients)
-{
-    vector<vector<Point2f>> checkerboardImageSpacePoints;
-    getChessboardCorners(calibrationImages, checkerboardImageSpacePoints, false);
+//void MainWindow::cameraCalibration(vector<Mat> calibrationImages, Size boardSize, float squareEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients)
+//{
+//    vector<vector<Point2f>> checkerboardImageSpacePoints;
+//    getChessboardCorners(calibrationImages, checkerboardImageSpacePoints, false);
 
-    vector<vector<Point3f>> worldSpaceCornerPoints(1);
-    createKnownBoardPosition(boardSize, squareEdgeLength, worldSpaceCornerPoints[0]);
-    worldSpaceCornerPoints.resize(checkerboardImageSpacePoints.size(), worldSpaceCornerPoints[0]);
+//    vector<vector<Point3f>> worldSpaceCornerPoints(1);
+//    createKnownBoardPosition(boardSize, squareEdgeLength, worldSpaceCornerPoints[0]);
+//    worldSpaceCornerPoints.resize(checkerboardImageSpacePoints.size(), worldSpaceCornerPoints[0]);
 
-    vector<Mat> rVectors, tVectors;
-    distanceCoefficients = Mat::zeros(8, 1, CV_64F);
+//    vector<Mat> rVectors, tVectors;
+//    distanceCoefficients = Mat::zeros(8, 1, CV_64F);
 
-    calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
-
-
-}
+//    calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
 
 
-void MainWindow::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showResult = false)
-{
-    for(vector<Mat>::iterator iter = images.begin(); iter  != images.end(); iter++)
-    {
-        vector<Point2f> pointBuf;
-        bool found = findChessboardCorners(*iter, cv::Size(9,6), pointBuf, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
-        if(found)
-        {
-            allFoundCorners.push_back(pointBuf);
-        }
-
-        if(showResult)
-        {
-            drawChessboardCorners(*iter, Size(9,6), pointBuf, found);
-            imshow("Looking for Corners", *iter);
-            waitKey(0);
-        }
-    }
-}
+//}
 
 
-bool MainWindow::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoefficients)
-{
-    ofstream outStream(name);
-    if(outStream)
-    {
-        uint16_t rows = cameraMatrix.rows;
-        uint16_t columns = cameraMatrix.cols;
+//void MainWindow::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showResult = false)
+//{
+//    for(vector<Mat>::iterator iter = images.begin(); iter  != images.end(); iter++)
+//    {
+//        vector<Point2f> pointBuf;
+//        bool found = findChessboardCorners(*iter, cv::Size(9,6), pointBuf, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
+//        if(found)
+//        {
+//            allFoundCorners.push_back(pointBuf);
+//        }
 
-        for(int r = 0; r < rows; r++)
-        {
-            for(int c = 0; c < columns; c++)
-            {
-                double value = cameraMatrix.at<double>(r, c);
-                outStream << value << endl;
-            }
-        }
-
-        rows = distanceCoefficients.rows;
-        columns = distanceCoefficients.cols;
-
-        for(int r = 0; r < rows; r++)
-        {
-            for(int c = 0; c < columns; c++)
-            {
-                double value = distanceCoefficients.at<double>(r, c);
-                outStream << value << endl;
-            }
-        }
-        outStream.close();
-        return true;
-    }
-    return false;
-}
+//        if(showResult)
+//        {
+//            drawChessboardCorners(*iter, Size(9,6), pointBuf, found);
+//            imshow("Looking for Corners", *iter);
+//            waitKey(0);
+//        }
+//    }
+//}
 
 
-void MainWindow::createKnownBoardPosition(cv::Size boardSize, float squareEdgeLength, vector<Point3f>& corners)
-{
-    for(int i = 0; i < boardSize.height; i++)
-    {
-        for(int j = 0; j < boardSize.width; j++)
-        {
-            corners.push_back(Point3f(j*squareEdgeLength, i*squareEdgeLength, 0.0f));
-        }
-    }
-}
+//bool MainWindow::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoefficients)
+//{
+//    ofstream outStream(name);
+//    if(outStream)
+//    {
+//        uint16_t rows = cameraMatrix.rows;
+//        uint16_t columns = cameraMatrix.cols;
+
+//        for(int r = 0; r < rows; r++)
+//        {
+//            for(int c = 0; c < columns; c++)
+//            {
+//                double value = cameraMatrix.at<double>(r, c);
+//                outStream << value << endl;
+//            }
+//        }
+
+//        rows = distanceCoefficients.rows;
+//        columns = distanceCoefficients.cols;
+
+//        for(int r = 0; r < rows; r++)
+//        {
+//            for(int c = 0; c < columns; c++)
+//            {
+//                double value = distanceCoefficients.at<double>(r, c);
+//                outStream << value << endl;
+//            }
+//        }
+//        outStream.close();
+//        return true;
+//    }
+//    return false;
+//}
+
+
+//void MainWindow::createKnownBoardPosition(cv::Size boardSize, float squareEdgeLength, vector<Point3f>& corners)
+//{
+//    for(int i = 0; i < boardSize.height; i++)
+//    {
+//        for(int j = 0; j < boardSize.width; j++)
+//        {
+//            corners.push_back(Point3f(j*squareEdgeLength, i*squareEdgeLength, 0.0f));
+//        }
+//    }
+//}

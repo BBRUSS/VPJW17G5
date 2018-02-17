@@ -6,6 +6,12 @@
 #define ENTER_KEY 13
 #define SPACE_KEY 32 // ' '
 
+Camera::Camera()
+{
+    this->id = 1;
+}
+
+
 Camera::Camera(int id, Ui::MainWindow *ui, Settings *s)
 {
     this->id = id;
@@ -14,6 +20,8 @@ Camera::Camera(int id, Ui::MainWindow *ui, Settings *s)
     this->cameraMatrix = Mat::eye(3, 3, CV_64F);    // camera matrix 3x3
     this->distCoeffs = Mat::zeros(8, 1, CV_64F);    // distortion coefficients 8x1
     //inputCapture.open(id);
+    this->maxValue = -1;                            // default: do not use these values, ergo -1
+    this->blackWhiteThreshold = -1;                 // default: do not use these values, ergo -1
 }
 
 
@@ -112,6 +120,8 @@ bool Camera::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& a
         {
             drawChessboardCorners(*i, s->boardSize, pointBuf, found);
             imshow("Webcam", *i);
+//            Mat frame = QImage((const unsigned char*)(*i.data), *i.cols, *i.rows, *i.step, QImage::Format_RGB888);
+//            ui->labelImageOrig->setPixmap(QPixmap::fromImage(frame));
             waitKey(0);
         }
     }
@@ -126,7 +136,7 @@ bool Camera::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& a
  */
 int Camera::doCalibrationIntrinsics()
 {
-    Mat frame;                              // Original video frame
+    Mat frame, raw;                         // Original video frame
     Mat drawToFrame;                        // Copy of original frame to draw found patterns within it
     cameraMatrix = Mat::eye(3,3,CV_64F);    // Initialize intrinsic parameters
     distCoeffs = Mat::zeros(8,1,CV_64F);    // Initialize distortion coefficients
@@ -148,9 +158,21 @@ int Camera::doCalibrationIntrinsics()
 
     namedWindow("Webcam", CV_WINDOW_AUTOSIZE);
 
+
     while(true)
     {
-        if(!vid.read(frame)) break;
+        if(!vid.read(raw)) break;
+
+        if(blackWhiteThreshold >= 0 && maxValue >= 0)   // if values are given, use them to set threshold in frame
+        {
+           cv::threshold(raw, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
+        }
+        else    // else use original frame
+        {
+            raw.copyTo(frame);
+        }
+
+
 
         // find and show calibration pattern corners
         vector<Vec2f> foundPoints;
@@ -211,7 +233,7 @@ int Camera::doCalibrationIntrinsics()
             qInfo() << "bye bye" << endl;
             destroyWindow("Webcam");
             destroyWindow("Distorted | Undistorted");
-            return 0;
+            return 3;
             break;
         }
     }
@@ -384,3 +406,8 @@ void Camera::saveCameraCalibrationParameters()
     //        }
 
 }
+
+
+
+
+

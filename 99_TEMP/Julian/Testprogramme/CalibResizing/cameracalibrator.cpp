@@ -180,6 +180,7 @@ Mat CameraCalibrator::remap(const Mat &image)
     return undistorted;
 }
 
+
 void CameraCalibrator::writeXML(QString fileName, double exposureValue, double contrastValue, double brightnessValue){
 
     QFile file(fileName);//Anpassen für Windows

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "settings.h"
 #include "camera.h"
+#include "cameracontrast.h"
 #include <QDebug>
 
 
@@ -15,12 +16,24 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->textEditCalibPattern->setText("Chessboard");
     connect(ui->horizontalSliderCalibPattern, SIGNAL(valueChanged(int)),this, SLOT(changedValue()));
     s = new Settings();
+    s->calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
+    ui->textEditCalibPattern->setText("Asym. Circlegrid");
+    ui->horizontalSliderCalibPattern->setValue(1);
+    s->boardSize.height = 11;    // number of corners in height
+    s->boardSize.width = 4;      // number of corners in width
+    s->squareSize = 15.0f;       // size of squares in mm
 
-    s->calibrationPattern = Settings::CHESSBOARD;
     s->nrFrames = 10;
     s->calibFlag |= CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_FOCAL_LENGTH | CV_CALIB_FIX_PRINCIPAL_POINT;
+    this->camID = 1;    // cam id chosen by user
 
-    cam1 = new Camera(1, ui, s);
+    for(int id=0; id < 2/*MAX_CAMS*/; ++id)
+    {
+        cams.push_back( new Camera(id, ui, s));
+        qInfo() << "created new cam object with id <" << id << ">" << endl;
+    }
+
+    //cam1 = new Camera(1, ui, s);
 
 }
 
@@ -29,38 +42,53 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButtonCalibIntrinsics_clicked()
+
+//void MainWindow::on_pushButtonCalibIntrinsics_clicked()
+//{
+//    qDebug() << "Starting intrinsic calibration for Cam <"<<cams.at(camID)->getID()<<"> ..."<<endl;
+//    cams.at(camID)->doCalibrationIntrinsics();  // intrinsic parameters
+//    // Wenn Kalibrierung neu: flag = CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5
+//    // Wenn Kalibierung vorhanden: flag = CV_CALIB_USE_INTRINSIC_GUESS|CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5
+//}
+
+
+//void MainWindow::on_pushButtonCalibExtrinsics_clicked()
+//{
+//    // how to get extrinsics:
+//    // Pro Camera (4?) 6* Bilder mit dem "Punkt-Ständer" in jeweils einer Ecke aufnehmen, Bilder Schwarz-weiß mit Kontrast so einstellen,
+//    // dass alles schwarz ist und nur der Punkt (Kreis) weiß ist.
+//    // Die 4 Einzelbilder mittels bitwise-OR zu einem Bild zusammenfügen, dann mit der zuvor gewonnenen Kameramatrix (Kopie erstellen) und Flag
+//    // <CV_CALIB_USE_INTRINSIC_GUESS> 1x calibrateCamera() aufrufen. Somit erhält man rvec und tvec als Rotationsmatrix und Translationsvektor.
+//    // eventuell kann man mit diesem Schritt mittels getNewCameramatrix() (oder so ähnlich heißt die) eine verbesserte Kalibierung der intrinsischen
+//    // Parameter erhalten.
+//    // Somit entstehen zwei nötige Kalibierungen: 1x mit dem Schachbrettmuster für die Intrinsics und danach mit dem "Punkt-Ständer" für die Extrinsics.
+//    // +----------+
+//    // |*        *|
+//    // |          |
+//    // |*        *|    => Extrinsic calibration pattern: symmetric circle grid 2 x 3
+//    // |          |
+//    // |*        *|
+//    // +----------+
+//    //
+//    // * 6 Bilder sind besser als 4, da für getChessboadCorners() / getCircleGrid() empfohlen wird, eine gerade und eine ungerade Dimension zu haben.
+
+//    qDebug() << "Starting extrinsic calibration for Cam <"<<cams.at(camID)->getID()<<"> ..."<<endl;
+//    cams.at(camID)->doCalibrationExtrinsics();
+//}
+
+
+void MainWindow::on_pushButtonSetContrast_clicked()
 {
-    qDebug() << "Starting intrinsic calibration...";
-    cam1->doCalibrationIntrinsics();  // intrinsic parameters
-    // Wenn Kalibrierung neu: flag = CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5
-    // Wenn Kalibierung vorhanden: flag = CV_CALIB_USE_INTRINSIC_GUESS|CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5
+    //    CameraContrast contrastWindow; // this is the modal approach for new window, which means that the new window is prior and has to be closed
+    //    contrastWindow.setModal(true); // before you can work/move/click the other window(s)
+    //    contrastWindow.exec();
+    // other way to open new window:
+    contrastWindow = new CameraContrast(this);
+    contrastWindow->setCams(cams);
+    contrastWindow->show();
 }
 
 
-void MainWindow::on_pushButtonCalibExtrinsics_clicked()
-{
-    // how to get extrinsics:
-    // Pro Camera (4?) 6* Bilder mit dem "Punkt-Ständer" in jeweils einer Ecke aufnehmen, Bilder Schwarz-weiß mit Kontrast so einstellen,
-    // dass alles schwarz ist und nur der Punkt (Kreis) weiß ist.
-    // Die 4 Einzelbilder mittels bitwise-OR zu einem Bild zusammenfügen, dann mit der zuvor gewonnenen Kameramatrix (Kopie erstellen) und Flag
-    // <CV_CALIB_USE_INTRINSIC_GUESS> 1x calibrateCamera() aufrufen. Somit erhält man rvec und tvec als Rotationsmatrix und Translationsvektor.
-    // eventuell kann man mit diesem Schritt mittels getNewCameramatrix() (oder so ähnlich heißt die) eine verbesserte Kalibierung der intrinsischen
-    // Parameter erhalten.
-    // Somit entstehen zwei nötige Kalibierungen: 1x mit dem Schachbrettmuster für die Intrinsics und danach mit dem "Punkt-Ständer" für die Extrinsics.
-    // +----------+
-    // |*        *|
-    // |          |
-    // |*        *|    => Extrinsic calibration pattern: symmetric circle grid 2 x 3
-    // |          |
-    // |*        *|
-    // +----------+
-    //
-    // * 6 Bilder sind besser als 4, da für getChessboadCorners() / getCircleGrid() empfohlen wird, eine gerade und eine ungerade Dimension zu haben.
-
-    qDebug() << "Starting extrinsic calibration...";
-    cam1->doCalibrationExtrinsics();
-}
 
 void MainWindow::changedValue()
 {
