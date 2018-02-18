@@ -36,14 +36,13 @@ public:
 
 
     // According to George Lecaces Youtube video "OpenCV Basics"
-    void createKnownBoardPositions(vector<Point3f>& corners);
+    void createKnownBoardPositions(vector<Point3f>& corners, Size size, float squareSize, Settings::Pattern pattern);
     bool getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
     void cameraCalibration(vector<Mat> calibrationImages, Size boardSize);
     int doCalibrationIntrinsics();              // Function to get intrinsics
     int doCalibrationExtrinsics();              // Function to get extrinsics
     void saveCameraCalibrationParameters();     // Save parameters to XML file
-    Mat showUndistorted(Mat distorted);         // geet and show undistorted picture to compare to distorted one
-    // Mat getBlackWhiteOptimatedPicture()
+    Mat showUndistorted(Mat distorted);         // get and show undistorted picture to compare to distorted one
     // TODO: Reprojection-Error calculation
     int getID()
     {

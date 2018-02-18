@@ -6,6 +6,8 @@
 #define ENTER_KEY 13
 #define SPACE_KEY 32 // ' '
 
+const Scalar RED(0,0,255), GREEN(0,255,0);
+
 Camera::Camera()
 {
     this->id = 1;
@@ -28,17 +30,17 @@ Camera::Camera(int id, Ui::MainWindow *ui, Settings *s)
 /** calculate the corners of calibration pattern (e.g. chessboard) in the real world plane
  * @brief Camera::createKnownBoardPositions
  */
-void Camera::createKnownBoardPositions(vector<Point3f>& corners)
+void Camera::createKnownBoardPositions(vector<Point3f>& corners, Size size, float squareSize, Settings::Pattern pattern)
 {
-    switch(s->calibrationPattern)
+    switch(pattern)
     {
     case Settings::CHESSBOARD:
     case Settings::CIRCLES_GRID:
-        for(int i = 0; i < s->boardSize.height; i++)    // in original example description: ++i, ++j, they leave kind of space. With i++, the first corner is (0,0)
+        for(int i = 0; i < size.height; i++)    // in original example description: ++i, ++j, they leave kind of space. With i++, the first corner is (0,0)
         {
-            for(int j = 0; j < s->boardSize.width; j++)
+            for(int j = 0; j < size.width; j++)
             {
-                corners.push_back(Point3f(j*s->squareSize, i*s->squareSize, 0.0f)); // X,Y,Z
+                corners.push_back(Point3f(j*squareSize, i*squareSize, 0.0f)); // X,Y,Z
             }
         }
         break;
@@ -65,7 +67,7 @@ void Camera::cameraCalibration(vector<Mat> calibrationImages, Size boardSize)
     getChessboardCorners(calibrationImages, chessboardImageSpacePoints, false);
 
     vector<vector<Point3f>> worldSpaceCornerPoints(1);
-    createKnownBoardPositions(worldSpaceCornerPoints[0]);
+    createKnownBoardPositions(worldSpaceCornerPoints[0], s->boardSize, s->squareSize, s->calibrationPattern);
     worldSpaceCornerPoints.resize(chessboardImageSpacePoints.size(), worldSpaceCornerPoints[0]);
 
     double error = calibrateCamera(worldSpaceCornerPoints, chessboardImageSpacePoints, boardSize, cameraMatrix,
@@ -120,8 +122,8 @@ bool Camera::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& a
         {
             drawChessboardCorners(*i, s->boardSize, pointBuf, found);
             imshow("Webcam", *i);
-//            Mat frame = QImage((const unsigned char*)(*i.data), *i.cols, *i.rows, *i.step, QImage::Format_RGB888);
-//            ui->labelImageOrig->setPixmap(QPixmap::fromImage(frame));
+            //            Mat frame = QImage((const unsigned char*)(*i.data), *i.cols, *i.rows, *i.step, QImage::Format_RGB888);
+            //            ui->labelImageOrig->setPixmap(QPixmap::fromImage(frame));
             waitKey(0);
         }
     }
@@ -165,7 +167,7 @@ int Camera::doCalibrationIntrinsics()
 
         if(blackWhiteThreshold >= 0 && maxValue >= 0)   // if values are given, use them to set threshold in frame
         {
-           cv::threshold(raw, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
+            cv::threshold(raw, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
         }
         else    // else use original frame
         {
@@ -191,6 +193,13 @@ int Camera::doCalibrationIntrinsics()
             break;
         }
 
+        // Text output on frame
+        string  msg = format("%d / %d", (int)savedImages.size(), s->nrFrames);
+        int baseline = 0;
+        Size textSize = getTextSize(msg, 1, 1, 1, &baseline);
+        Point textOrigin(frame.cols - 2*textSize.width-10, frame.rows - 2*baseline-10);
+
+        putText(frame, msg, textOrigin, 1,1,RED);
         frame.copyTo(drawToFrame);
         drawChessboardCorners(drawToFrame, s->boardSize, foundPoints, found);
         if(found)
@@ -211,9 +220,9 @@ int Camera::doCalibrationIntrinsics()
             // save image
             if(found)
             {
-                Mat temp;
-                frame.copyTo(temp);
-                savedImages.push_back(temp);
+                //Mat temp;
+                //frame.copyTo(temp);
+                savedImages.push_back(frame);
                 qInfo() << "saving image...(" << savedImages.size() << "/" << s->nrFrames << ")" << endl;
             }
             break;
@@ -250,7 +259,7 @@ int Camera::doCalibrationIntrinsics()
  */
 int Camera::doCalibrationExtrinsics()
 {
-    Mat frame;                              // Original video frame
+    Mat frame, raw;                         // Original video frame
     Mat drawToFrame;                        // Copy of original frame to draw found patterns within it
     cameraMatrix = Mat::eye(3,3,CV_64F);    // Initialize intrinsic parameters
     distCoeffs = Mat::zeros(8,1,CV_64F);    // Initialize distortion coefficients
@@ -270,27 +279,36 @@ int Camera::doCalibrationExtrinsics()
 
     while(true)
     {
-        if(!vid.read(frame)) break;
+        if(!vid.read(raw)) break;
+
+        if(blackWhiteThreshold >= 0 && maxValue >= 0)   // if values are given, use them to set threshold in frame
+        {
+            cv::threshold(raw, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
+        }
+        else    // else use original frame
+        {
+            raw.copyTo(frame);
+        }
 
         // find and show calibration pattern corners
         // TODO: convert frame to black and white with high contrast (see CalibResizing.pro)
-        vector<Vec2f> foundPoints;
-        bool found = findCirclesGrid(frame, calibSize, foundPoints );
+        //        vector<Vec2f> foundPoints;
+        //        bool found = findCirclesGrid(frame, Size(2,1), foundPoints );
 
 
-        frame.copyTo(drawToFrame);
-        drawChessboardCorners(drawToFrame, calibSize, foundPoints, found);
-        if(found)
-        {
-            imshow("Webcam", drawToFrame);
-        }
-        else
-        {
-            imshow("Webcam", frame);
-        }
+        //        frame.copyTo(drawToFrame);
+        //        drawChessboardCorners(drawToFrame, Size(2,1), foundPoints, found);
+        //        if(found)
+        //        {
+        //            imshow("Webcam", drawToFrame);
+        //        }
+        //        else
+        //        {
+        //            imshow("Webcam", frame);
+        //        }
         // save images for calibration, and calibrate if enough good images
         char key = waitKey(1000 / framesPerSecond);
-
+        bool found = true;
         switch(key)
         {
         case SPACE_KEY:
@@ -309,22 +327,67 @@ int Camera::doCalibrationExtrinsics()
             if(savedImages.size() > 6-1)
             {
                 // TODO: Put all 6 images together with bitwise-OR
-                qInfo() << "calibrating cam" << "<" <<id << ">" << endl;
-                Mat origCameraMatrix, origDistCoeffs;
-                cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
-                distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
-                cameraCalibration(savedImages, calibSize);
-                // TODO: calculate reprojection error with new camera matrix, compare to original ones
-                // and decide, which to use
-                origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
-                origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
+                // TODO: create known circle position in 3D real world
+                // TODO: find circles in image plane
+                Mat images = Mat::zeros(savedImages.at(0).rows, savedImages.at(0).cols, savedImages.at(0).type());
+                savedImages.at(0).copyTo(images);
+                //                for(int i=0; i<savedImages.size(); i++)
+                //                {
+                //                    Mat temp;
+                //                    savedImages.at(i).copyTo(temp);
+                //                    cv::bitwise_or(images, temp, images);
+                //                    qInfo() << "add successfull" << i;
+                //                }
+                // 1. Find circle positions in image plane
+                vector<Vec2f> foundPoints;
+                Mat drawToImages;
+                bool foundCircles = false;
+                while(!foundCircles)
+                {
+                    found = findCirclesGrid(images, Size(3,2), foundPoints );
+
+                    images.copyTo(drawToImages);
+                    drawChessboardCorners(drawToImages, Size(3,2), foundPoints, found);
+                    if(found)
+                    {
+                        imshow("Webcam", drawToImages);
+                    }
+                    else
+                    {
+                        imshow("Webcam", images);
+                    }
+                    if(waitKey(50)==ESC_KEY) break;
+                }
+
+                // 2. Create circle positions in real 3D world
+                vector<vector<Point3f>> corners(1);
+                createKnownBoardPositions(corners[0], Size(3,2), 13.0, Settings::CIRCLES_GRID);
+
+                corners.resize(foundPoints.size(), corners[0]);
+
+
+
+
+                //                qInfo() << "calibrating cam" << "<" <<id << ">" << endl;
+                //                Mat origCameraMatrix, origDistCoeffs;
+
+                //                cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
+                //                distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
+                //                double error = calibrateCamera(corners, foundPoints, Size(3,2), cameraMatrix,
+                //                                               distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
+                //                //                // TODO: calculate reprojection error with new camera matrix, compare to original ones
+                //                //                // and decide, which to use
+                //                origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
+                //                origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
+                //                //                //cout << rvecs << endl;
+                //                //                //cout << tvecs << endl;
             }
             break;
 
         case ESC_KEY:
             // exit
             qInfo() << "bye bye" << endl;
-            destroyWindow("Webcam");
+            destroyAllWindows();
             return 0;
             break;
         }

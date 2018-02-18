@@ -4,6 +4,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+
 CameraContrast::CameraContrast(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CameraContrast)
@@ -18,7 +19,10 @@ CameraContrast::~CameraContrast()
     delete ui;
 }
 
-
+/** Starts timer and connects "frameReady()"-Method as TOV-ISR.
+ *  Starts camera capture and enables/disables corresponding pushbuttons
+ * @brief CameraContrast::on_pushButtonStartCam_clicked
+ */
 void CameraContrast::on_pushButtonStartCam_clicked()
 {
     cameraTimer.start(33); // 33 ms = 30 fps
@@ -28,6 +32,7 @@ void CameraContrast::on_pushButtonStartCam_clicked()
     //sender (source of signal): of type QTimer; signal (value of signal): timeout()
     //receiver: this Window - slot:a function of the receiver that processes the incoming signal
     id = ui->spinBoxCameraID->value();
+
     capture.open(id);
 
     if (capture.isOpened())
@@ -41,8 +46,7 @@ void CameraContrast::on_pushButtonStartCam_clicked()
         ui->pushButtonSaveContrast->setEnabled(true);
         ui->pushButtonResetThr->setEnabled(true);
         ui->lineEditStatus->clear();
-
-
+        on_pushButtonResetThr_clicked();    // reset b/w threshold and max values
     }
     else
     {
@@ -50,11 +54,13 @@ void CameraContrast::on_pushButtonStartCam_clicked()
     }
 }
 
+/** Stops camera capture and enables/disables corresponding pushbuttons
+ * @brief CameraContrast::on_pushButtonStopCam_clicked
+ */
 void CameraContrast::on_pushButtonStopCam_clicked()
 {
     if(capture.isOpened())
     {
-
         // release camera stream - Closes video file or capturing device.
         capture.release();
         ui->labelImageOrig->clear();
@@ -73,7 +79,11 @@ void CameraContrast::on_pushButtonStopCam_clicked()
     ui->spinBoxCameraID->setEnabled(true);
 }
 
-
+/** Writes sample image to calibration window GUI after timeout (30fps),
+ *  convert image according to horizontal sliders values for black/white threshold
+ *  and max value respectively.
+ * @brief CameraContrast::frameReady
+ */
 void CameraContrast::frameReady()
 {
     if(capture.isOpened())
@@ -116,14 +126,21 @@ void CameraContrast::frameReady()
     }
 }
 
-
+/** Save the horizontal slider values for black/white threshold and max value
+ *  to active camera object, in order to use these values while calibration process
+ * @brief CameraContrast::on_pushButtonSaveContrast_clicked
+ */
 void CameraContrast::on_pushButtonSaveContrast_clicked()
 {
     qInfo() <<"save id "<< id;
     cams.at(id)->setContrast(ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value());
 }
 
-
+/** Start the calibration process to get intrinsic parameters.
+ *  Therefor, the capture from parent window needs to be released, else the "frameReady()" method
+ *  will have size-errors and the application will crash.
+ * @brief CameraContrast::on_pushButtonGetIntrinsics_clicked
+ */
 void CameraContrast::on_pushButtonGetIntrinsics_clicked()
 {
    capture.release();
@@ -132,7 +149,11 @@ void CameraContrast::on_pushButtonGetIntrinsics_clicked()
    qInfo() << "intrinsic success:" << success;
 }
 
-
+/** Start the calibration process to get extrinsic parameters.
+ *  Therefor, the capture from parent window needs to be released, else the "frameReady()" method
+ *  will have size-errors and the application will crash.
+ * @brief CameraContrast::on_pushButtonGetExtrinsics_clicked
+ */
 void CameraContrast::on_pushButtonGetExtrinsics_clicked()
 {
     capture.release();
@@ -140,7 +161,10 @@ void CameraContrast::on_pushButtonGetExtrinsics_clicked()
     capture.open(id);
 }
 
-
+/** Reset the horizontal slider values for black/white threshold and max value
+ *  and the corresponding values in active camera object.
+ * @brief CameraContrast::on_pushButtonResetThr_clicked
+ */
 void CameraContrast::on_pushButtonResetThr_clicked()
 {
     ui->horizontalSliderMaxValue->setValue(128);
@@ -148,7 +172,13 @@ void CameraContrast::on_pushButtonResetThr_clicked()
     cams.at(id)->setContrast(-1, -1);
 }
 
+/** close the calibration window.
+ *  If a calibration has been already started, the calibration process
+ *  will not be interrupted.
+ * @brief CameraContrast::on_pushButtonCloseCalibWindow_clicked
+ */
 void CameraContrast::on_pushButtonCloseCalibWindow_clicked()
 {
+    capture.release();
     this->close();
 }
