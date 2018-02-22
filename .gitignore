@@ -12,3 +12,9 @@ ArucoMarkerErkennung/Makefile
 02_Calib/03_Konzeptpraesentation/~$G5Calib.ppt
 99_TEMP/Benny/~$G5Calib.ppt
 11_Orga/70_ARUCO/ArucoMarkerErkennung/Makefile
+11_Orga/01_CamCalib/KamKal/047S-Function_6_Cams/find_the_biggest.asv
+03_Navi/01_Code/RobotDetection Portiert/Makefile
+*.Debug
+*.Release
+*.dll
+*.Debug

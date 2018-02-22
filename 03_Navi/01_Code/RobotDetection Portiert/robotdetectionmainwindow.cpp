@@ -154,7 +154,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
     {
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
-            videoCapture[i].open(i);
+            videoCapture[i].open(0); //TÓDO: 0 -> i
             videoCapture[i].set(CV_CAP_PROP_FRAME_WIDTH, CAMERA_IMG_WIDTH);
             videoCapture[i].set(CV_CAP_PROP_FRAME_HEIGHT, CAMERA_IMG_HEIGTH);
             videoCapture[i].set(CV_CAP_PROP_BRIGHTNESS, brightnessValue[i]);

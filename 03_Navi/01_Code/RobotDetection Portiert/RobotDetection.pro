@@ -15,7 +15,7 @@ INCLUDEPATH += \
 
 LIBS += \
     "-LD:/opencv/build/x64/vc14/lib" \
-    -lopencv_world340
+    -lopencv_world331
 
 #debug:LIBS +=    -lopencv_core300d \
 #    -lopencv_videoio300d \
@@ -45,14 +45,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         robotdetectionmainwindow.cpp \
     myudp.cpp \
-    imgtask.cpp \
-    viewworker.cpp
+    imgtask.cpp
 
 HEADERS  += robotdetectionmainwindow.h \
     myudp.h \
     imgtask.h \
-    constants.h \
-    viewworker.h
+    constants.h
 
 FORMS    += robotdetectionmainwindow.ui
 
