@@ -45,12 +45,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         robotdetectionmainwindow.cpp \
     myudp.cpp \
-    imgtask.cpp
+    imgtask.cpp \
+    imageprocessingworker.cpp
 
 HEADERS  += robotdetectionmainwindow.h \
     myudp.h \
     imgtask.h \
-    constants.h
+    constants.h \
+    imageprocessingworker.h
 
 FORMS    += robotdetectionmainwindow.ui
 

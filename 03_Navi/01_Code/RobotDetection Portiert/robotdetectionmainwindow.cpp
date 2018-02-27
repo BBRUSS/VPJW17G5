@@ -15,24 +15,23 @@
 #include "ui_robotdetectionmainwindow.h"
 #include <iostream>
 #include <fstream>
+#include <QDebug>
 
 RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::RobotDetectionMainWindow),
-    udpClient(this),
-    threadPool(this)
+    ui(new Ui::RobotDetectionMainWindow)
 {
     ui->setupUi(this);
     // read settings from ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
     settings.beginGroup("RobotDetectionSettings");
-    sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
-    sendToPort = settings.value("SendToPort", 25000).toInt();
+    udpStruct.sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
+    udpStruct.sendToPort = settings.value("SendToPort", 25000).toInt();
 
-    sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
-    sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
-    reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
-    recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
+    udpStruct.sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
+    udpStruct.sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
+    udpStruct.reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
+    udpStruct.recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
 
     timerMilSecs = settings.value("TimerMilSecs", 20).toInt();
     ui->slider_cornerRefinementMaxIterations->setValue( settings.value("cornerRefinementMaxIterations", 1).toInt());
@@ -49,53 +48,33 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
 
     //Set Offset for Robots
-    QList<RobotOffset> RobotOffsets;
+    robotOffsets.clear();
     for(int i = 0; i < MAX_NR_OF_ROBOTS; i++)
     {
         RobotOffset temp = {i,settings.value("Robot"+QString::number(i)+"MEven",2).toFloat(),settings.value("Robot"+QString::number(i)+"MNotEven",2).toFloat()};
-        RobotOffsets.append(temp);
+        robotOffsets.append(temp);
     }
     settings.endGroup();
 
-    // create UDP-Client and open socket
-    //udpClient.setSendIP(sendToIp, sendToPort);
-
-
-    udpClient.setSendConfig (sendToIp,sendToPort);
-
-    udpClient.setReciveConfig_SyncService(reciveIp_SyncService,recivePort_SyncService);
-    udpClient.setSendConfig_SyncService(sendToIp_SyncService,sendToPort_SyncService);
+    for (int i = 0; i < NR_OF_CAMS; i++)
+    {
+        cv::VideoCapture capt;
+        videoCapture.append(capt);
+    }
 
     mainloopIsActive = false;
     calibrateOffset_ON_OFF = false;
 
+    timer = new QTimer(this);
+    timerFPS = new QTimer(this);
     // init timers for mainloop and frames-per-second counting
-    connect(&timer, SIGNAL(timeout()), this, SLOT(operate()));
-    connect(&timerFPS, SIGNAL(timeout()), this, SLOT(fpsCounter()));
+
+    connect(timerFPS, &QTimer::timeout, this, &RobotDetectionMainWindow::fpsCounter);
+    //connect(&timerFPS, SIGNAL(timeout()), this, SLOT(fpsCounter()));
     fpsCount = 0;
 
     // read camera calibration data and perspective transform matrices from xml
     readXmlCalibrationFile();
-
-    // init list of robotLocations
-    robotLocations.clear();
-
-    for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
-    {
-        robotLocations.append(cv::Point3f(0.0, 0.0, 0.0));
-    }
-
-    // open threadpool for image analysis
-    threadPool.setMaxThreadCount(NR_OF_CAMS);
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        tasks[i] = new ImgTask();
-        tasks[i]->setAutoDelete(false);
-        tasks[i]->setCameraMatrix(cameraMatrix.at(i));
-        tasks[i]->setDistCoeffs(distCoeffs.at(i));
-        tasks[i]->setPerspTransfMatrix(perspTransfMatrix.at(i));
-        tasks[i]->setRobotOffsets(RobotOffsets);
-    }
 
     ui->labelVersion->setText("Version: " + QString(__DATE__) + " " + QString(__TIME__));
 
@@ -104,11 +83,15 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
 RobotDetectionMainWindow::~RobotDetectionMainWindow()
 {
+    workerThread.quit();
+    workerThread.wait();
+    qDebug()<<"!";
+
     // write settings to ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
     settings.beginGroup("RobotDetectionSettings");
-    settings.setValue("SendToIP", sendToIp);
-    settings.setValue("SendToPort", sendToPort);
+    settings.setValue("SendToIP", udpStruct.sendToIp);
+    settings.setValue("SendToPort", udpStruct.sendToPort);
     settings.setValue("TimerMilSecs", timerMilSecs);
 
     settings.setValue("cornerRefinementMaxIterations", ui->slider_cornerRefinementMaxIterations->value());
@@ -125,27 +108,59 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
     settings.setValue("MinSizeofRects", ui->slider_MinSizeofRects->value());
     settings.endGroup();
 
-    // clean up
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        delete tasks[i];
-    }
     delete ui;
 }
 void RobotDetectionMainWindow::on_pushButtonCalibrateOffset_clicked()
 {
     calibrateOffset_ON_OFF = true;
 }
+
+cv::Ptr<cv::aruco::DetectorParameters> RobotDetectionMainWindow::readArucoParameters(){
+    //Read Settings
+    cv::Ptr<cv::aruco::DetectorParameters> arucoParameters = cv::aruco::DetectorParameters::create();
+
+    //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
+    //    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
+    //    {
+    //        arucoParameters->doCornerRefinement = true;
+    //    } else {
+    //        arucoParameters->doCornerRefinement = false;
+    //    }
+    QList<double> temp;
+
+    arucoParameters->perspectiveRemovePixelPerCell = ui->slider_perspectiveRemovePixelPerCell->value();
+    arucoParameters->cornerRefinementMaxIterations = ui->slider_cornerRefinementMaxIterations->value();
+    arucoParameters->adaptiveThreshWinSizeMin = ui->slider_adaptiveThreshWinSizeMin->value();
+    arucoParameters->adaptiveThreshWinSizeStep = ui->slider_adaptiveThreshWinSizeStep->value();
+    arucoParameters->adaptiveThreshConstant = ui->slider_adaptiveThreshConstant->value();
+
+    temp.append(ui->slider_minMarkerPerimeterRate->value());
+    temp.append(ui->slider_maxMarkerPerimeterRate->value());
+    temp.append(ui->slider_polygonalApproxAccuracyRate->value());
+    temp.append(ui->slider_errorCorrectionRate->value());
+    temp.append(ui->slider_cornerRefinementMinAccuracy->value());
+
+    arucoParameters->minMarkerPerimeterRate = temp[0]/100;
+    arucoParameters->maxMarkerPerimeterRate = temp[1]/100;
+    arucoParameters->polygonalApproxAccuracyRate = temp[2]/100;
+    arucoParameters->errorCorrectionRate = temp[3]/100;
+    arucoParameters->cornerRefinementMinAccuracy = temp[4]/100;
+
+    return arucoParameters;
+}
+
 void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
 {
+
     if(mainloopIsActive)
     {
-        timer.stop();
-        timerFPS.stop();
+        timer->stop();
+        timerFPS->stop();
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
             videoCapture[i].release();
         }
+        workerThread.quit();
         ui->statusBar->showMessage("Releasing cameras...", 2000);
         ui->pushButtonStartStop->setText("Start Detection");
         mainloopIsActive = false;
@@ -166,151 +181,33 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         // otherwise program might crash (depends on camera driver)
         Sleep(3000);
         //timer.start(timerMilSecs);
-        timer.start(1);
-        timerFPS.start(1000);
+        imgWorker = new ImageProcessingWorker(udpStruct, readArucoParameters(), videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix, robotOffsets);
+        imgWorker->setTaskThreshold(ui->slider_threshold->value());
+        imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
+
+        imgWorker->moveToThread(&workerThread);
+
+        connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
+        //connect(&workerThread, &QThread::started, imgWorker, &ImageProcessingWorker::processImages);
+        connect(timer, &QTimer::timeout, imgWorker, &ImageProcessingWorker::processImages, Qt::DirectConnection);
+        connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);
+
+        workerThread.start();
+
+        timer->start(33);
+        timerFPS->start(1000);
         ui->pushButtonStartStop->setText("Stop Detection");
         mainloopIsActive = true;
     }
 }
 
-void RobotDetectionMainWindow::operate()
-{
-    if(!workerMutex.tryLock())
+void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> warpedImage, const QList<cv::Point3f> robotLocations, const QList<RobotPosition> detectedRobots){
+    udpCount++;
+    if(!guiUpdateMutex.tryLock())
     {
         return;
     }
-
-    // GRAB TIMESTAMP
-    timeStamp = QTime::currentTime(); // read system time
-    QString stime = timeStamp.toString(Qt::LocalDate);  // convert time to string
-
     fpsCount++;
-
-    QList<double> temp;
-
-    //Read Settings
-    cv::Ptr<cv::aruco::DetectorParameters> arucoParameters = cv::aruco::DetectorParameters::create();
-
-    //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
-//    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
-//    {
-//        arucoParameters->doCornerRefinement = true;
-//    } else {
-//        arucoParameters->doCornerRefinement = false;
-//    }
-
-    ui->t4_label->setText(QString::number(udpClient.msg_4));
-
-
-    arucoParameters->perspectiveRemovePixelPerCell = ui->slider_perspectiveRemovePixelPerCell->value();
-    arucoParameters->cornerRefinementMaxIterations = ui->slider_cornerRefinementMaxIterations->value();
-    arucoParameters->adaptiveThreshWinSizeMin = ui->slider_adaptiveThreshWinSizeMin->value();
-    arucoParameters->adaptiveThreshWinSizeStep = ui->slider_adaptiveThreshWinSizeStep->value();
-    arucoParameters->adaptiveThreshConstant = ui->slider_adaptiveThreshConstant->value();
-
-    temp.append(ui->slider_minMarkerPerimeterRate->value());
-    temp.append(ui->slider_maxMarkerPerimeterRate->value());
-    temp.append(ui->slider_polygonalApproxAccuracyRate->value());
-    temp.append(ui->slider_errorCorrectionRate->value());
-    temp.append(ui->slider_cornerRefinementMinAccuracy->value());
-
-    arucoParameters->minMarkerPerimeterRate = temp[0]/100;
-    arucoParameters->maxMarkerPerimeterRate = temp[1]/100;
-    arucoParameters->polygonalApproxAccuracyRate = temp[2]/100;
-    arucoParameters->errorCorrectionRate = temp[3]/100;
-    arucoParameters->cornerRefinementMinAccuracy = temp[4]/100;
-
-    // READ IMAGES FROM CAMERAS
-    // grab frames with smallest time difference possible
-    // "grab()" + "retrieve()" is faster than the combined function "read()"
-
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        if (videoCapture[i].isOpened())
-        {
-            videoCapture[i].grab();
-        }
-    }
-
-
-    // Fetch detected Robots from tasks
-    QList<RobotPosition> detectedRobots;
-
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        if (videoCapture[i].isOpened())
-        {
-            videoCapture[i].retrieve(cameraImages[i], 0);   // get frames from camera
-        }
-        else     // no camera connected, use black image
-        {
-            cv::Mat blackImage(CAMERA_IMG_HEIGTH, CAMERA_IMG_WIDTH, CV_8UC3);
-            blackImage.setTo(COLOR_BLACK);
-            cameraImages[i] = blackImage;
-        }
-        // start seperate tasks
-        tasks[i]->setImage( cameraImages[i] );
-        tasks[i]->setDebugMode( ui->checkBoxLiveView->isChecked() );
-        tasks[i]->setCalibrateOffset(calibrateOffset_ON_OFF);
-        tasks[i]->setArucoParameters(arucoParameters);
-        tasks[i]->setthreshold(ui->slider_threshold->value());
-        tasks[i]->setMinSizeofRects(ui->slider_MinSizeofRects->value());
-        threadPool.start( tasks[i] );
-    }
-    threadPool.waitForDone();
-
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        detectedRobots.append(tasks[i]->getdetectRobots());
-    }
-
-
-    //User clicked on Calibration
-    if(calibrateOffset_ON_OFF)
-    {
-        //Fetch Calibration Data from Tasks
-        QList<RobotOffset> foundOffsets;
-
-        for (int i = 0; i < NR_OF_CAMS; i++)
-        {
-            foundOffsets.append(tasks[i]->getNewRobotOffsets());
-            tasks[i]->clearNewRobotOffsets();
-        }
-
-        if(foundOffsets.size() != MAX_NR_OF_ROBOTS)
-        {
-            QString alarmtxt = "Calibration failed! Please place all Robots in Field! Founded Robots are: ";
-            for(int i = 0; i < foundOffsets.size() ;i++)
-            {
-                alarmtxt = alarmtxt + QString::number(foundOffsets.at(i).id+1);
-
-                if(i+1 != foundOffsets.size())
-                    alarmtxt = alarmtxt + ",";
-            }
-            QMessageBox msgBox;
-            msgBox.setText(alarmtxt);
-            msgBox.exec();
-        }
-        else
-        {
-            //Save Offsets
-            QSettings settings("settings.ini", QSettings::IniFormat);
-            settings.beginGroup("RobotDetectionSettings");
-            QString optionNameQString;
-            for(int i = 0; i < foundOffsets.size() ;i++)
-            {
-                //Build String
-                optionNameQString = "Robot" + QString::number(foundOffsets.at(i).id);
-                settings.setValue(optionNameQString + "MEven",QString::number(-foundOffsets.at(i).offsetMarkerEven));
-                settings.setValue(optionNameQString + "MNotEven",QString::number(foundOffsets.at(i).offsetMarkerNotEven));
-            }
-            settings.endGroup();
-        }
-
-        calibrateOffset_ON_OFF = false;
-        foundOffsets.clear();
-    }
-
 
     // Display either camera images or white background
     cv::Mat guiImage(GUI_HEIGTH, GUI_WIDTH, CV_8UC3);
@@ -319,7 +216,7 @@ void RobotDetectionMainWindow::operate()
         guiImage.setTo(COLOR_BLACK);
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
-            addWeighted(guiImage, 1, tasks[i]->getWarpedImage(), 1, 0, guiImage, -1);
+            cv::addWeighted(guiImage, 1, warpedImage[i], 1, 0, guiImage, -1);
         }
     }
     else     // show white background with grid
@@ -348,66 +245,8 @@ void RobotDetectionMainWindow::operate()
             }
         }
     }
-
-    // init locations with zeros
-    for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
-    {
-        robotLocations[i] = cv::Point3f(0, 0, 0);
-    }
-
-    //Check all Robots of double detections
-    //That mean, two or more Robots, are detected on the same Place (This is not possible!)
-    QList<int> doubledetecterobots;
-    for(int a = 0;a<MAX_NR_OF_ROBOTS;a++)
-    {
-        for(int i = 0; i < detectedRobots.size();i++)
-        {
-            if(detectedRobots[i].id == a)
-            {
-                for(int b = 0; b < detectedRobots.size(); b++)
-                {
-
-                    if(i != b
-                            &&  detectedRobots[i].id != detectedRobots[b].id
-                            && (detectedRobots[i].coordinates.x >= detectedRobots[b].coordinates.x-250 && detectedRobots[i].coordinates.x <= detectedRobots[b].coordinates.x+250)
-                            && (detectedRobots[i].coordinates.y >= detectedRobots[b].coordinates.y-250 && detectedRobots[i].coordinates.y <= detectedRobots[b].coordinates.y+250))
-                    {
-                        doubledetecterobots.append(a);
-                    }
-
-                }
-                robotLocations[a] = detectedRobots[i].coordinates;
-            }
-        }
-
-        for(int i =0;i < doubledetecterobots.size();i++)
-        {
-            robotLocations[doubledetecterobots.at(i)] = cv::Point3f(0, 0, 0);
-        }
-    }
-
-    //If Measurement is checked, save all Robot Positions, in a txt. File
-    if(ui->checkBox_Measurement->isChecked())
-    {
-        std::ofstream f;
-        f.open("Measurement.txt",std::ios::app);
-
-        for(int a = 0;a<robotLocations.size();a++)
-        {
-            f << robotLocations[a].x << "\t" << robotLocations[a].y << "\t" << robotLocations[a].z << "\t";
-        }
-
-        f << "\n";
-        f.close();
-    }
-
-    // sendUDPdata...
-    udpClient.sendUdpData(robotLocations, timeStamp);
-    // write robotLocations to tablewidget
-    writeRobotLocationsToTable();
-
     // invert y-axis
-    flip(guiImage, guiImage, 0);
+    cv::flip(guiImage, guiImage, 0);
 
 
     //Draw Line and Circle for Robots in GUI
@@ -428,9 +267,6 @@ void RobotDetectionMainWindow::operate()
             cv::line  (guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
         }
     }
-
-    detectedRobots.clear();
-
 
     // show error message in image if camera is missing
     for (int i = 0; i < NR_OF_CAMS; i++ )
@@ -464,28 +300,28 @@ void RobotDetectionMainWindow::operate()
             cv::putText(guiImage, str2, cv::Point2f(x, y), CV_FONT_HERSHEY_PLAIN, 1, COLOR_DARK_GREY, 1, 8, false);
         }
     }
-
     // Write robot IDs into guiImage
-    writeRobotIDsToGui(guiImage);
+    writeRobotIDsToGui(guiImage, robotLocations);
 
     //convert colors and show image in GUI
-    cvtColor(guiImage, guiImage, CV_BGR2RGB);
+    cv::cvtColor(guiImage, guiImage, CV_BGR2RGB);
     QPixmap pixmap;
     pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
     ui->labelImage->setPixmap(pixmap);
-
-    workerMutex.unlock();
+    guiUpdateMutex.unlock();
 }
 
 void RobotDetectionMainWindow::fpsCounter()
 {
+    qDebug() << udpCount;
     QString str = "Frames per second: ";
     str.append(QString::number(fpsCount));
     ui->labelFPS->setText(str);
     fpsCount = 0;
+    udpCount = 0;
 }
 
-void RobotDetectionMainWindow::writeRobotLocationsToTable()
+void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> robotLocations)
 {
     // init tableWidget during first run
     for(int row = 0; row < MAX_NR_OF_ROBOTS; row++)
@@ -506,7 +342,7 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable()
     }
 }
 
-void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage)
+void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations)
 {
     cv::Point2f offset = cv::Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
     for (unsigned int i = 0; i < MAX_NR_OF_ROBOTS; i++)
@@ -515,7 +351,7 @@ void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage)
         if (center.y != FIELD_HEIGTH)
         {
             cv::putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offset),
-                     CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
+                         CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
         }
     }
 }

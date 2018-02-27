@@ -35,7 +35,7 @@ class ImgTask : public QRunnable
 {
 
 public:
-
+    //explicit ImgTask();
     static const int InvalidRobotId = -1;
     void run();
     void setImage(cv::Mat image);
@@ -76,6 +76,7 @@ protected:
     int getRobotId(int markerID);
     int threshold_max;
     int MinSizeofRects;
+    QThread warpedImageThread;
 
 signals:
 
