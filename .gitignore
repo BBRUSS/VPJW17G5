@@ -19,3 +19,5 @@ ArucoMarkerErkennung/Makefile
 *.dll
 *.Debug
 *.user
+*.Debug
+*.Release
