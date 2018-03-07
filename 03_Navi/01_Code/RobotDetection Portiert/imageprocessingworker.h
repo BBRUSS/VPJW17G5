@@ -20,6 +20,9 @@ public:
     void setTaskThreshold(int threshold);
     void setTaskRectMinSize(int minSize);
 
+    friend cv::Point3f operator*(const cv::Point3f& a, const cv::Point3f& b);
+
+
 private:
     MyUDP *udpClient;
     QThreadPool threadPool;
@@ -37,6 +40,7 @@ private:
     cv::Ptr<cv::aruco::DetectorParameters> arucoParameters;
     cv::Mat cameraImages[NR_OF_CAMS];
     QList<cv::Point3f> robotLocations;
+    QList<cv::Point3f> robotLocationStd;
     bool calibrateOffset_ON_OFF = false;
     bool debugMode = true;
     bool measureData = false;
@@ -47,6 +51,7 @@ private:
     QList<cv::Mat> distCoeffs;
     QList<cv::Mat> perspTransfMatrix;
     QList<RobotOffset> robotOffsets;
+    QList<QList<RobotPosition>> robotIDLocation;
 
 signals:
     void updateGui(QList<cv::Mat> warpedImage, QList<cv::Point3f> robotLocations, QList<RobotPosition> detectedRobots);
@@ -54,6 +59,8 @@ signals:
 
 public slots:
     void processImages();
+
+
 };
 
 #endif // IMAGEPROCESSINGWORKER_H

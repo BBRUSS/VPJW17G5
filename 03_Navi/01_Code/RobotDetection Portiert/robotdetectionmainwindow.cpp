@@ -85,7 +85,6 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
 {
     workerThread.quit();
     workerThread.wait();
-    qDebug()<<"!";
 
     // write settings to ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
@@ -180,11 +179,11 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         // give cameras some time to get connected,
         // otherwise program might crash (depends on camera driver)
         Sleep(3000);
-        //timer.start(timerMilSecs);
+        //timer.start(timerMilSecs);#
+
         imgWorker = new ImageProcessingWorker(udpStruct, readArucoParameters(), videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix, robotOffsets);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
-
         imgWorker->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
@@ -192,7 +191,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         connect(timer, &QTimer::timeout, imgWorker, &ImageProcessingWorker::processImages, Qt::DirectConnection);
         connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);
 
-        workerThread.start();
+        workerThread.start(QThread::HighestPriority);
 
         timer->start(33);
         timerFPS->start(1000);
@@ -202,7 +201,6 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
 }
 
 void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> warpedImage, const QList<cv::Point3f> robotLocations, const QList<RobotPosition> detectedRobots){
-    udpCount++;
     if(!guiUpdateMutex.tryLock())
     {
         return;
@@ -313,7 +311,6 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> warpedImage, 
 
 void RobotDetectionMainWindow::fpsCounter()
 {
-    qDebug() << udpCount;
     QString str = "Frames per second: ";
     str.append(QString::number(fpsCount));
     ui->labelFPS->setText(str);

@@ -18,3 +18,4 @@ ArucoMarkerErkennung/Makefile
 *.Release
 *.dll
 *.Debug
+*.user

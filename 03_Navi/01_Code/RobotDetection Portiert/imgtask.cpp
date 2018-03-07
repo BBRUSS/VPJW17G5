@@ -56,7 +56,6 @@ void ImgTask::run()
     cv::cvtColor(workImage, workImage, CV_BGR2GRAY);
 
     //Thresholding
-
     cv::threshold(workImage, workImage, threshold_max, 200, cv::THRESH_TOZERO);//Definiert den Schwellwert auf 200
 
     //Find Contours
@@ -77,7 +76,7 @@ void ImgTask::run()
             cv::aruco::detectMarkers(roi, dictionary, tempmarkerCorners, tempmarkerIds, arucoParameters, rejectedCandidates);
             cv::rectangle(image,rect,COLOR_BLUE, 1, CV_AA);
 
-            //Safe detected Marker´s
+            //Safe detected Markers
             for( unsigned int a = 0; a < tempmarkerCorners.size();a++)
             {
                 for(int b = 0; b < 4; b++)
