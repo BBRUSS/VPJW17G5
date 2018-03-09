@@ -12,6 +12,9 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QMutex>
+#include <QMap>
+#include <QDataStream>
+#include <QTableWidgetItem>
 
 #include "imageprocessingworker.h"
 #include "myudp.h"
@@ -56,12 +59,21 @@ private:
     int fpsCount = 0;
     int udpCount = 0;
     QTime timeStamp;
+    cv::Ptr<cv::aruco::Dictionary> defaultArucoDict;
+    QMap<int, QString> arucoIdNameMap;
+
 
 protected:
     void writeRobotLocationsToTable(QList<cv::Point3f> robotLocations);
     void writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations);
     void readXmlCalibrationFile();
     cv::Ptr<cv::aruco::DetectorParameters> readArucoParameters();
+    void updateArucoTab(int SelectedRow);
+    void initArucoTab();
+
+    void saveIDNameMap(QMap<int, QString> map);
+    QMap<int, QString> loadIDNameMap();
+
 
     double scaleToGui(double value);
     double distanceBetweenPoints(cv::Point2f a, cv::Point2f b);
@@ -72,10 +84,18 @@ protected:
     QMap<QString, QXmlStreamAttributes> parseCamera(QXmlStreamReader& xmlReader);
 
 private slots:
+
     void on_pushButtonCalibrateOffset_clicked();
     void on_pushButtonStartStop_clicked();
     void fpsCounter();
 
+    void updateIDNameMap();
+    void on_pushButton_addAruco_clicked();
+    void on_tabMain_tabBarClicked(int index);
+    void on_tableWidget_Aruco_cellChanged(int row, int column);
+    void on_tableWidget_Aruco_cellClicked(int row, int column);
+    void on_pushButton_deleteAruco_clicked();
+    void on_pushButton_SaveToImage_clicked();
 };
 
 #endif // ROBOTDETECTIONMAINWINDOW_H

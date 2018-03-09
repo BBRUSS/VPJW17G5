@@ -21,3 +21,7 @@ ArucoMarkerErkennung/Makefile
 *.user
 *.Debug
 *.Release
+*.Debug
+*.Release
+*.Release
+*.user

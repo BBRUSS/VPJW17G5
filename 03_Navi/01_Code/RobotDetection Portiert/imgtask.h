@@ -45,6 +45,7 @@ public:
     void setDebugMode(bool liveViewMode);
     void setCalibrateOffset(bool  setValue);
     void setArucoParameters(cv::Ptr<cv::aruco::DetectorParameters> arucoParameters);
+    void setArucoDict(cv::Ptr<cv::aruco::Dictionary> arucoDict);
     void setthreshold(int threshold);
     void setMinSizeofRects(int minSizeofRects);
     QList<RobotOffset> getNewRobotOffsets();
@@ -62,6 +63,7 @@ protected:
     cv::Mat perspTransfMatrix;
     cv::Mat guiTransfMatrix;
     cv::Mat warpedImage;
+    cv::Ptr<cv::aruco::Dictionary> arucoDict;
     bool liveViewMode; // debug == LiveView mode...
     bool calibrateOffset;
     QList<RobotPosition> detectedRobots;

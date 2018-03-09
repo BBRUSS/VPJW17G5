@@ -1,7 +1,7 @@
 #include "imageprocessingworker.h"
 #include <QDebug>
 
-ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, QList<cv::VideoCapture> videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets)
+ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets)
 {
     qRegisterMetaType<QList<cv::Mat>>("QList<cv::Mat>");
     qRegisterMetaType<QList<cv::Point3f>>("QList<cv::Point3f>");
@@ -34,6 +34,7 @@ ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::
     }
 
     this->arucoParameters = arucoParameters;
+    this->arucoDict = arucoDict;
     this->videoCapture = videoCapture;
     this->cameraMatrix = cameraMatrix;
     this->distCoeffs = distCoeffs;
@@ -113,6 +114,7 @@ void ImageProcessingWorker::processImages() {
         tasks[i]->setDebugMode(debugMode);
         tasks[i]->setCalibrateOffset(calibrateOffset_ON_OFF);
         tasks[i]->setArucoParameters(arucoParameters);
+        tasks[i]->setArucoDict(arucoDict);
         tasks[i]->setthreshold(taskThreshold);
         tasks[i]->setMinSizeofRects(taskRectMinSize);
         threadPool.start( tasks[i]);

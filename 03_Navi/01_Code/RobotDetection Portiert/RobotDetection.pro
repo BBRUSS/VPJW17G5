@@ -46,13 +46,15 @@ SOURCES += main.cpp\
         robotdetectionmainwindow.cpp \
     myudp.cpp \
     imgtask.cpp \
-    imageprocessingworker.cpp
+    imageprocessingworker.cpp \
+    arucoserializer.cpp
 
 HEADERS  += robotdetectionmainwindow.h \
     myudp.h \
     imgtask.h \
     constants.h \
-    imageprocessingworker.h
+    imageprocessingworker.h \
+    arucoserializer.h
 
 FORMS    += robotdetectionmainwindow.ui
 

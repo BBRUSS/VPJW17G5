@@ -47,6 +47,10 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
     ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
 
+
+    //load aruco dict
+    this->defaultArucoDict = ArucoSerializer::loadArucoDictionary(ARUCO_DICT_NAME);
+    //this->initArucoTab();
     //Set Offset for Robots
     robotOffsets.clear();
     for(int i = 0; i < MAX_NR_OF_ROBOTS; i++)
@@ -72,6 +76,10 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     connect(timerFPS, &QTimer::timeout, this, &RobotDetectionMainWindow::fpsCounter);
     //connect(&timerFPS, SIGNAL(timeout()), this, SLOT(fpsCounter()));
     fpsCount = 0;
+
+    //connect GUI elements
+    connect(this->ui->tableWidget_Aruco, &QTableWidget::itemChanged, this, &RobotDetectionMainWindow::updateIDNameMap );
+    //connect(this->ui, &Q::, RobotDetectionMainWindow, &RobotDetectionMainWindow::updateArucoTab());
 
     // read camera calibration data and perspective transform matrices from xml
     readXmlCalibrationFile();
@@ -181,7 +189,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         Sleep(3000);
         //timer.start(timerMilSecs);#
 
-        imgWorker = new ImageProcessingWorker(udpStruct, readArucoParameters(), videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix, robotOffsets);
+        imgWorker = new ImageProcessingWorker(udpStruct, readArucoParameters(), defaultArucoDict, videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix, robotOffsets);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
         imgWorker->moveToThread(&workerThread);
@@ -507,4 +515,144 @@ QMap<QString, QXmlStreamAttributes> RobotDetectionMainWindow::parseCamera(QXmlSt
         xmlReader.readNext();
     }
     return camera;
+}
+
+void RobotDetectionMainWindow::on_pushButton_addAruco_clicked()
+{
+    cv::Ptr<cv::aruco::Dictionary> generatedDict;
+    generatedDict = cv::aruco::generateCustomDictionary(defaultArucoDict->bytesList.rows+1, ARUCO_DICT_MARKER_SIZE, defaultArucoDict);
+    ArucoSerializer::saveArucoDictionary(generatedDict, ARUCO_DICT_NAME);
+    this->defaultArucoDict = generatedDict;
+
+    initArucoTab();
+}
+
+void RobotDetectionMainWindow::initArucoTab()
+{
+    int MarkerCount = this->defaultArucoDict->bytesList.rows;
+    this->ui->tableWidget_Aruco->setRowCount(0);
+    arucoIdNameMap = loadIDNameMap();
+    this->ui->tableWidget_Aruco->blockSignals(true);
+
+    for (int row = 0; row < MarkerCount; row++) {
+
+        this->ui->tableWidget_Aruco->insertRow( this->ui->tableWidget_Aruco->rowCount());
+        QTableWidgetItem *itemID = new QTableWidgetItem(QString::number(row));
+
+        this->ui->tableWidget_Aruco->setItem   ( this->ui->tableWidget_Aruco->rowCount()-1,
+                                                 0,
+                                                 itemID);
+
+        itemID->setFlags(itemID->flags() ^ Qt::ItemIsEditable);
+
+        QTableWidgetItem *itemName;
+        if (arucoIdNameMap.contains(row)) {
+          itemName = new QTableWidgetItem(arucoIdNameMap.value(row));
+        } else {
+          itemName = new QTableWidgetItem("");
+        }
+        this->ui->tableWidget_Aruco->setItem   ( this->ui->tableWidget_Aruco->rowCount()-1,
+                                                 1,
+                                                 itemName);
+    }
+    updateArucoTab(0);
+    this->ui->tableWidget_Aruco->blockSignals(false);
+}
+
+void RobotDetectionMainWindow::updateArucoTab(int SelectedRow)
+{
+    int MarkerCount = this->defaultArucoDict->bytesList.rows;
+    if (SelectedRow <= MarkerCount) {
+        cv::Mat Marker;
+        cv::aruco::drawMarker(this->defaultArucoDict, SelectedRow, this->ui->label_arucomarker->height(), Marker);
+        cv::cvtColor(Marker, Marker, cv::COLOR_GRAY2RGB);
+        QPixmap pixmap;
+        pixmap = QPixmap::fromImage(QImage((unsigned char*) Marker.data, Marker.cols, Marker.rows, Marker.step, QImage::Format_RGB888));
+        this->ui->label_arucomarker->setPixmap(pixmap);
+    }
+}
+
+void RobotDetectionMainWindow::on_tabMain_tabBarClicked(int index)
+{
+    if (index == 2) {
+        this->initArucoTab();
+    }
+}
+
+void RobotDetectionMainWindow::on_tableWidget_Aruco_cellChanged(int row, int column)
+{
+}
+
+void RobotDetectionMainWindow::on_tableWidget_Aruco_cellClicked(int row, int column)
+{
+    updateArucoTab(this->ui->tableWidget_Aruco->item(row, 0)->text().toInt());
+}
+
+void RobotDetectionMainWindow::on_pushButton_deleteAruco_clicked()
+{
+    cv::Ptr<cv::aruco::Dictionary> generatedDict;
+    generatedDict = cv::aruco::generateCustomDictionary(defaultArucoDict->bytesList.rows-1, ARUCO_DICT_MARKER_SIZE, defaultArucoDict);
+    ArucoSerializer::saveArucoDictionary(generatedDict, ARUCO_DICT_NAME);
+    this->defaultArucoDict = generatedDict;
+
+    initArucoTab();
+}
+
+void RobotDetectionMainWindow::on_pushButton_SaveToImage_clicked()
+{
+    QString fileName = QFileDialog::getExistingDirectory(this, "Open Directory",
+                                                         QDir::currentPath(),
+                                                         QFileDialog::ShowDirsOnly
+                                                         | QFileDialog::DontResolveSymlinks);
+    if (!fileName.isEmpty()) {
+        QModelIndexList selectedIndexes = this->ui->tableWidget_Aruco->selectionModel()->selectedRows();
+        for (int i = 0; i < selectedIndexes.size(); i++)
+        {
+            int row = selectedIndexes.at(i).row();
+            int ID = this->ui->tableWidget_Aruco->item(row, 0)->text().toInt();
+            bool ret = ArucoSerializer::drawArucoDictionarySingle(this->defaultArucoDict, fileName + "/", QString::number(QDateTime::currentMSecsSinceEpoch()) + "_ID_", ARUCO_DICT_MARKER_SIZE_PIXEL, ID);
+            if (ret) {
+                this->ui->statusBar->showMessage("File saved to " + fileName, 3000);
+            } else {
+                this->ui->statusBar->showMessage("File could not be saved", 3000);
+            }
+        }
+    }
+}
+
+void RobotDetectionMainWindow::updateIDNameMap() {
+    QMap<int, QString> idNameMap;
+    int tableRows = this->ui->tableWidget_Aruco->rowCount();
+    for (int i = 0; i < tableRows; i++) {
+        idNameMap.insert(this->ui->tableWidget_Aruco->item(i, 0)->text().toInt(), this->ui->tableWidget_Aruco->item(i, 1)->text());
+    }
+    arucoIdNameMap = idNameMap;
+    saveIDNameMap(arucoIdNameMap);
+}
+
+void RobotDetectionMainWindow::saveIDNameMap(QMap<int, QString> map) {
+    QFile mapFile(ARUCO_ID_NAME_FILE);
+    if (!mapFile.open(QIODevice::WriteOnly))
+    {
+        this->ui->statusBar->showMessage("Could not write to file:" + QString(ARUCO_ID_NAME_FILE) + "Error string:" + mapFile.errorString(), 3000);
+    }
+
+    QDataStream out(&mapFile);
+    out.setVersion(QDataStream::Qt_5_9);
+    out << map;
+}
+
+QMap<int, QString> RobotDetectionMainWindow::loadIDNameMap() {
+    QFile mapFile(ARUCO_ID_NAME_FILE);
+    QMap<int, QString> idNameMap;
+    QDataStream in(&mapFile);
+    in.setVersion(QDataStream::Qt_5_9);
+
+    if (!mapFile.open(QIODevice::ReadOnly))
+    {
+        this->ui->statusBar->showMessage("Could not read the file:" + QString(ARUCO_ID_NAME_FILE) + "Error string:" + mapFile.errorString(), 3000);
+        return idNameMap;
+    }
+    in >> idNameMap;
+    return idNameMap;
 }

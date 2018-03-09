@@ -7,6 +7,7 @@
 #include "imgtask.h"
 #include <QMessageBox>
 #include <QMetaType>
+#include "arucoserializer.h"
 
 
 class ImageProcessingWorker : public QObject
@@ -14,7 +15,7 @@ class ImageProcessingWorker : public QObject
     Q_OBJECT
 public:
     //explicit ImageProcessingWorker();
-    explicit ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, QList<cv::VideoCapture> videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets);
+    explicit ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets);
     ~ImageProcessingWorker();
     void setMeasureData(bool measure);
     void setTaskThreshold(int threshold);
@@ -38,6 +39,7 @@ private:
     QTime timeStamp;
     QList<cv::VideoCapture> videoCapture;
     cv::Ptr<cv::aruco::DetectorParameters> arucoParameters;
+    cv::Ptr<cv::aruco::Dictionary> arucoDict;
     cv::Mat cameraImages[NR_OF_CAMS];
     QList<cv::Point3f> robotLocations;
     QList<cv::Point3f> robotLocationStd;
