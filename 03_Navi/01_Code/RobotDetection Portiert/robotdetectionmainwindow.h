@@ -12,10 +12,10 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QMutex>
-#include <QMap>
 #include <QDataStream>
 #include <QTableWidgetItem>
 
+#include "arucodictionary.h"
 #include "imageprocessingworker.h"
 #include "myudp.h"
 #include "constants.h"
@@ -59,8 +59,7 @@ private:
     int fpsCount = 0;
     int udpCount = 0;
     QTime timeStamp;
-    cv::Ptr<cv::aruco::Dictionary> defaultArucoDict;
-    QMap<int, QString> arucoIdNameMap;
+    ArucoDictionary defaultArucoDict;
 
 
 protected:
@@ -71,8 +70,8 @@ protected:
     void updateArucoTab(int SelectedRow);
     void initArucoTab();
 
-    void saveIDNameMap(QMap<int, QString> map);
-    QMap<int, QString> loadIDNameMap();
+//    void saveIDNameMap(QMap<int, QString> map);
+//    QMap<int, QString> loadIDNameMap();
 
 
     double scaleToGui(double value);
