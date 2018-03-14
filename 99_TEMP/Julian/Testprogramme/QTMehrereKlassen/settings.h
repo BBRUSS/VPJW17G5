@@ -213,7 +213,8 @@ public:
 
 };
 
-
+originalFrame  = QImage((const unsigned char*)(imageOrig.data), imageOrig.cols, imageOrig.rows, imageOrig.step, QImage::Format_RGB888);
+ui->labelImageOrig->setPixmap(QPixmap::fromImage(originalFrame));
 
 static void read(const FileNode& node, Settings& x, const Settings& default_value = Settings())
 {
