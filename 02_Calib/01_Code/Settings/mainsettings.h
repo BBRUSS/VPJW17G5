@@ -16,6 +16,9 @@ public:
     explicit MainSettings(QWidget *parent = 0);
     ~MainSettings();
 
+private slots:
+//    void on_pushButtonSave_clicked();
+
 private:
     Ui::MainSettings *ui;
 

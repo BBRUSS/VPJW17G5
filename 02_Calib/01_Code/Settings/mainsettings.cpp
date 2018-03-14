@@ -1,9 +1,11 @@
 #include "mainsettings.h"
 #include "ui_mainsettings.h"
+#include "settings.h"
 
 #include <QDebug>
 #include <QObjectList>
 #include <QList>
+
 
 
 MainSettings::MainSettings(QWidget *parent) :
@@ -23,11 +25,13 @@ MainSettings::MainSettings(QWidget *parent) :
     qDebug() << cList2;
     qDebug() << cList3;
     qDebug() << cList4;
-//    this->setAttribute(Qt::WA_DeleteOnClose);
+    this->setAttribute(Qt::WA_DeleteOnClose);
+    this->parentWidget()->show();
 }
 
 MainSettings::~MainSettings()
 {
-//    this->parentWidget()->show();
+    qDebug() << "delete";
+
     delete ui;
 }

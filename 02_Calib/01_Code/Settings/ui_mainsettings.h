@@ -23,7 +23,6 @@ QT_BEGIN_NAMESPACE
 class Ui_MainSettings
 {
 public:
-    QPushButton *pushButtonSave;
     QPushButton *pushButtonLoade;
     QLineEdit *lineEdit_int_test;
 
@@ -32,9 +31,6 @@ public:
         if (MainSettings->objectName().isEmpty())
             MainSettings->setObjectName(QStringLiteral("MainSettings"));
         MainSettings->resize(400, 300);
-        pushButtonSave = new QPushButton(MainSettings);
-        pushButtonSave->setObjectName(QStringLiteral("pushButtonSave"));
-        pushButtonSave->setGeometry(QRect(40, 200, 93, 28));
         pushButtonLoade = new QPushButton(MainSettings);
         pushButtonLoade->setObjectName(QStringLiteral("pushButtonLoade"));
         pushButtonLoade->setGeometry(QRect(270, 200, 93, 28));
@@ -52,7 +48,6 @@ public:
     void retranslateUi(QDialog *MainSettings)
     {
         MainSettings->setWindowTitle(QApplication::translate("MainSettings", "Dialog", Q_NULLPTR));
-        pushButtonSave->setText(QApplication::translate("MainSettings", "save", Q_NULLPTR));
         pushButtonLoade->setText(QApplication::translate("MainSettings", "loade", Q_NULLPTR));
     } // retranslateUi
 

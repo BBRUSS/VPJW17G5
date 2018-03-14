@@ -42,7 +42,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButtonMainSettings_clicked()
 {
-//    hide();
+    hide();
     mainsettings = new MainSettings(this);
     mainsettings->show();
 

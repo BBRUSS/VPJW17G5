@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <QString>
+#include <QObject>
 
 using namespace cv;
 using namespace std;
@@ -23,7 +24,7 @@ public:
     Settings(int test);
 
     // Copykonstruktor
-//    Settings(const Settings& orig);
+    //    Settings(const Settings& orig);
 
     // Assignment operator
     Settings& operator=(const Settings & orig);
@@ -35,25 +36,52 @@ public:
     void read(const FileNode& node);
 
     //save with write serialization for this class
-//    void save(FileStorage& fs);
+    //    void save(QWidge);
 
     //laode with read serialization for this class
-//    void loade(const FileNode& node);
+    //    void loade(const FileNode& node);
+
+
+
+    //public slots:
+    //    void save();
 
     // Data in Settings
-
 public:
-
-    const string filename = "test.xml";
+    const string filename = "settings.xml";
     int test;
+
+    enum Pattern { NOT_EXISTING, CHESSBOARD, CIRCLES_GRID, ASYMMETRIC_CIRCLES_GRID };
+
+    // Global Settings
+    Size boardSize;                 // The size of the board -> Number of items by width and height
+    Size camFieldSize;              // The size of camara field
+    Pattern calibrationPattern;     // One of the Chessboard, circles, or asymmetric circle pattern
+    float squareSize;               // The size of a square in your defined unit (point, millimeter,etc).
+    int nrFrames;                   // The number of frames to use from the input for calibration
+    string outputFileName;          // The name of the file where to write
+
+    // Camera-depending settings (later in struct)
+    struct cams
+    {
+        bool calibFixAspectratio;       // Assume fix aspect ratio (usual for lens cameras)
+        bool calibZeroTangentDist;      // Assume zero tangential distortion
+        bool calibFixPrincipalPoint;    // Fix the principal point at the center
+        bool showUndistorsed;           // Show undistorted images after calibration (Do we really need that in Settings?)
+        int cameraID;
+        int calibFlag;                  // Flag(s) for calibration
+    };
+
+
 };
 
-//evtl write and read in setting.h
 //These write and read functions must be defined for the serialization in FileStorage to work
+
 static void write(FileStorage& fs, const std::string&, const Settings& x)
 {
     x.write(fs);
 }
+
 static void read(const FileNode& node, Settings& x, const Settings& default_value = Settings())
 {
     if(node.empty())
