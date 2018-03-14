@@ -18,3 +18,4 @@ ArucoMarkerErkennung/Makefile
 *.Release
 *.dll
 *.Debug
+03_Navi/01_Code/RobotDetection Portiert/RobotDetection.pro.user
