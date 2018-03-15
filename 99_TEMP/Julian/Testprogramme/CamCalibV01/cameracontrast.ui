@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>931</width>
-    <height>526</height>
+    <width>929</width>
+    <height>532</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,6 +25,15 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QPushButton" name="pushButtonStartCam">
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
+      <property name="toolTip">
+       <string>Connect to camera with chosen ID</string>
+      </property>
+      <property name="toolTipDuration">
+       <number>-1</number>
+      </property>
       <property name="text">
        <string>Start Camera</string>
       </property>
@@ -35,6 +44,12 @@
       <property name="enabled">
        <bool>false</bool>
       </property>
+      <property name="toolTip">
+       <string>Disconnect from camera</string>
+      </property>
+      <property name="toolTipDuration">
+       <number>-1</number>
+      </property>
       <property name="text">
        <string>Stop Camera</string>
       </property>
@@ -44,6 +59,9 @@
      <widget class="QPushButton" name="pushButtonSaveContrast">
       <property name="enabled">
        <bool>false</bool>
+      </property>
+      <property name="toolTip">
+       <string>Save threshold and max value to camera, in order to use them in calibration processes</string>
       </property>
       <property name="text">
        <string>Save</string>
@@ -64,6 +82,12 @@
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
      <widget class="QSlider" name="horizontalSliderThreshold">
+      <property name="toolTip">
+       <string>Slide this value to change the black / white treshold</string>
+      </property>
+      <property name="toolTipDuration">
+       <number>-1</number>
+      </property>
       <property name="maximum">
        <number>255</number>
       </property>
@@ -77,6 +101,9 @@
     </item>
     <item>
      <widget class="QSlider" name="horizontalSliderMaxValue">
+      <property name="toolTip">
+       <string>Slide this value to change the maximum value</string>
+      </property>
       <property name="maximum">
        <number>255</number>
       </property>
@@ -194,6 +221,9 @@
     </item>
     <item>
      <widget class="QSpinBox" name="spinBoxCameraID">
+      <property name="toolTip">
+       <string extracomment="Choose the camera id to open"/>
+      </property>
       <property name="value">
        <number>1</number>
       </property>
@@ -226,6 +256,9 @@
       <property name="enabled">
        <bool>false</bool>
       </property>
+      <property name="toolTip">
+       <string>Start calibration process for chosen camera to get intrinsic parameters</string>
+      </property>
       <property name="text">
        <string>get Intrinsics</string>
       </property>
@@ -236,6 +269,9 @@
       <property name="enabled">
        <bool>false</bool>
       </property>
+      <property name="toolTip">
+       <string>Start calibration process for chosen camera to get extrinsic parameters</string>
+      </property>
       <property name="text">
        <string>get Extrinsics</string>
       </property>
@@ -245,6 +281,9 @@
      <widget class="QPushButton" name="pushButtonResetThr">
       <property name="enabled">
        <bool>false</bool>
+      </property>
+      <property name="toolTip">
+       <string>Reset threshold and max-value</string>
       </property>
       <property name="text">
        <string>Reset</string>

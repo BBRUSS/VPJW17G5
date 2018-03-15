@@ -28,6 +28,7 @@ Camera::Camera(int id, Ui::MainWindow *ui, Settings *s)
 
 
 /** calculate the corners of calibration pattern (e.g. chessboard) in the real world plane
+ * Note: In CIRCLES_GRID, the squareSize is the distance between two circle middlepoints!
  * @brief Camera::createKnownBoardPositions
  */
 void Camera::createKnownBoardPositions(vector<Point3f>& corners, Size size, float squareSize, Settings::Pattern pattern)
@@ -167,7 +168,9 @@ int Camera::doCalibrationIntrinsics()
 
         if(blackWhiteThreshold >= 0 && maxValue >= 0)   // if values are given, use them to set threshold in frame
         {
-            cv::threshold(raw, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
+            Mat viewGray;
+            cvtColor(raw, viewGray, COLOR_BGR2GRAY);
+            threshold(viewGray, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
         }
         else    // else use original frame
         {
@@ -326,7 +329,7 @@ int Camera::doCalibrationExtrinsics()
             // start calibration
             if(savedImages.size() > 6-1)
             {
-                // TODO: Put all 6 images together with bitwise-OR
+                // TODO: Put all 6 images together with cv::add
                 // TODO: create known circle position in 3D real world
                 // TODO: find circles in image plane
                 Mat images = Mat::zeros(savedImages.at(0).rows, savedImages.at(0).cols, savedImages.at(0).type());
@@ -335,9 +338,10 @@ int Camera::doCalibrationExtrinsics()
                 //                {
                 //                    Mat temp;
                 //                    savedImages.at(i).copyTo(temp);
-                //                    cv::bitwise_or(images, temp, images);
+                //                    cv::add(images, temp, images);
                 //                    qInfo() << "add successfull" << i;
                 //                }
+
                 // 1. Find circle positions in image plane
                 vector<Vec2f> foundPoints;
                 Mat drawToImages;

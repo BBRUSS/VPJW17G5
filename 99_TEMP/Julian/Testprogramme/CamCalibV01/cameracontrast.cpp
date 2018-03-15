@@ -3,7 +3,10 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-
+/* TODO's
+   - User interface Existenz von XML prüfen -> erstellen wenn nicht vorhanden, füttern mit Werten
+   -
+*/
 
 CameraContrast::CameraContrast(QWidget *parent) :
     QDialog(parent),
@@ -12,12 +15,16 @@ CameraContrast::CameraContrast(QWidget *parent) :
     this->cams = cams;
     ui->setupUi(this);
     ui->pushButtonStopCam->setEnabled(false);
+    //ui->pushButtonStartCam->setToolTip("Connect to camera with chosen ID");
+    //ui->pushButtonStartCam->setToolTipDuration();
 }
+
 
 CameraContrast::~CameraContrast()
 {
     delete ui;
 }
+
 
 /** Starts timer and connects "frameReady()"-Method as TOV-ISR.
  *  Starts camera capture and enables/disables corresponding pushbuttons
@@ -54,6 +61,7 @@ void CameraContrast::on_pushButtonStartCam_clicked()
     }
 }
 
+
 /** Stops camera capture and enables/disables corresponding pushbuttons
  * @brief CameraContrast::on_pushButtonStopCam_clicked
  */
@@ -78,6 +86,7 @@ void CameraContrast::on_pushButtonStopCam_clicked()
     ui->pushButtonStartCam->setEnabled(true);
     ui->spinBoxCameraID->setEnabled(true);
 }
+
 
 /** Writes sample image to calibration window GUI after timeout (30fps),
  *  convert image according to horizontal sliders values for black/white threshold
@@ -126,6 +135,7 @@ void CameraContrast::frameReady()
     }
 }
 
+
 /** Save the horizontal slider values for black/white threshold and max value
  *  to active camera object, in order to use these values while calibration process
  * @brief CameraContrast::on_pushButtonSaveContrast_clicked
@@ -135,6 +145,7 @@ void CameraContrast::on_pushButtonSaveContrast_clicked()
     qInfo() <<"save id "<< id;
     cams.at(id)->setContrast(ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value());
 }
+
 
 /** Start the calibration process to get intrinsic parameters.
  *  Therefor, the capture from parent window needs to be released, else the "frameReady()" method
@@ -149,6 +160,7 @@ void CameraContrast::on_pushButtonGetIntrinsics_clicked()
    qInfo() << "intrinsic success:" << success;
 }
 
+
 /** Start the calibration process to get extrinsic parameters.
  *  Therefor, the capture from parent window needs to be released, else the "frameReady()" method
  *  will have size-errors and the application will crash.
@@ -161,6 +173,7 @@ void CameraContrast::on_pushButtonGetExtrinsics_clicked()
     capture.open(id);
 }
 
+
 /** Reset the horizontal slider values for black/white threshold and max value
  *  and the corresponding values in active camera object.
  * @brief CameraContrast::on_pushButtonResetThr_clicked
@@ -171,6 +184,7 @@ void CameraContrast::on_pushButtonResetThr_clicked()
     ui->horizontalSliderThreshold->setValue(128);
     cams.at(id)->setContrast(-1, -1);
 }
+
 
 /** close the calibration window.
  *  If a calibration has been already started, the calibration process

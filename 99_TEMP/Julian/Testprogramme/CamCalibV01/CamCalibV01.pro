@@ -28,17 +28,20 @@ SOURCES += \
         mainwindow.cpp \
         settings.cpp \
         camera.cpp \
-    cameracontrast.cpp
+    cameracontrast.cpp \
+    createnewxml.cpp
 
 HEADERS += \
         mainwindow.h \
         settings.h \
         camera.h \
-    cameracontrast.h
+    cameracontrast.h \
+    createnewxml.h
 
 FORMS += \
         mainwindow.ui \
-    cameracontrast.ui
+    cameracontrast.ui \
+    createnewxml.ui
 
 INCLUDEPATH += "E:\Programme\opencv\build\include"
 
