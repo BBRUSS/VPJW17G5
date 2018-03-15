@@ -2,5 +2,9 @@
 <opencv_storage>
 <MySettings>
   <boardSize>
-    15 3</boardSize></MySettings>
+    0 0</boardSize>
+  <camFieldSize>
+    0 0</camFieldSize>
+  <squareSize>0.</squareSize>
+  <nrFrames>1918238904</nrFrames></MySettings>
 </opencv_storage>
