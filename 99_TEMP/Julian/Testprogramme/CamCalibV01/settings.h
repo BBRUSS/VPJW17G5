@@ -29,6 +29,14 @@ public:
     bool showUndistorsed;           // Show undistorted images after calibration (Do we really need that in Settings?)
     int cameraID;
     int calibFlag;                  // Flag(s) for calibration
+    Mat cameraMatrix;               // intrinsic parameters
+    Mat distCoeffs;                 // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
+    Mat rvecs;                      // rotation vectors estimated for each pattern view
+    Mat tvecs;                      // translation vectors estimated for each pattern view
+
+    int blackWhiteThreshold;        // Threshold gained by slider in "Contrast Window"
+    int maxValue;                   // Max value gained by slider in "Contrast Window"
+
 
     /*if(calibFixPrincipalPoint)    flag |= CV_CALIB_FIX_PRINCIPAL_POINT;
     if(calibZeroTangentDist)        flag |= CV_CALIB_ZERO_TANGENT_DIST;
