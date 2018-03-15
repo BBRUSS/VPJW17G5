@@ -180,15 +180,15 @@ public:
     {
         createNewXML->setWindowTitle(QApplication::translate("createNewXML", "Dialog", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit->setToolTip(QString());
+        lineEdit->setToolTip(QApplication::translate("createNewXML", "Amount of cameras in a row", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit->setText(QApplication::translate("createNewXML", "Num Cams Height", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit_2->setToolTip(QString());
+        lineEdit_2->setToolTip(QApplication::translate("createNewXML", "Amount of cameras in a column", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit_2->setText(QApplication::translate("createNewXML", "Num Cams Width", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit_3->setToolTip(QString());
+        lineEdit_3->setToolTip(QApplication::translate("createNewXML", "Type in filename to save settings to. Note: Existing files will be overwritten!", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit_3->setText(QApplication::translate("createNewXML", "Filename", nullptr));
         textEditFileName->setHtml(QApplication::translate("createNewXML", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -197,28 +197,37 @@ public:
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">settings.xml</p></body></html>", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit_4->setToolTip(QString());
+        lineEdit_4->setToolTip(QApplication::translate("createNewXML", "Choose calibration pattern to use: CHESSBOARD, CIRCLES GRID, ASYMMETRIC CIRCLES GRID", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit_4->setText(QApplication::translate("createNewXML", "Calibration Pattern", nullptr));
+#ifndef QT_NO_TOOLTIP
+        lineEdit_5->setToolTip(QApplication::translate("createNewXML", "Amount of corners / circles in calibration pattern in a row", nullptr));
+#endif // QT_NO_TOOLTIP
         lineEdit_5->setText(QApplication::translate("createNewXML", "Num Pattern  Height", nullptr));
+#ifndef QT_NO_TOOLTIP
+        lineEdit_6->setToolTip(QApplication::translate("createNewXML", "Amount of corners / circles in calibration pattern in a column", nullptr));
+#endif // QT_NO_TOOLTIP
         lineEdit_6->setText(QApplication::translate("createNewXML", "Num Pattern  Width", nullptr));
+#ifndef QT_NO_TOOLTIP
+        lineEdit_7->setToolTip(QApplication::translate("createNewXML", "Size of chessboard squares or distance between circle middle points", nullptr));
+#endif // QT_NO_TOOLTIP
         lineEdit_7->setText(QApplication::translate("createNewXML", "Pattern Square Size", nullptr));
         pushButtonCancel->setText(QApplication::translate("createNewXML", "Cancel", nullptr));
         pushButtonOK->setText(QApplication::translate("createNewXML", "OK", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit_8->setToolTip(QString());
+        lineEdit_8->setToolTip(QApplication::translate("createNewXML", "Choose Camera to set following settings", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit_8->setText(QApplication::translate("createNewXML", "Camera ID", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit_9->setToolTip(QString());
+        lineEdit_9->setToolTip(QApplication::translate("createNewXML", "Assume fix aspect ratio (constant lens radius, usual for lens cameras)", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit_9->setText(QApplication::translate("createNewXML", "Fix aspect ratio", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit_10->setToolTip(QString());
+        lineEdit_10->setToolTip(QApplication::translate("createNewXML", "Assume zero tangential distortion", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit_10->setText(QApplication::translate("createNewXML", "Zero tangential distortion", nullptr));
 #ifndef QT_NO_TOOLTIP
-        lineEdit_11->setToolTip(QString());
+        lineEdit_11->setToolTip(QApplication::translate("createNewXML", "Fix the principal point at the center of the image", nullptr));
 #endif // QT_NO_TOOLTIP
         lineEdit_11->setText(QApplication::translate("createNewXML", "Fix principal point", nullptr));
         label->setText(QApplication::translate("createNewXML", "Global Settings", nullptr));

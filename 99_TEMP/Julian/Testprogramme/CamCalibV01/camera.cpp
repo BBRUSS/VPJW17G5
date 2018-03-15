@@ -146,7 +146,7 @@ int Camera::doCalibrationIntrinsics()
     vector<Mat> savedImages;                // Vector for saving snapshots with found patterns
     VideoCapture vid(id);
 
-    if(s->calibFlag & CV_CALIB_FIX_ASPECT_RATIO)
+    if(s->cams.at(id)->calibFlag & CV_CALIB_FIX_ASPECT_RATIO)
     {
         cameraMatrix.at<float>(0,0) = 1.0f;
     }

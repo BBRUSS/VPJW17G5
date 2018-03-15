@@ -19,10 +19,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->horizontalSliderCalibPattern, SIGNAL(valueChanged(int)),this, SLOT(changedValue()));
 
     ui->textEditCalibPattern->setText("Asym. Circlegrid");
-    ui->horizontalSliderCalibPattern->setValue(1);
 
     // Config Settings
     s = new Settings();
+    s->setCamFieldSize(Size(3,2));
     //s->load()== ok ? calibrieren : frage user nach size -> s.cameraField;
     s->calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
     s->boardSize.height = 11;    // number of corners in height
@@ -30,16 +30,19 @@ MainWindow::MainWindow(QWidget *parent) :
     s->squareSize = 15.0f;       // size of squares in mm
 
     s->nrFrames = 10;
-    s->calibFlag |= CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_FOCAL_LENGTH | CV_CALIB_FIX_PRINCIPAL_POINT;
-    this->camID = 1;    // cam id chosen by user
+
+    for(int i=0; i < s->camFieldSize.area();i++)
+    {
+        s->cams.at(i)->calibFlag |= CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_FOCAL_LENGTH | CV_CALIB_FIX_PRINCIPAL_POINT;
+    }
+
 
     for(int id = 0; id < 2/*MAX_CAMS*/; ++id)
     {
         cams.push_back( new Camera(id, ui, s));
+        s->cams.at(id)->cameraID = id;
         qInfo() << "created new cam object with id <" << id << ">" << endl;
     }
-
-    //cam1 = new Camera(1, ui, s);
 }
 
 MainWindow::~MainWindow()
@@ -115,4 +118,15 @@ void MainWindow::changedValue()
         s->boardSize.width = 4;      // number of corners in width
         s->squareSize = 15.0f;       // size of squares in mm
     }
+}
+
+
+void MainWindow::on_pushButtonSave_clicked()
+{
+    for(int id = 0; id < s->camFieldSize.area(); id++)
+    {
+        s->cams.at(id)->cameraID = id;
+    }
+    s->calibrationPattern = Settings::CIRCLES_GRID;
+   s->save();
 }

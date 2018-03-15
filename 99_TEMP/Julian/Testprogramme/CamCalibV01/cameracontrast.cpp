@@ -15,8 +15,6 @@ CameraContrast::CameraContrast(QWidget *parent) :
     this->cams = cams;
     ui->setupUi(this);
     ui->pushButtonStopCam->setEnabled(false);
-    //ui->pushButtonStartCam->setToolTip("Connect to camera with chosen ID");
-    //ui->pushButtonStartCam->setToolTipDuration();
 }
 
 

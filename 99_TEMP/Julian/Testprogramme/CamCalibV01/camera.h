@@ -22,6 +22,8 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 using namespace std;
@@ -52,14 +54,10 @@ public:
     {
         this->blackWhiteThreshold = blackWhiteThreshold;
         this->maxValue = maxValue;
-        qInfo() <<"Cam" << this->id << " B/W Thr.:" << this->blackWhiteThreshold << ", Max val: " << this->maxValue;
+        s->cams.at(this->id)->blackWhiteThreshold = blackWhiteThreshold;
+        s->cams.at(this->id)->maxValue = maxValue;
+        qInfo() <<"Cam" << this->id << " B/W Thr.:" <<  s->cams.at(this->id)->blackWhiteThreshold << ", Max val: " << s->cams.at(this->id)->maxValue;
     }
-
-//    void setUI(CameraContrast *ui)
-//    {
-//        this->ui = ui;
-//    }
-
 
 
 private slots:
@@ -69,7 +67,6 @@ private slots:
 private:
     int id;
     Ui::MainWindow *ui;
-    //CameraContrast *ui;
     Settings *s;
 
     Mat cameraMatrix;           // intrinsic parameters
