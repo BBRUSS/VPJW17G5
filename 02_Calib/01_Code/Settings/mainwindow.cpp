@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "settings.h"
 
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -13,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::on_pushButtonSave_clicked()
 {
     Settings s(13);
+
+    s.boardSize.width = 15;
+    s.boardSize.height = 3;
 
     FileStorage fs(s.filename, FileStorage::WRITE);
 
@@ -27,12 +32,17 @@ void MainWindow::on_pushButtonLoade_clicked()
     Settings s;
     FileStorage fs(s.filename, FileStorage::READ);
 
+
+
     fs["MySettings"] >> s;
 
 //    ui->lineEdit_int_test->setText(QString::number((int) fs["test"]));
     ui->lineEdit_int_test->setText(QString::number(s.test));
 
     fs.release();
+
+    qDebug() << "height: " << s.boardSize.height;
+    qDebug() << "width: " << s.boardSize.width;
 }
 
 MainWindow::~MainWindow()

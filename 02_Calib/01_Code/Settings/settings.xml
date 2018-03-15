@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
 <MySettings>
-  <test1>13</test1>
-  <test2>13</test2></MySettings>
+  <boardSize>
+    15 3</boardSize></MySettings>
 </opencv_storage>
