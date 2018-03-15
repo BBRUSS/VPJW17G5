@@ -7,8 +7,8 @@
 // Default constructor (no argument)
 Settings::Settings()//:test(42)
 {
-//    1. lade variablen aus Datei
-//    2. Plausibilitätsprüfung
+    //    1. lade variablen aus Datei
+    //    2. Plausibilitätsprüfung
 }
 
 Settings::Settings(int test):test(test)
@@ -31,17 +31,14 @@ Settings& Settings :: operator=(const Settings & orig)
 
 void Settings::write(FileStorage& fs) const                        //Write serialization for this class
 {
-    //fs << "{" << "ebene1"; // öffnet XML-Bereich
-        //fs << "{" << "ebene2";
-            fs << "{";
-                fs << "test" << this->test;
-            fs << "}";
-        //fs << "}";
-    //fs << "}"; // schließt XML-Bereich
+
+    fs << "{";
+    fs << "boardSize" << boardSize;
+    fs << "}";
 }
 
 void Settings::read(const FileNode& node)                          //Read serialization for this class
 {
-    this->test = (int)node[""];
-    qDebug() << "gibt es nicht: "<<node.type();
+    test = (int)node["test"];
+    boardSize = (Size)node["boardSize"];
 }
