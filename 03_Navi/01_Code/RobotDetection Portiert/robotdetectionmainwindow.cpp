@@ -21,6 +21,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RobotDetectionMainWindow)
 {
+
     ui->setupUi(this);
     // read settings from ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
@@ -199,7 +200,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
         //connect(&workerThread, &QThread::started, imgWorker, &ImageProcessingWorker::processImages);
         connect(timer, &QTimer::timeout, imgWorker, &ImageProcessingWorker::processImages, Qt::DirectConnection);
-        connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);
+        connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage, Qt::DirectConnection);
 
         workerThread.start(QThread::HighestPriority);
 
@@ -210,7 +211,9 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
     }
 }
 
-void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> warpedImage, const QList<cv::Point3f> robotLocations, const QList<RobotPosition> detectedRobots){
+void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<cv::Point3f> robotLocationsStd, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots){
+    udpCount++;
+
     if(!guiUpdateMutex.tryLock())
     {
         return;
@@ -224,7 +227,15 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> warpedImage, 
         guiImage.setTo(COLOR_BLACK);
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
-            cv::addWeighted(guiImage, 1, warpedImage[i], 1, 0, guiImage, -1);
+            // Undistort Image
+            cv::Mat undistortedImage;
+            cv::Mat warpedImage;
+            cv::undistort(cameraImage[i], undistortedImage, cameraMatrix.at(i), distCoeffs.at(i));
+            cv::line(undistortedImage,cv::Point(0,0),cv::Point(0, undistortedImage.rows),cv::Scalar(0,0,200,100),10);
+            // Apply perspective Transformation
+            cv::warpPerspective(undistortedImage, warpedImage, guiTransfMatrix.at(i), cv::Size(GUI_WIDTH, GUI_HEIGTH), cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
+            cv::imshow("myWind", undistortedImage);
+            cv::addWeighted(guiImage, 1, warpedImage, 1, 0, guiImage, -1);
         }
     }
     else     // show white background with grid
@@ -321,9 +332,12 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> warpedImage, 
 
 void RobotDetectionMainWindow::fpsCounter()
 {
-    QString str = "Frames per second: ";
+    QString str = "GUI Frames per second: ";
     str.append(QString::number(fpsCount));
     ui->labelFPS->setText(str);
+    str = "UDP Frames per second: ";
+    str.append(QString::number(udpCount));
+    ui->labelUDPFPS->setText(str);
     fpsCount = 0;
     udpCount = 0;
 }
@@ -479,6 +493,14 @@ void RobotDetectionMainWindow::readXmlCalibrationFile()
         perspTransfMatrix[i].at<double>(2, 1) = attribTrafoMatrix.value("t8").toDouble();
         perspTransfMatrix[i].at<double>(2, 2) = attribTrafoMatrix.value("t9").toDouble();
 
+
+        // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
+        cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
+        scaleMatrix.at<double>(0, 0) = 1.0 / GUI_SCALING;
+        scaleMatrix.at<double>(1, 1) = 1.0 / GUI_SCALING;
+        scaleMatrix.at<double>(2, 2) = 1.0;
+        guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
+
         // build settings
         exposureValue.insert(i, attribSettings.value("exp").toInt());
         contrastValue.insert(i, attribSettings.value("cnt").toInt());
@@ -560,11 +582,8 @@ void RobotDetectionMainWindow::updateArucoTab(int SelectedRow)
     if (SelectedRow < MarkerCount) {
         cv::Mat Marker;
         cv::aruco::drawMarker(this->defaultArucoDict.get(), SelectedRow, this->ui->label_arucomarker->height(), Marker);
-        qDebug() << 2;
         cv::cvtColor(Marker, Marker, cv::COLOR_GRAY2RGB);
-        qDebug() << 3;
         QPixmap pixmap;
-        qDebug() << 4;
         pixmap = QPixmap::fromImage(QImage((unsigned char*) Marker.data, Marker.cols, Marker.rows, Marker.step, QImage::Format_RGB888));
         this->ui->label_arucomarker->setPixmap(pixmap);
     }
@@ -607,9 +626,7 @@ void RobotDetectionMainWindow::on_pushButton_SaveToImage_clicked()
             int ID = this->ui->tableWidget_Aruco->item(row, 0)->text().toInt();
             name = defaultArucoDict.getNameById(row);
             QString namePrefix = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_Name_"+ name + "_ID_";
-            qDebug() << "a";
             bool ret = defaultArucoDict.drawSingle(fileName + "/", namePrefix, ID);
-            qDebug() << "b";
             if (ret) {
                 this->ui->statusBar->showMessage("File saved to " + fileName + namePrefix, 3000);
             } else {
@@ -626,29 +643,3 @@ void RobotDetectionMainWindow::updateIDNameMap() {
     }
 }
 
-//void RobotDetectionMainWindow::saveIDNameMap(QMap<int, QString> map) {
-//    QFile mapFile(ARUCO_ID_NAME_FILE);
-//    if (!mapFile.open(QIODevice::WriteOnly))
-//    {
-//        this->ui->statusBar->showMessage("Could not write to file:" + QString(ARUCO_ID_NAME_FILE) + "Error string:" + mapFile.errorString(), 3000);
-//    }
-
-//    QDataStream out(&mapFile);
-//    out.setVersion(QDataStream::Qt_5_9);
-//    out << map;
-//}
-
-//QMap<int, QString> RobotDetectionMainWindow::loadIDNameMap() {
-//    QFile mapFile(ARUCO_ID_NAME_FILE);
-//    QMap<int, QString> idNameMap;
-//    QDataStream in(&mapFile);
-//    in.setVersion(QDataStream::Qt_5_9);
-
-//    if (!mapFile.open(QIODevice::ReadOnly))
-//    {
-//        this->ui->statusBar->showMessage("Could not read the file:" + QString(ARUCO_ID_NAME_FILE) + "Error string:" + mapFile.errorString(), 3000);
-//        return idNameMap;
-//    }
-//    in >> idNameMap;
-//    return idNameMap;
-//}

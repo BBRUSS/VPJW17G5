@@ -33,7 +33,7 @@ public:
     ~RobotDetectionMainWindow();
 
 public slots:
-    void updateGuiImage(const QList<cv::Mat> warpedImage, const QList<cv::Point3f> robotLocations, const QList<RobotPosition> detectedRobots);
+    void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<cv::Point3f> robotLocationsStd, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
 
 private:
     UDPSettings udpStruct;
@@ -44,6 +44,7 @@ private:
     QList<cv::Mat> cameraMatrix;
     QList<cv::Mat> distCoeffs;
     QList<cv::Mat> perspTransfMatrix;
+    QList<cv::Mat> guiTransfMatrix;
     QList<RobotOffset> robotOffsets;
     QThread workerThread;
     QList<int> exposureValue;
@@ -60,7 +61,6 @@ private:
     int udpCount = 0;
     QTime timeStamp;
     ArucoDictionary defaultArucoDict;
-
 
 protected:
     void writeRobotLocationsToTable(QList<cv::Point3f> robotLocations);

@@ -47,7 +47,6 @@ SOURCES += main.cpp\
     myudp.cpp \
     imgtask.cpp \
     imageprocessingworker.cpp \
-    arucoserializer.cpp \
     arucodictionary.cpp
 
 HEADERS  += robotdetectionmainwindow.h \
@@ -55,7 +54,6 @@ HEADERS  += robotdetectionmainwindow.h \
     imgtask.h \
     constants.h \
     imageprocessingworker.h \
-    arucoserializer.h \
     arucodictionary.h
 
 FORMS    += robotdetectionmainwindow.ui

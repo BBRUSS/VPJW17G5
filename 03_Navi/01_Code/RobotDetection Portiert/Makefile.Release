@@ -3481,7 +3481,10 @@ release\arucodictionary.obj: arucodictionary.cpp arucodictionary.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qsharedpointer_impl.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QFile \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfile.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfiledevice.h
+		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfiledevice.h \
+		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QDataStream \
+		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qdatastream.h \
+		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QDebug
 
 release\qrc_ressource.obj: release\qrc_ressource.cpp 
 

@@ -15,7 +15,7 @@ class ImageProcessingWorker : public QObject
     Q_OBJECT
 public:
     //explicit ImageProcessingWorker();
-    explicit ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets);
+    explicit ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets);
     ~ImageProcessingWorker();
     void setMeasureData(bool measure);
     void setTaskThreshold(int threshold);
@@ -56,7 +56,7 @@ private:
     QList<QList<RobotPosition>> robotIDLocation;
 
 signals:
-    void updateGui(QList<cv::Mat> warpedImage, QList<cv::Point3f> robotLocations, QList<RobotPosition> detectedRobots);
+    void updateGui(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<cv::Point3f> robotLocationsStd, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
     void finishedUDPData(QList<cv::Point3f> robotLocations, QTime timeStamp);
 
 public slots:

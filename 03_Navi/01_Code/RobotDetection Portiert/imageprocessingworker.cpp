@@ -1,7 +1,7 @@
 #include "imageprocessingworker.h"
 #include <QDebug>
 
-ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets)
+ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets)
 {
     qRegisterMetaType<QList<cv::Mat>>("QList<cv::Mat>");
     qRegisterMetaType<QList<cv::Point3f>>("QList<cv::Point3f>");
@@ -51,7 +51,6 @@ void ImageProcessingWorker::setMeasureData(bool measure) {
 
 void ImageProcessingWorker::setTaskThreshold(int threshold) {
     this->taskThreshold = threshold;
-
 }
 
 void ImageProcessingWorker::setTaskRectMinSize(int minSize) {
@@ -59,14 +58,12 @@ void ImageProcessingWorker::setTaskRectMinSize(int minSize) {
 }
 
 void ImageProcessingWorker::processImages() {
-
     if(!workerMutex.tryLock())
     {
         return;
     }
     // GRAB TIMESTAMP
     timeStamp = QTime::currentTime(); // read system time
-
     //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
     //    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
     //    {
@@ -82,8 +79,6 @@ void ImageProcessingWorker::processImages() {
     // READ IMAGES FROM CAMERAS
     // grab frames with smallest time difference possible
     // "grab()" + "retrieve()" is faster than the combined function "read()"
-    QElapsedTimer timer;
-    timer.start();
 
     for (int i = 0; i < NR_OF_CAMS; i++)
     {
@@ -140,7 +135,7 @@ void ImageProcessingWorker::processImages() {
 
         if(foundOffsets.size() != MAX_NR_OF_ROBOTS)
         {
-            QString alarmtxt = "Calibration failed! Please place all Robots in Field! Founded Robots are: ";
+            QString alarmtxt = "Calibration failed! Please place all Robots in Field! Found Robots are: ";
             for(int i = 0; i < foundOffsets.size() ;i++)
             {
                 alarmtxt = alarmtxt + QString::number(foundOffsets.at(i).id+1);
@@ -249,7 +244,6 @@ void ImageProcessingWorker::processImages() {
         cv::Point3f tempStdVal = cv::Point3f(0, 0, 0);
 
         if (!robotIDLocation[a].empty()) {
-            qDebug() << "b";
             for(int i = 0; i < robotIDLocation[a].size(); i++) {
                 tempMeanVal += robotIDLocation[a].at(i).coordinates;
             }
@@ -289,7 +283,7 @@ void ImageProcessingWorker::processImages() {
         warpedImage.append(tasks[i]->getWarpedImage());
     }
 
-    emit updateGui(warpedImage, robotLocations, detectedRobots);
+    emit updateGui(warpedImage, robotLocations, robotLocationStd, robotIDLocation, detectedRobots);
 
     warpedImage.clear();
     detectedRobots.clear();

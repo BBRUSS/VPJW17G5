@@ -11,7 +11,7 @@
  ***************************************************************************/
 
 #include "imgtask.h"
-
+#include <QElapsedTimer>
 bool operator< (const RobotMarker & lhs, const RobotMarker & rhs)
 {
     return lhs.id < rhs.id;
@@ -118,18 +118,14 @@ void ImgTask::run()
 
         markerList[j].warpedCornerPoints.append(stdVectorToPointlist(tempVec));
     }
+    QElapsedTimer timer;
+    timer.start();
 
     if (liveViewMode)
     {
         //Draw the detected Marker
         cv::aruco::drawDetectedMarkers(image, markerCorners, markerIds);
-
-        // Undistort Image
-        cv::Mat temp;
-        cv::undistort(image, temp, cameraMatrix, distCoeffs);
-
-        // Apply perspective Transformation
-        cv::warpPerspective(temp, warpedImage, guiTransfMatrix, cv::Size(GUI_WIDTH, GUI_HEIGTH), cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
+        warpedImage = image;
     }
 
     //CALCULATE ANGLE AND POSITION OF ALL DETECTED MARKER
@@ -276,13 +272,6 @@ void ImgTask::setDistCoeffs(cv::Mat distCoeffs)
 void ImgTask::setPerspTransfMatrix(cv::Mat perspTransfMatrix)
 {
     this->perspTransfMatrix = perspTransfMatrix;
-
-    // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
-    cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
-    scaleMatrix.at<double>(0, 0) = 1.0 / GUI_SCALING;
-    scaleMatrix.at<double>(1, 1) = 1.0 / GUI_SCALING;
-    scaleMatrix.at<double>(2, 2) = 1.0;
-    guiTransfMatrix = scaleMatrix * perspTransfMatrix;
 }
 
 void ImgTask::setDebugMode(bool debugMode)

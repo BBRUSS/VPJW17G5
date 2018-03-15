@@ -8,9 +8,6 @@ ArucoDictionary::ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict)
     this->baseDict = baseDict;
     cv::Ptr<cv::aruco::Dictionary> tempDict = cv::aruco::getPredefinedDictionary(this->baseDict);
     this->markerBits = tempDict->markerSize;
-    qDebug() << this->baseDict;
-    qDebug() << this->markerBits;
-    qDebug() << this->markerCount;
 }
 ArucoDictionary::ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict, int markerCount) {
     this->baseDict = baseDict;

@@ -61,7 +61,6 @@ protected:
     cv::Mat cameraMatrix;
     cv::Mat distCoeffs;
     cv::Mat perspTransfMatrix;
-    cv::Mat guiTransfMatrix;
     cv::Mat warpedImage;
     cv::Ptr<cv::aruco::Dictionary> arucoDict;
     bool liveViewMode; // debug == LiveView mode...
