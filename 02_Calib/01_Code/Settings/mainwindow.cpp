@@ -14,35 +14,33 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::on_pushButtonSave_clicked()
 {
-    Settings s(13);
-
-    s.boardSize.width = 15;
-    s.boardSize.height = 3;
-
-    FileStorage fs(s.filename, FileStorage::WRITE);
-
-//    fs << "test" << ui->lineEdit_int_test->text().toInt();
-    fs << "MySettings" << s;
-
-    fs.release();
+    Settings s;
+    s.save();
+//    FileStorage fs(s.filename, FileStorage::WRITE);
+//    fs << "MySettings"<< s;
+//    fs.release();
 }
 
 void MainWindow::on_pushButtonLoade_clicked()
 {
     Settings s;
-    FileStorage fs(s.filename, FileStorage::READ);
+    s.load();
+//    FileStorage fs(s.filename, FileStorage::READ);
 
+//    if (!fs.isOpened()){
+//        fs.release();
+//    }
 
+//    fs["MySettings"] >> s;
+//    fs.release();
 
-    fs["MySettings"] >> s;
-
-//    ui->lineEdit_int_test->setText(QString::number((int) fs["test"]));
-    ui->lineEdit_int_test->setText(QString::number(s.test));
-
-    fs.release();
-
-    qDebug() << "height: " << s.boardSize.height;
-    qDebug() << "width: " << s.boardSize.width;
+    qDebug() << "boardSize.width" << s.boardSize.width;
+    qDebug() << "boardSize.height" << s.boardSize.height;
+    qDebug() << "camFieldSize.width" << s.camFieldSize.width;
+    qDebug() << "camFieldSize.height" << s.camFieldSize.height;
+    qDebug() << "calibrationPattern" << s.calibrationPattern;
+    qDebug() << "squareSize" << s.squareSize;
+    qDebug() << "nrFrames" << s.nrFrames;
 }
 
 MainWindow::~MainWindow()
@@ -55,5 +53,4 @@ void MainWindow::on_pushButtonMainSettings_clicked()
     hide();
     mainsettings = new MainSettings(this);
     mainsettings->show();
-
 }
