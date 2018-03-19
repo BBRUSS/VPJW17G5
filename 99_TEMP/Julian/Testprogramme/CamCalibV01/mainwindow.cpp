@@ -31,9 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     s->nrFrames = 10;
 
-    for(int i=0; i < s->camFieldSize.area();i++)
+    for(int i = 0; i < s->camFieldSize.area(); i++)
     {
-        s->cams.at(i)->calibFlag |= CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_FOCAL_LENGTH | CV_CALIB_FIX_PRINCIPAL_POINT;
+        s->cams.at(i)->calibFlag = CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_FOCAL_LENGTH | CV_CALIB_FIX_PRINCIPAL_POINT;
     }
 
 
@@ -100,6 +100,9 @@ void MainWindow::on_pushButtonSetContrast_clicked()
 }
 
 
+/** Used for toggle switch in test page
+ * @brief MainWindow::changedValue
+ */
 void MainWindow::changedValue()
 {
     if(ui->horizontalSliderCalibPattern->value()==0)

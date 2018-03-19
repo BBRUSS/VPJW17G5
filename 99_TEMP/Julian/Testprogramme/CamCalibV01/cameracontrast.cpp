@@ -50,6 +50,8 @@ void CameraContrast::on_pushButtonStartCam_clicked()
         ui->pushButtonGetIntrinsics->setEnabled(true);
         ui->pushButtonSaveContrast->setEnabled(true);
         ui->pushButtonResetThr->setEnabled(true);
+        ui->horizontalSliderMaxValue->setEnabled(true);
+        ui->horizontalSliderThreshold->setEnabled(true);
         ui->lineEditStatus->clear();
         on_pushButtonResetThr_clicked();    // reset b/w threshold and max values
     }
@@ -81,6 +83,8 @@ void CameraContrast::on_pushButtonStopCam_clicked()
     ui->pushButtonGetIntrinsics->setEnabled(false);
     ui->pushButtonSaveContrast->setEnabled(false);
     ui->pushButtonResetThr->setEnabled(false);
+    ui->horizontalSliderMaxValue->setEnabled(false);
+    ui->horizontalSliderThreshold->setEnabled(false);
     ui->pushButtonStartCam->setEnabled(true);
     ui->spinBoxCameraID->setEnabled(true);
 }

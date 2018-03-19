@@ -82,6 +82,9 @@
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
      <widget class="QSlider" name="horizontalSliderThreshold">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="toolTip">
        <string>Slide this value to change the black / white treshold</string>
       </property>
@@ -101,6 +104,9 @@
     </item>
     <item>
      <widget class="QSlider" name="horizontalSliderMaxValue">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="toolTip">
        <string>Slide this value to change the maximum value</string>
       </property>

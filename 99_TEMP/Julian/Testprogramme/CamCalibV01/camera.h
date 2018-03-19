@@ -46,22 +46,8 @@ public:
     void saveCameraCalibrationParameters();     // Save parameters to XML file
     Mat showUndistorted(Mat distorted);         // get and show undistorted picture to compare to distorted one
     // TODO: Reprojection-Error calculation
-    int getID()
-    {
-        return id;
-    }
-    void setContrast(int blackWhiteThreshold, int maxValue)
-    {
-        this->blackWhiteThreshold = blackWhiteThreshold;
-        this->maxValue = maxValue;
-        s->cams.at(this->id)->blackWhiteThreshold = blackWhiteThreshold;
-        s->cams.at(this->id)->maxValue = maxValue;
-        qInfo() <<"Cam" << this->id << " B/W Thr.:" <<  s->cams.at(this->id)->blackWhiteThreshold << ", Max val: " << s->cams.at(this->id)->maxValue;
-    }
-
-
-private slots:
-
+    int getID();
+    void setContrast(int blackWhiteThreshold, int maxValue);
 
 
 private:
@@ -77,7 +63,6 @@ private:
     int blackWhiteThreshold;    // Threshold gained by slider in "Contrast Window"
     int maxValue;               // Max value gained by slider in "Contrast Window"
 
-    // TODO: Weitere Variablen für Kontrasteinstellung etc.
 };
 
 #endif // CAMERA_H

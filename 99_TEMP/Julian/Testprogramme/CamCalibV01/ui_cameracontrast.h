@@ -98,6 +98,7 @@ public:
         horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
         horizontalSliderThreshold = new QSlider(horizontalLayoutWidget_2);
         horizontalSliderThreshold->setObjectName(QStringLiteral("horizontalSliderThreshold"));
+        horizontalSliderThreshold->setEnabled(false);
         horizontalSliderThreshold->setToolTipDuration(-1);
         horizontalSliderThreshold->setMaximum(255);
         horizontalSliderThreshold->setValue(128);
@@ -107,6 +108,7 @@ public:
 
         horizontalSliderMaxValue = new QSlider(horizontalLayoutWidget_2);
         horizontalSliderMaxValue->setObjectName(QStringLiteral("horizontalSliderMaxValue"));
+        horizontalSliderMaxValue->setEnabled(false);
         horizontalSliderMaxValue->setMaximum(255);
         horizontalSliderMaxValue->setValue(128);
         horizontalSliderMaxValue->setOrientation(Qt::Horizontal);

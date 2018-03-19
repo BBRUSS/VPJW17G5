@@ -17,13 +17,13 @@ public:
 
     enum Pattern { NOT_EXISTING, CHESSBOARD, CIRCLES_GRID, ASYMMETRIC_CIRCLES_GRID };
 
-    struct cam{
-
-        bool calibFixAspectratio;       // Assume fix aspect ratio (usual for lens cameras)
-        bool calibZeroTangentDist;      // Assume zero tangential distortion
-        bool calibFixPrincipalPoint;    // Fix the principal point at the center
+    struct cam
+    {
+        int calibFixAspectratio;        // Assume fix aspect ratio (usual for lens cameras)
+        int calibZeroTangentDist;       // Assume zero tangential distortion
+        int calibFixPrincipalPoint;     // Fix the principal point at the center
         bool showUndistorsed;           // Show undistorted images after calibration (Do we really need that in Settings?)
-        int cameraID;
+        int cameraID;                   // Camera windows id
         int calibFlag;                  // Flag(s) for calibration
         Mat cameraMatrix;               // intrinsic parameters
         Mat distCoeffs;                 // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
@@ -36,11 +36,11 @@ public:
     const string filename = "settings.xml"; // The name of the file where to write
 
     // Global Settings
-    Size boardSize;                 // The size of the board -> Number of items by width and height
-    Size camFieldSize;              // The size of camara field
-    Pattern calibrationPattern;     // One of the Chessboard, circles, or asymmetric circle pattern
-    float squareSize;               // The size of a square in your defined unit (point, millimeter,etc).
-    int nrFrames;                   // The number of frames to use from the input for calibration
+    Size boardSize;                     // The size of the board -> Number of items by width and height
+    Size camFieldSize;                  // The size of camara field
+    Pattern calibrationPattern;         // One of the Chessboard, circles, or asymmetric circle pattern
+    float squareSize;                   // The size of a square in your defined unit (point, millimeter,etc).
+    int nrFrames;                       // The number of frames to use from the input for calibration
 
     // Camera Settings
     vector<cam*> cams;

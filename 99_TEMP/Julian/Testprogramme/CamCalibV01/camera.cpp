@@ -21,9 +21,7 @@ Camera::Camera(int id, Ui::MainWindow *ui, Settings *s)
     this->s = s;
     this->cameraMatrix = Mat::eye(3, 3, CV_64F);    // camera matrix 3x3
     this->distCoeffs = Mat::zeros(8, 1, CV_64F);    // distortion coefficients 8x1
-    //inputCapture.open(id);
-    this->maxValue = -1;                            // default: do not use these values, ergo -1
-    this->blackWhiteThreshold = -1;                 // default: do not use these values, ergo -1
+    setContrast(-1, -1);                            // default: do not use these values, ergo -1
 }
 
 
@@ -51,7 +49,7 @@ void Camera::createKnownBoardPositions(vector<Point3f>& corners, Size size, floa
         {
             for( int j = 0; j < s->boardSize.width; j++ )
             {
-                corners.push_back(Point3f(float((2*j + i % 2)*s->squareSize), float(i*s->squareSize), 0));
+                corners.push_back(Point3f(float((2*j + i % 2)*s->squareSize), float(i*s->squareSize), 0.0f));
             }
         }
         break;
@@ -72,7 +70,7 @@ void Camera::cameraCalibration(vector<Mat> calibrationImages, Size boardSize)
     worldSpaceCornerPoints.resize(chessboardImageSpacePoints.size(), worldSpaceCornerPoints[0]);
 
     double error = calibrateCamera(worldSpaceCornerPoints, chessboardImageSpacePoints, boardSize, cameraMatrix,
-                                   distCoeffs, rvecs, tvecs, /*s->calibFlag*/CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
+                                   distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
     saveCameraCalibrationParameters();
     qInfo() << "calibration finished with error <" << error << ">" << endl;
 }
@@ -286,7 +284,7 @@ int Camera::doCalibrationExtrinsics()
 
         if(blackWhiteThreshold >= 0 && maxValue >= 0)   // if values are given, use them to set threshold in frame
         {
-            cv::threshold(raw, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
+            threshold(raw, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
         }
         else    // else use original frame
         {
@@ -333,14 +331,15 @@ int Camera::doCalibrationExtrinsics()
                 // TODO: create known circle position in 3D real world
                 // TODO: find circles in image plane
                 Mat images = Mat::zeros(savedImages.at(0).rows, savedImages.at(0).cols, savedImages.at(0).type());
-                savedImages.at(0).copyTo(images);
-                //                for(int i=0; i<savedImages.size(); i++)
-                //                {
-                //                    Mat temp;
-                //                    savedImages.at(i).copyTo(temp);
-                //                    cv::add(images, temp, images);
-                //                    qInfo() << "add successfull" << i;
-                //                }
+                //savedImages.at(0).copyTo(images);
+
+                for(int i=0; i<savedImages.size(); i++)
+                {
+                    Mat temp;
+                    savedImages.at(i).copyTo(temp);
+                    cv::add(images, temp, images);
+                    qInfo() << "add successfull" << i;
+                }
 
                 // 1. Find circle positions in image plane
                 vector<Vec2f> foundPoints;
@@ -475,6 +474,19 @@ void Camera::saveCameraCalibrationParameters()
 }
 
 
+int Camera::getID()
+{
+    return id;
+}
 
+
+void Camera::setContrast(int blackWhiteThreshold, int maxValue)
+{
+    this->blackWhiteThreshold = blackWhiteThreshold;
+    this->maxValue = maxValue;
+    s->cams.at(this->id)->blackWhiteThreshold = blackWhiteThreshold;
+    s->cams.at(this->id)->maxValue = maxValue;
+    qInfo() <<"Cam" << this->id << " B/W Thr.:" <<  s->cams.at(this->id)->blackWhiteThreshold << ", Max val: " << s->cams.at(this->id)->maxValue;
+}
 
 

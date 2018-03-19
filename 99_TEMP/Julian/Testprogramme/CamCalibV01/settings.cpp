@@ -95,6 +95,7 @@ void Settings::read(const FileNode& node){              //Read serialization for
     if (!patternToUse.compare("CHESSBOARD")) calibrationPattern = Settings::CHESSBOARD;
     else if (!patternToUse.compare("CIRCLES_GRID")) calibrationPattern = Settings::CIRCLES_GRID;
     else if (!patternToUse.compare("ASYMMETRIC_CIRCLES_GRID")) calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
+
 }
 
 void Settings::save(){                                  //save with write serialization for this class
