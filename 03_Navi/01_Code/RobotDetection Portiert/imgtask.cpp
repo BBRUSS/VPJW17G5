@@ -23,7 +23,6 @@ void ImgTask::run()
     {
         return;
     }
-
     //VARIABLES
     int t = 0;                                                  //Variable for Index of Vectors
 
@@ -59,6 +58,7 @@ void ImgTask::run()
 
     //Find Contours
     cv::findContours(workImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+    //cv::imwrite((QString("img/")+QString::number(QDateTime::currentMSecsSinceEpoch())+QString(".jpg")).toUtf8().constData(), workImage);
 
     cv::Rect rect;
     cv::Mat roi;
@@ -66,13 +66,16 @@ void ImgTask::run()
     {
         //Build Rect´s (AOI´s)
         rect = cv::boundingRect(contours[i]);
-
+        cv::rectangle(workImage,rect, COLOR_WHITE, 2, CV_AA);
+        cv::imwrite((QString("img/")+QString::number(QDateTime::currentMSecsSinceEpoch())+QString(".jpg")).toUtf8().constData(), workImage);
         //Filter the Rect´s by size
         if(rect.size().area() > 1000 && rect.size().area() < MinSizeofRects)
         {
             //Transfer relevant AOI´s to ARUCO Detection
             roi = cv::Mat(image, rect).clone();
+
             cv::aruco::detectMarkers(roi, arucoDict, tempmarkerCorners, tempmarkerIds, arucoParameters, rejectedCandidates);
+
             cv::rectangle(image,rect,COLOR_BLUE, 1, CV_AA);
 
             //Safe detected Markers
@@ -136,7 +139,7 @@ void ImgTask::run()
         RobotMarker currentMarker = markerList[i];
 
         //find the detected ID (Each Robot have two Marker, that are all possible ID´s)
-        for( unsigned int a = 0; a<MAX_NR_OF_ROBOTS*2; a++)
+        for( unsigned int a = 0; a<robotCount*2; a++)
         {
             //Current MarkerID is in a
             if(currentMarker.id == a)
@@ -316,6 +319,10 @@ void ImgTask::setMinSizeofRects(int minSizeofRects)
 void ImgTask::clearNewRobotOffsets()
 {
     this->NewRobotOffsets.clear();
+}
+
+void ImgTask::setRobotCount(int robotCount) {
+    this->robotCount = robotCount;
 }
 
 double ImgTask::calculateangle(Pointlist marker)

@@ -28,10 +28,6 @@ ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::
         temp->setRobotOffsets(robotOffsets);
         tasks.append(temp);
     }
-    for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
-    {
-        robotIDLocation.append(QList<RobotPosition>());
-    }
 
     this->arucoParameters = arucoParameters;
     this->arucoDict = arucoDict;
@@ -62,6 +58,8 @@ void ImageProcessingWorker::processImages() {
     {
         return;
     }
+
+    int localRobotCount = robotCount;
     // GRAB TIMESTAMP
     timeStamp = QTime::currentTime(); // read system time
     //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
@@ -112,6 +110,7 @@ void ImageProcessingWorker::processImages() {
         tasks[i]->setArucoDict(arucoDict);
         tasks[i]->setthreshold(taskThreshold);
         tasks[i]->setMinSizeofRects(taskRectMinSize);
+        tasks[i]->setRobotCount(localRobotCount);
         threadPool.start( tasks[i]);
     }
     threadPool.waitForDone();
@@ -133,7 +132,7 @@ void ImageProcessingWorker::processImages() {
             tasks[i]->clearNewRobotOffsets();
         }
 
-        if(foundOffsets.size() != MAX_NR_OF_ROBOTS)
+        if(foundOffsets.size() != localRobotCount)
         {
             QString alarmtxt = "Calibration failed! Please place all Robots in Field! Found Robots are: ";
             for(int i = 0; i < foundOffsets.size() ;i++)
@@ -166,12 +165,13 @@ void ImageProcessingWorker::processImages() {
         calibrateOffset_ON_OFF = false;
         foundOffsets.clear();
     }
-
     // init locations with zeros
-    for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
+    for (int i = 0; i < localRobotCount; i++)
     {
+        robotIDLocation.append(QList<RobotPosition>());
         robotLocations.append(cv::Point3f(0, 0, 0));
         robotLocationStd.append(cv::Point3f(0, 0, 0));
+        robotLocationStd1d.append(0);
     }
 
     //Check all Robots of double detections
@@ -208,7 +208,7 @@ void ImageProcessingWorker::processImages() {
     //    }
 
     QVector<int> falseDetection = QVector<int>(detectedRobots.size());
-    for(int a = 0;a<MAX_NR_OF_ROBOTS;a++)
+    for(int a = 0;a<localRobotCount;a++)
     {
         for(int i = 0; i < detectedRobots.size();i++)
         {
@@ -239,9 +239,11 @@ void ImageProcessingWorker::processImages() {
         }
     }
 
-    for (int a = 0;a<MAX_NR_OF_ROBOTS;a++) {
+    for (int a = 0;a<localRobotCount;a++) {
         cv::Point3f tempMeanVal = cv::Point3f(0, 0, 0);
+        cv::Point3f tempStdVal3f = cv::Point3f(0, 0, 0);
         cv::Point3f tempStdVal = cv::Point3f(0, 0, 0);
+        int tempStdVal1d = 0;
 
         if (!robotIDLocation[a].empty()) {
             for(int i = 0; i < robotIDLocation[a].size(); i++) {
@@ -250,12 +252,15 @@ void ImageProcessingWorker::processImages() {
             tempMeanVal = tempMeanVal / robotIDLocation[a].size();
 
             for(int i = 0; i < robotIDLocation[a].size(); i++) {
+                tempStdVal3f = (robotIDLocation[a].at(i).coordinates-tempMeanVal)*(robotIDLocation[a].at(i).coordinates-tempMeanVal);
+                tempStdVal1d += sqrt(tempStdVal3f.x + tempStdVal3f.y);
                 tempStdVal += (robotIDLocation[a].at(i).coordinates-tempMeanVal)*(robotIDLocation[a].at(i).coordinates-tempMeanVal);
             }
             tempStdVal = tempStdVal / (robotIDLocation[a].size() - 1);
         }
         robotLocations[a] = tempMeanVal;
         robotLocationStd[a] = tempStdVal;
+        robotLocationStd1d[a] = tempStdVal1d;
     }
 
 
@@ -283,8 +288,10 @@ void ImageProcessingWorker::processImages() {
         warpedImage.append(tasks[i]->getWarpedImage());
     }
 
-    emit updateGui(warpedImage, robotLocations, robotLocationStd, robotIDLocation, detectedRobots);
+    //emit updateGui(warpedImage, robotLocations, robotLocationStd, robotIDLocation, detectedRobots);
+    emit updateGui(warpedImage, robotLocations, robotLocationStd1d, robotIDLocation, detectedRobots);
 
+    robotIDLocation.clear();
     warpedImage.clear();
     detectedRobots.clear();
     robotLocations.clear();
@@ -300,4 +307,8 @@ cv::Point3f operator*(const cv::Point3f& a, const cv::Point3f& b) {
     double z2 = b.z;
 
     return cv::Point3f(x1*x2, y1*y2, z1*z2);
+}
+
+void ImageProcessingWorker::setRobotCount(int robotCount) {
+    this->robotCount = robotCount;
 }

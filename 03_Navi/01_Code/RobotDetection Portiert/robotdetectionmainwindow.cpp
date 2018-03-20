@@ -51,10 +51,12 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     //load aruco dict
     this->defaultArucoDict = ArucoDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
     this->defaultArucoDict.load(ARUCO_DICT_NAME);
+    this->initArucoTab();
+
     //this->initArucoTab();
     //Set Offset for Robots
     robotOffsets.clear();
-    for(int i = 0; i < MAX_NR_OF_ROBOTS; i++)
+    for(int i = 0; i < 4; i++)
     {
         RobotOffset temp = {i,settings.value("Robot"+QString::number(i)+"MEven",2).toFloat(),settings.value("Robot"+QString::number(i)+"MNotEven",2).toFloat()};
         robotOffsets.append(temp);
@@ -79,7 +81,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     fpsCount = 0;
 
     //connect GUI elements
-    connect(this->ui->tableWidget_Aruco, &QTableWidget::itemChanged, this, &RobotDetectionMainWindow::updateIDNameMap );
+    //connect(this->ui->tableWidget_Aruco, &QTableWidget::itemChanged, this, &RobotDetectionMainWindow::updateIDNameMap );
     //connect(this->ui, &Q::, RobotDetectionMainWindow, &RobotDetectionMainWindow::updateArucoTab());
 
     // read camera calibration data and perspective transform matrices from xml
@@ -195,6 +197,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         imgWorker = new ImageProcessingWorker(udpStruct, readArucoParameters(), defaultArucoDict.get(), videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix, robotOffsets);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
+        imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
         imgWorker->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
@@ -211,9 +214,8 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
     }
 }
 
-void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<cv::Point3f> robotLocationsStd, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots){
+void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots){
     udpCount++;
-
     if(!guiUpdateMutex.tryLock())
     {
         return;
@@ -231,10 +233,9 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
             cv::Mat undistortedImage;
             cv::Mat warpedImage;
             cv::undistort(cameraImage[i], undistortedImage, cameraMatrix.at(i), distCoeffs.at(i));
-            cv::line(undistortedImage,cv::Point(0,0),cv::Point(0, undistortedImage.rows),cv::Scalar(0,0,200,100),10);
+            //cv::line(undistortedImage,cv::Point(0,0),cv::Point(0, undistortedImage.rows),cv::Scalar(0,0,200,100),10);
             // Apply perspective Transformation
             cv::warpPerspective(undistortedImage, warpedImage, guiTransfMatrix.at(i), cv::Size(GUI_WIDTH, GUI_HEIGTH), cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
-            cv::imshow("myWind", undistortedImage);
             cv::addWeighted(guiImage, 1, warpedImage, 1, 0, guiImage, -1);
         }
     }
@@ -281,9 +282,18 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
             double angledegree = 2*3.14159265359-(robotLocations[i].z*3.14159265359/180);
             cv::Point2f directionPoint = cv::Point2f(scaleToGui(centerPoint).x + scaleToGui(ROBOT_RADIUS)*cos(angledegree ), scaleToGui(centerPoint).y + scaleToGui(ROBOT_RADIUS)*sin(angledegree));
 
+
+
             //Draw circles and lines for center and orientation circles
+            if (robotLocationsStd1d[i] > ROBOT_STD_THRESH) {
+                cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_RED, 2, CV_AA);
+            } else {
+                cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_WHITE, 2, CV_AA);
+            }
+
             cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius), COLOR_GREEN, 2, CV_AA);
             cv::line  (guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
+            cv::putText(guiImage, defaultArucoDict.getNameById(i).toUtf8().constData(),scaleToGui(centerPoint),cv::FONT_HERSHEY_SIMPLEX,1,COLOR_GREEN, 2, CV_AA);
         }
     }
 
@@ -344,8 +354,10 @@ void RobotDetectionMainWindow::fpsCounter()
 
 void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> robotLocations)
 {
+    int robotCount = defaultArucoDict.getMarkerCount()/2;
+    this->ui->tableWidget_Aruco->setRowCount(0);
     // init tableWidget during first run
-    for(int row = 0; row < MAX_NR_OF_ROBOTS; row++)
+    for(int row = 0; row < robotCount; row++)
         for(int col = 0; col < 3; col++)
             if (ui->tableWidget->item(row, col) == 0)
             {
@@ -355,7 +367,7 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> rob
             }
 
     // write RobotLocations to tableWidget
-    for(int row = 0; row < MAX_NR_OF_ROBOTS; row++)
+    for(int row = 0; row < robotCount; row++)
     {
         ui->tableWidget->item(row, 0)->setText(QString::number(robotLocations.at(row).x, 'f', 1));
         ui->tableWidget->item(row, 1)->setText(QString::number(robotLocations.at(row).y, 'f', 1));
@@ -365,8 +377,9 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> rob
 
 void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations)
 {
+    int robotCount = defaultArucoDict.getMarkerCount()/2;
     cv::Point2f offset = cv::Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
-    for (unsigned int i = 0; i < MAX_NR_OF_ROBOTS; i++)
+    for (unsigned int i = 0; i < robotCount; i++)
     {
         cv::Point2f center = cv::Point2f(robotLocations.at(i).x, FIELD_HEIGTH - robotLocations.at(i).y);
         if (center.y != FIELD_HEIGTH)
@@ -543,7 +556,7 @@ QMap<QString, QXmlStreamAttributes> RobotDetectionMainWindow::parseCamera(QXmlSt
 
 void RobotDetectionMainWindow::on_pushButton_addAruco_clicked()
 {
-    defaultArucoDict.add(1);
+    defaultArucoDict.add(2);
     initArucoTab();
 }
 
@@ -598,6 +611,12 @@ void RobotDetectionMainWindow::on_tabMain_tabBarClicked(int index)
 
 void RobotDetectionMainWindow::on_tableWidget_Aruco_cellChanged(int row, int column)
 {
+    if (row%2) { // odd number
+        this->ui->tableWidget_Aruco->item(row-1, column)->setText(this->ui->tableWidget_Aruco->item(row, column)->text());
+    } else {
+        this->ui->tableWidget_Aruco->item(row+1, column)->setText(this->ui->tableWidget_Aruco->item(row, column)->text());
+    }
+    updateIDNameMap();
 }
 
 void RobotDetectionMainWindow::on_tableWidget_Aruco_cellClicked(int row, int column)
@@ -607,7 +626,7 @@ void RobotDetectionMainWindow::on_tableWidget_Aruco_cellClicked(int row, int col
 
 void RobotDetectionMainWindow::on_pushButton_deleteAruco_clicked()
 {
-    defaultArucoDict.remove(1);
+    defaultArucoDict.remove(2);
     initArucoTab();
 }
 
@@ -628,9 +647,9 @@ void RobotDetectionMainWindow::on_pushButton_SaveToImage_clicked()
             QString namePrefix = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_Name_"+ name + "_ID_";
             bool ret = defaultArucoDict.drawSingle(fileName + "/", namePrefix, ID);
             if (ret) {
-                this->ui->statusBar->showMessage("File saved to " + fileName + namePrefix, 3000);
+                this->ui->statusBar->showMessage("File saved to " + fileName, 3000);
             } else {
-                this->ui->statusBar->showMessage("Could not write to file:" + fileName + namePrefix, 3000);
+                this->ui->statusBar->showMessage("Could not write to file:" + fileName, 3000);
             }
         }
     }

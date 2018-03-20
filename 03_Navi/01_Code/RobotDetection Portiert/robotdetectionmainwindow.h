@@ -33,7 +33,7 @@ public:
     ~RobotDetectionMainWindow();
 
 public slots:
-    void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<cv::Point3f> robotLocationsStd, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
+    void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
 
 private:
     UDPSettings udpStruct;
@@ -69,7 +69,7 @@ protected:
     cv::Ptr<cv::aruco::DetectorParameters> readArucoParameters();
     void updateArucoTab(int SelectedRow);
     void initArucoTab();
-
+    void updateIDNameMap();
 //    void saveIDNameMap(QMap<int, QString> map);
 //    QMap<int, QString> loadIDNameMap();
 
@@ -88,7 +88,7 @@ private slots:
     void on_pushButtonStartStop_clicked();
     void fpsCounter();
 
-    void updateIDNameMap();
+
     void on_pushButton_addAruco_clicked();
     void on_tabMain_tabBarClicked(int index);
     void on_tableWidget_Aruco_cellChanged(int row, int column);

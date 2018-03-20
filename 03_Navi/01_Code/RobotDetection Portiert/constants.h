@@ -12,6 +12,7 @@
 #define NR_OF_CAMS 6
 #define MAX_NR_OF_ROBOTS 4
 #define ROBOT_RADIUS 180.0 // millimeters
+#define ROBOT_STD_THRESH 10
 #define ARUCO_DICT_NAME "StdArucoDict.yml"
 #define ARUCO_DICT_MARKER_SIZE 10
 #define ARUCO_DICT_MARKER_SIZE_PIXEL 1000

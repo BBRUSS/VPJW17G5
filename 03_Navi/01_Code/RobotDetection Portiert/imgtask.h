@@ -48,6 +48,7 @@ public:
     void setArucoDict(cv::Ptr<cv::aruco::Dictionary> arucoDict);
     void setthreshold(int threshold);
     void setMinSizeofRects(int minSizeofRects);
+    void setRobotCount(int robotCount);
     QList<RobotOffset> getNewRobotOffsets();
     void setRobotOffsets(QList<RobotOffset> offsets);
     void clearNewRobotOffsets();
@@ -55,6 +56,7 @@ public:
     cv::Mat getWarpedImage();
     static Pointlist stdVectorToPointlist(std::vector<cv::Point2f> vec);
     static std::vector<cv::Point2f> PointlistToStdVector( Pointlist  vec);
+
 
 protected:
     cv::Mat image;
@@ -77,6 +79,7 @@ protected:
     int getRobotId(int markerID);
     int threshold_max;
     int MinSizeofRects;
+    int robotCount;
     QThread warpedImageThread;
 
 signals:
