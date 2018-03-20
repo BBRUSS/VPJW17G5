@@ -15,24 +15,24 @@
 #include "ui_robotdetectionmainwindow.h"
 #include <iostream>
 #include <fstream>
+#include <QDebug>
 
 RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::RobotDetectionMainWindow),
-    udpClient(this),
-    threadPool(this)
+    ui(new Ui::RobotDetectionMainWindow)
 {
+
     ui->setupUi(this);
     // read settings from ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
     settings.beginGroup("RobotDetectionSettings");
-    sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
-    sendToPort = settings.value("SendToPort", 25000).toInt();
+    udpStruct.sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
+    udpStruct.sendToPort = settings.value("SendToPort", 25000).toInt();
 
-    sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
-    sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
-    reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
-    recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
+    udpStruct.sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
+    udpStruct.sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
+    udpStruct.reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
+    udpStruct.recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
 
     timerMilSecs = settings.value("TimerMilSecs", 20).toInt();
     ui->slider_cornerRefinementMaxIterations->setValue( settings.value("cornerRefinementMaxIterations", 1).toInt());
@@ -48,54 +48,44 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
     ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
 
+    //load aruco dict
+    this->defaultArucoDict = ArucoDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
+    this->defaultArucoDict.load(ARUCO_DICT_NAME);
+    this->initArucoTab();
+
+    //this->initArucoTab();
     //Set Offset for Robots
-    QList<RobotOffset> RobotOffsets;
-    for(int i = 0; i < MAX_NR_OF_ROBOTS; i++)
+    robotOffsets.clear();
+    for(int i = 0; i < 4; i++)
     {
         RobotOffset temp = {i,settings.value("Robot"+QString::number(i)+"MEven",2).toFloat(),settings.value("Robot"+QString::number(i)+"MNotEven",2).toFloat()};
-        RobotOffsets.append(temp);
+        robotOffsets.append(temp);
     }
     settings.endGroup();
 
-    // create UDP-Client and open socket
-    //udpClient.setSendIP(sendToIp, sendToPort);
-
-
-    udpClient.setSendConfig (sendToIp,sendToPort);
-
-    udpClient.setReciveConfig_SyncService(reciveIp_SyncService,recivePort_SyncService);
-    udpClient.setSendConfig_SyncService(sendToIp_SyncService,sendToPort_SyncService);
+    for (int i = 0; i < NR_OF_CAMS; i++)
+    {
+        cv::VideoCapture capt;
+        videoCapture.append(capt);
+    }
 
     mainloopIsActive = false;
     calibrateOffset_ON_OFF = false;
 
+    timer = new QTimer(this);
+    timerFPS = new QTimer(this);
     // init timers for mainloop and frames-per-second counting
-    connect(&timer, SIGNAL(timeout()), this, SLOT(operate()));
-    connect(&timerFPS, SIGNAL(timeout()), this, SLOT(fpsCounter()));
+
+    connect(timerFPS, &QTimer::timeout, this, &RobotDetectionMainWindow::fpsCounter);
+    //connect(&timerFPS, SIGNAL(timeout()), this, SLOT(fpsCounter()));
     fpsCount = 0;
+
+    //connect GUI elements
+    //connect(this->ui->tableWidget_Aruco, &QTableWidget::itemChanged, this, &RobotDetectionMainWindow::updateIDNameMap );
+    //connect(this->ui, &Q::, RobotDetectionMainWindow, &RobotDetectionMainWindow::updateArucoTab());
 
     // read camera calibration data and perspective transform matrices from xml
     readXmlCalibrationFile();
-
-    // init list of robotLocations
-    robotLocations.clear();
-
-    for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
-    {
-        robotLocations.append(cv::Point3f(0.0, 0.0, 0.0));
-    }
-
-    // open threadpool for image analysis
-    threadPool.setMaxThreadCount(NR_OF_CAMS);
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        tasks[i] = new ImgTask();
-        tasks[i]->setAutoDelete(false);
-        tasks[i]->setCameraMatrix(cameraMatrix.at(i));
-        tasks[i]->setDistCoeffs(distCoeffs.at(i));
-        tasks[i]->setPerspTransfMatrix(perspTransfMatrix.at(i));
-        tasks[i]->setRobotOffsets(RobotOffsets);
-    }
 
     ui->labelVersion->setText("Version: " + QString(__DATE__) + " " + QString(__TIME__));
 
@@ -104,11 +94,14 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
 RobotDetectionMainWindow::~RobotDetectionMainWindow()
 {
+    workerThread.quit();
+    workerThread.wait();
+
     // write settings to ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
     settings.beginGroup("RobotDetectionSettings");
-    settings.setValue("SendToIP", sendToIp);
-    settings.setValue("SendToPort", sendToPort);
+    settings.setValue("SendToIP", udpStruct.sendToIp);
+    settings.setValue("SendToPort", udpStruct.sendToPort);
     settings.setValue("TimerMilSecs", timerMilSecs);
 
     settings.setValue("cornerRefinementMaxIterations", ui->slider_cornerRefinementMaxIterations->value());
@@ -125,82 +118,27 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
     settings.setValue("MinSizeofRects", ui->slider_MinSizeofRects->value());
     settings.endGroup();
 
-    // clean up
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        delete tasks[i];
-    }
+    defaultArucoDict.save(ARUCO_DICT_NAME);
+
     delete ui;
 }
 void RobotDetectionMainWindow::on_pushButtonCalibrateOffset_clicked()
 {
     calibrateOffset_ON_OFF = true;
 }
-void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
-{
-    if(mainloopIsActive)
-    {
-        timer.stop();
-        timerFPS.stop();
-        for (int i = 0; i < NR_OF_CAMS; i++)
-        {
-            videoCapture[i].release();
-        }
-        ui->statusBar->showMessage("Releasing cameras...", 2000);
-        ui->pushButtonStartStop->setText("Start Detection");
-        mainloopIsActive = false;
-    }
-    else
-    {
-        for (int i = 0; i < NR_OF_CAMS; i++)
-        {
-            videoCapture[i].open(0); //TÓDO: 0 -> i
-            videoCapture[i].set(CV_CAP_PROP_FRAME_WIDTH, CAMERA_IMG_WIDTH);
-            videoCapture[i].set(CV_CAP_PROP_FRAME_HEIGHT, CAMERA_IMG_HEIGTH);
-            videoCapture[i].set(CV_CAP_PROP_BRIGHTNESS, brightnessValue[i]);
-            videoCapture[i].set(CV_CAP_PROP_CONTRAST, contrastValue[i]);
-            videoCapture[i].set(CV_CAP_PROP_EXPOSURE, exposureValue[i]);
-        }
-        ui->statusBar->showMessage("Connecting to cameras...", 3000);
-        // give cameras some time to get connected,
-        // otherwise program might crash (depends on camera driver)
-        Sleep(3000);
-        //timer.start(timerMilSecs);
-        timer.start(1);
-        timerFPS.start(1000);
-        ui->pushButtonStartStop->setText("Stop Detection");
-        mainloopIsActive = true;
-    }
-}
 
-void RobotDetectionMainWindow::operate()
-{
-    if(!workerMutex.tryLock())
-    {
-        return;
-    }
-
-    // GRAB TIMESTAMP
-    timeStamp = QTime::currentTime(); // read system time
-    QString stime = timeStamp.toString(Qt::LocalDate);  // convert time to string
-
-    fpsCount++;
-
-    QList<double> temp;
-
+cv::Ptr<cv::aruco::DetectorParameters> RobotDetectionMainWindow::readArucoParameters(){
     //Read Settings
     cv::Ptr<cv::aruco::DetectorParameters> arucoParameters = cv::aruco::DetectorParameters::create();
 
     //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
-//    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
-//    {
-//        arucoParameters->doCornerRefinement = true;
-//    } else {
-//        arucoParameters->doCornerRefinement = false;
-//    }
-
-    ui->t4_label->setText(QString::number(udpClient.msg_4));
-
+    //    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
+    //    {
+    //        arucoParameters->doCornerRefinement = true;
+    //    } else {
+    //        arucoParameters->doCornerRefinement = false;
+    //    }
+    QList<double> temp;
 
     arucoParameters->perspectiveRemovePixelPerCell = ui->slider_perspectiveRemovePixelPerCell->value();
     arucoParameters->cornerRefinementMaxIterations = ui->slider_cornerRefinementMaxIterations->value();
@@ -220,97 +158,69 @@ void RobotDetectionMainWindow::operate()
     arucoParameters->errorCorrectionRate = temp[3]/100;
     arucoParameters->cornerRefinementMinAccuracy = temp[4]/100;
 
-    // READ IMAGES FROM CAMERAS
-    // grab frames with smallest time difference possible
-    // "grab()" + "retrieve()" is faster than the combined function "read()"
+    return arucoParameters;
+}
 
-    for (int i = 0; i < NR_OF_CAMS; i++)
+void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
+{
+
+    if(mainloopIsActive)
     {
-        if (videoCapture[i].isOpened())
-        {
-            videoCapture[i].grab();
-        }
-    }
-
-
-    // Fetch detected Robots from tasks
-    QList<RobotPosition> detectedRobots;
-
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        if (videoCapture[i].isOpened())
-        {
-            videoCapture[i].retrieve(cameraImages[i], 0);   // get frames from camera
-        }
-        else     // no camera connected, use black image
-        {
-            cv::Mat blackImage(CAMERA_IMG_HEIGTH, CAMERA_IMG_WIDTH, CV_8UC3);
-            blackImage.setTo(COLOR_BLACK);
-            cameraImages[i] = blackImage;
-        }
-        // start seperate tasks
-        tasks[i]->setImage( cameraImages[i] );
-        tasks[i]->setDebugMode( ui->checkBoxLiveView->isChecked() );
-        tasks[i]->setCalibrateOffset(calibrateOffset_ON_OFF);
-        tasks[i]->setArucoParameters(arucoParameters);
-        tasks[i]->setthreshold(ui->slider_threshold->value());
-        tasks[i]->setMinSizeofRects(ui->slider_MinSizeofRects->value());
-        threadPool.start( tasks[i] );
-    }
-    threadPool.waitForDone();
-
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        detectedRobots.append(tasks[i]->getdetectRobots());
-    }
-
-
-    //User clicked on Calibration
-    if(calibrateOffset_ON_OFF)
-    {
-        //Fetch Calibration Data from Tasks
-        QList<RobotOffset> foundOffsets;
-
+        timer->stop();
+        timerFPS->stop();
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
-            foundOffsets.append(tasks[i]->getNewRobotOffsets());
-            tasks[i]->clearNewRobotOffsets();
+            videoCapture[i].release();
         }
-
-        if(foundOffsets.size() != MAX_NR_OF_ROBOTS)
-        {
-            QString alarmtxt = "Calibration failed! Please place all Robots in Field! Founded Robots are: ";
-            for(int i = 0; i < foundOffsets.size() ;i++)
-            {
-                alarmtxt = alarmtxt + QString::number(foundOffsets.at(i).id+1);
-
-                if(i+1 != foundOffsets.size())
-                    alarmtxt = alarmtxt + ",";
-            }
-            QMessageBox msgBox;
-            msgBox.setText(alarmtxt);
-            msgBox.exec();
-        }
-        else
-        {
-            //Save Offsets
-            QSettings settings("settings.ini", QSettings::IniFormat);
-            settings.beginGroup("RobotDetectionSettings");
-            QString optionNameQString;
-            for(int i = 0; i < foundOffsets.size() ;i++)
-            {
-                //Build String
-                optionNameQString = "Robot" + QString::number(foundOffsets.at(i).id);
-                settings.setValue(optionNameQString + "MEven",QString::number(-foundOffsets.at(i).offsetMarkerEven));
-                settings.setValue(optionNameQString + "MNotEven",QString::number(foundOffsets.at(i).offsetMarkerNotEven));
-            }
-            settings.endGroup();
-        }
-
-        calibrateOffset_ON_OFF = false;
-        foundOffsets.clear();
+        workerThread.quit();
+        ui->statusBar->showMessage("Releasing cameras...", 2000);
+        ui->pushButtonStartStop->setText("Start Detection");
+        mainloopIsActive = false;
     }
+    else
+    {
+        for (int i = 0; i < NR_OF_CAMS; i++)
+        {
+            videoCapture[i].open(0); //TÓDO: 0 -> i
+            videoCapture[i].set(CV_CAP_PROP_FRAME_WIDTH, CAMERA_IMG_WIDTH);
+            videoCapture[i].set(CV_CAP_PROP_FRAME_HEIGHT, CAMERA_IMG_HEIGTH);
+            videoCapture[i].set(CV_CAP_PROP_BRIGHTNESS, brightnessValue[i]);
+            videoCapture[i].set(CV_CAP_PROP_CONTRAST, contrastValue[i]);
+            videoCapture[i].set(CV_CAP_PROP_EXPOSURE, exposureValue[i]);
+        }
+        ui->statusBar->showMessage("Connecting to cameras...", 3000);
+        // give cameras some time to get connected,
+        // otherwise program might crash (depends on camera driver)
+        Sleep(3000);
+        //timer.start(timerMilSecs);#
 
+        imgWorker = new ImageProcessingWorker(udpStruct, readArucoParameters(), defaultArucoDict.get(), videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix, robotOffsets);
+        imgWorker->setTaskThreshold(ui->slider_threshold->value());
+        imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
+        imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
+        imgWorker->moveToThread(&workerThread);
+
+        connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
+        //connect(&workerThread, &QThread::started, imgWorker, &ImageProcessingWorker::processImages);
+        connect(timer, &QTimer::timeout, imgWorker, &ImageProcessingWorker::processImages, Qt::DirectConnection);
+        connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage, Qt::DirectConnection);
+
+        workerThread.start(QThread::HighestPriority);
+
+        timer->start(33);
+        timerFPS->start(1000);
+        ui->pushButtonStartStop->setText("Stop Detection");
+        mainloopIsActive = true;
+    }
+}
+
+void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots){
+    udpCount++;
+    if(!guiUpdateMutex.tryLock())
+    {
+        return;
+    }
+    fpsCount++;
 
     // Display either camera images or white background
     cv::Mat guiImage(GUI_HEIGTH, GUI_WIDTH, CV_8UC3);
@@ -319,7 +229,14 @@ void RobotDetectionMainWindow::operate()
         guiImage.setTo(COLOR_BLACK);
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
-            addWeighted(guiImage, 1, tasks[i]->getWarpedImage(), 1, 0, guiImage, -1);
+            // Undistort Image
+            cv::Mat undistortedImage;
+            cv::Mat warpedImage;
+            cv::undistort(cameraImage[i], undistortedImage, cameraMatrix.at(i), distCoeffs.at(i));
+            //cv::line(undistortedImage,cv::Point(0,0),cv::Point(0, undistortedImage.rows),cv::Scalar(0,0,200,100),10);
+            // Apply perspective Transformation
+            cv::warpPerspective(undistortedImage, warpedImage, guiTransfMatrix.at(i), cv::Size(GUI_WIDTH, GUI_HEIGTH), cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
+            cv::addWeighted(guiImage, 1, warpedImage, 1, 0, guiImage, -1);
         }
     }
     else     // show white background with grid
@@ -348,66 +265,8 @@ void RobotDetectionMainWindow::operate()
             }
         }
     }
-
-    // init locations with zeros
-    for (int i = 0; i < MAX_NR_OF_ROBOTS; i++)
-    {
-        robotLocations[i] = cv::Point3f(0, 0, 0);
-    }
-
-    //Check all Robots of double detections
-    //That mean, two or more Robots, are detected on the same Place (This is not possible!)
-    QList<int> doubledetecterobots;
-    for(int a = 0;a<MAX_NR_OF_ROBOTS;a++)
-    {
-        for(int i = 0; i < detectedRobots.size();i++)
-        {
-            if(detectedRobots[i].id == a)
-            {
-                for(int b = 0; b < detectedRobots.size(); b++)
-                {
-
-                    if(i != b
-                            &&  detectedRobots[i].id != detectedRobots[b].id
-                            && (detectedRobots[i].coordinates.x >= detectedRobots[b].coordinates.x-250 && detectedRobots[i].coordinates.x <= detectedRobots[b].coordinates.x+250)
-                            && (detectedRobots[i].coordinates.y >= detectedRobots[b].coordinates.y-250 && detectedRobots[i].coordinates.y <= detectedRobots[b].coordinates.y+250))
-                    {
-                        doubledetecterobots.append(a);
-                    }
-
-                }
-                robotLocations[a] = detectedRobots[i].coordinates;
-            }
-        }
-
-        for(int i =0;i < doubledetecterobots.size();i++)
-        {
-            robotLocations[doubledetecterobots.at(i)] = cv::Point3f(0, 0, 0);
-        }
-    }
-
-    //If Measurement is checked, save all Robot Positions, in a txt. File
-    if(ui->checkBox_Measurement->isChecked())
-    {
-        std::ofstream f;
-        f.open("Measurement.txt",std::ios::app);
-
-        for(int a = 0;a<robotLocations.size();a++)
-        {
-            f << robotLocations[a].x << "\t" << robotLocations[a].y << "\t" << robotLocations[a].z << "\t";
-        }
-
-        f << "\n";
-        f.close();
-    }
-
-    // sendUDPdata...
-    udpClient.sendUdpData(robotLocations, timeStamp);
-    // write robotLocations to tablewidget
-    writeRobotLocationsToTable();
-
     // invert y-axis
-    flip(guiImage, guiImage, 0);
+    cv::flip(guiImage, guiImage, 0);
 
 
     //Draw Line and Circle for Robots in GUI
@@ -423,14 +282,20 @@ void RobotDetectionMainWindow::operate()
             double angledegree = 2*3.14159265359-(robotLocations[i].z*3.14159265359/180);
             cv::Point2f directionPoint = cv::Point2f(scaleToGui(centerPoint).x + scaleToGui(ROBOT_RADIUS)*cos(angledegree ), scaleToGui(centerPoint).y + scaleToGui(ROBOT_RADIUS)*sin(angledegree));
 
+
+
             //Draw circles and lines for center and orientation circles
+            if (robotLocationsStd1d[i] > ROBOT_STD_THRESH) {
+                cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_RED, 2, CV_AA);
+            } else {
+                cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_WHITE, 2, CV_AA);
+            }
+
             cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius), COLOR_GREEN, 2, CV_AA);
             cv::line  (guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
+            cv::putText(guiImage, defaultArucoDict.getNameById(i).toUtf8().constData(),scaleToGui(centerPoint),cv::FONT_HERSHEY_SIMPLEX,1,COLOR_GREEN, 2, CV_AA);
         }
     }
-
-    detectedRobots.clear();
-
 
     // show error message in image if camera is missing
     for (int i = 0; i < NR_OF_CAMS; i++ )
@@ -464,31 +329,35 @@ void RobotDetectionMainWindow::operate()
             cv::putText(guiImage, str2, cv::Point2f(x, y), CV_FONT_HERSHEY_PLAIN, 1, COLOR_DARK_GREY, 1, 8, false);
         }
     }
-
     // Write robot IDs into guiImage
-    writeRobotIDsToGui(guiImage);
+    writeRobotIDsToGui(guiImage, robotLocations);
 
     //convert colors and show image in GUI
-    cvtColor(guiImage, guiImage, CV_BGR2RGB);
+    cv::cvtColor(guiImage, guiImage, CV_BGR2RGB);
     QPixmap pixmap;
     pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
     ui->labelImage->setPixmap(pixmap);
-
-    workerMutex.unlock();
+    guiUpdateMutex.unlock();
 }
 
 void RobotDetectionMainWindow::fpsCounter()
 {
-    QString str = "Frames per second: ";
+    QString str = "GUI Frames per second: ";
     str.append(QString::number(fpsCount));
     ui->labelFPS->setText(str);
+    str = "UDP Frames per second: ";
+    str.append(QString::number(udpCount));
+    ui->labelUDPFPS->setText(str);
     fpsCount = 0;
+    udpCount = 0;
 }
 
-void RobotDetectionMainWindow::writeRobotLocationsToTable()
+void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> robotLocations)
 {
+    int robotCount = defaultArucoDict.getMarkerCount()/2;
+    this->ui->tableWidget_Aruco->setRowCount(0);
     // init tableWidget during first run
-    for(int row = 0; row < MAX_NR_OF_ROBOTS; row++)
+    for(int row = 0; row < robotCount; row++)
         for(int col = 0; col < 3; col++)
             if (ui->tableWidget->item(row, col) == 0)
             {
@@ -498,7 +367,7 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable()
             }
 
     // write RobotLocations to tableWidget
-    for(int row = 0; row < MAX_NR_OF_ROBOTS; row++)
+    for(int row = 0; row < robotCount; row++)
     {
         ui->tableWidget->item(row, 0)->setText(QString::number(robotLocations.at(row).x, 'f', 1));
         ui->tableWidget->item(row, 1)->setText(QString::number(robotLocations.at(row).y, 'f', 1));
@@ -506,16 +375,17 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable()
     }
 }
 
-void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage)
+void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations)
 {
+    int robotCount = defaultArucoDict.getMarkerCount()/2;
     cv::Point2f offset = cv::Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
-    for (unsigned int i = 0; i < MAX_NR_OF_ROBOTS; i++)
+    for (unsigned int i = 0; i < robotCount; i++)
     {
         cv::Point2f center = cv::Point2f(robotLocations.at(i).x, FIELD_HEIGTH - robotLocations.at(i).y);
         if (center.y != FIELD_HEIGTH)
         {
             cv::putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offset),
-                     CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
+                         CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
         }
     }
 }
@@ -636,6 +506,14 @@ void RobotDetectionMainWindow::readXmlCalibrationFile()
         perspTransfMatrix[i].at<double>(2, 1) = attribTrafoMatrix.value("t8").toDouble();
         perspTransfMatrix[i].at<double>(2, 2) = attribTrafoMatrix.value("t9").toDouble();
 
+
+        // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
+        cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
+        scaleMatrix.at<double>(0, 0) = 1.0 / GUI_SCALING;
+        scaleMatrix.at<double>(1, 1) = 1.0 / GUI_SCALING;
+        scaleMatrix.at<double>(2, 2) = 1.0;
+        guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
+
         // build settings
         exposureValue.insert(i, attribSettings.value("exp").toInt());
         contrastValue.insert(i, attribSettings.value("cnt").toInt());
@@ -675,3 +553,112 @@ QMap<QString, QXmlStreamAttributes> RobotDetectionMainWindow::parseCamera(QXmlSt
     }
     return camera;
 }
+
+void RobotDetectionMainWindow::on_pushButton_addAruco_clicked()
+{
+    defaultArucoDict.add(2);
+    initArucoTab();
+}
+
+void RobotDetectionMainWindow::initArucoTab()
+{
+    int MarkerCount = this->defaultArucoDict.getMarkerCount();
+    this->ui->tableWidget_Aruco->setRowCount(0);
+    this->ui->tableWidget_Aruco->blockSignals(true);
+
+    for (int row = 0; row < MarkerCount; row++) {
+
+        this->ui->tableWidget_Aruco->insertRow( this->ui->tableWidget_Aruco->rowCount());
+        QTableWidgetItem *itemID = new QTableWidgetItem(QString::number(row));
+
+        this->ui->tableWidget_Aruco->setItem   ( this->ui->tableWidget_Aruco->rowCount()-1,
+                                                 0,
+                                                 itemID);
+
+        itemID->setFlags(itemID->flags() ^ Qt::ItemIsEditable);
+
+        QTableWidgetItem *itemName;
+        itemName = new QTableWidgetItem(defaultArucoDict.getNameById(row));
+        this->ui->tableWidget_Aruco->setItem   ( this->ui->tableWidget_Aruco->rowCount()-1,
+                                                 1,
+                                                 itemName);
+    }
+
+    updateArucoTab(0);
+    this->ui->tableWidget_Aruco->blockSignals(false);
+}
+
+void RobotDetectionMainWindow::updateArucoTab(int SelectedRow)
+{
+    int MarkerCount = this->defaultArucoDict.getMarkerCount();
+
+    if (SelectedRow < MarkerCount) {
+        cv::Mat Marker;
+        cv::aruco::drawMarker(this->defaultArucoDict.get(), SelectedRow, this->ui->label_arucomarker->height(), Marker);
+        cv::cvtColor(Marker, Marker, cv::COLOR_GRAY2RGB);
+        QPixmap pixmap;
+        pixmap = QPixmap::fromImage(QImage((unsigned char*) Marker.data, Marker.cols, Marker.rows, Marker.step, QImage::Format_RGB888));
+        this->ui->label_arucomarker->setPixmap(pixmap);
+    }
+}
+
+void RobotDetectionMainWindow::on_tabMain_tabBarClicked(int index)
+{
+    if (index == 2) {
+        this->initArucoTab();
+    }
+}
+
+void RobotDetectionMainWindow::on_tableWidget_Aruco_cellChanged(int row, int column)
+{
+    if (row%2) { // odd number
+        this->ui->tableWidget_Aruco->item(row-1, column)->setText(this->ui->tableWidget_Aruco->item(row, column)->text());
+    } else {
+        this->ui->tableWidget_Aruco->item(row+1, column)->setText(this->ui->tableWidget_Aruco->item(row, column)->text());
+    }
+    updateIDNameMap();
+}
+
+void RobotDetectionMainWindow::on_tableWidget_Aruco_cellClicked(int row, int column)
+{
+    updateArucoTab(row);
+}
+
+void RobotDetectionMainWindow::on_pushButton_deleteAruco_clicked()
+{
+    defaultArucoDict.remove(2);
+    initArucoTab();
+}
+
+void RobotDetectionMainWindow::on_pushButton_SaveToImage_clicked()
+{
+    QString fileName = QFileDialog::getExistingDirectory(this, "Open Directory",
+                                                         QDir::currentPath(),
+                                                         QFileDialog::ShowDirsOnly
+                                                         | QFileDialog::DontResolveSymlinks);
+    if (!fileName.isEmpty()) {
+        QString name;
+        QModelIndexList selectedIndexes = this->ui->tableWidget_Aruco->selectionModel()->selectedRows();
+        for (int i = 0; i < selectedIndexes.size(); i++)
+        {
+            int row = selectedIndexes.at(i).row();
+            int ID = this->ui->tableWidget_Aruco->item(row, 0)->text().toInt();
+            name = defaultArucoDict.getNameById(row);
+            QString namePrefix = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_Name_"+ name + "_ID_";
+            bool ret = defaultArucoDict.drawSingle(fileName + "/", namePrefix, ID);
+            if (ret) {
+                this->ui->statusBar->showMessage("File saved to " + fileName, 3000);
+            } else {
+                this->ui->statusBar->showMessage("Could not write to file:" + fileName, 3000);
+            }
+        }
+    }
+}
+
+void RobotDetectionMainWindow::updateIDNameMap() {
+    int tableRows = this->ui->tableWidget_Aruco->rowCount();
+    for (int i = 0; i < tableRows; i++) {
+        defaultArucoDict.setNameById(this->ui->tableWidget_Aruco->item(i, 0)->text().toInt(), this->ui->tableWidget_Aruco->item(i, 1)->text());
+    }
+}
+
