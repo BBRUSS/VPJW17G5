@@ -21,9 +21,17 @@ public:
     void setTaskThreshold(int threshold);
     void setTaskRectMinSize(int minSize);
     void setRobotCount(int robotCount);
+    void setArucoParameters(cv::Ptr<cv::aruco::DetectorParameters> arucoParameters);
+    void setArucoDict(cv::Ptr<cv::aruco::Dictionary> arucoDict);
+    void setCameraMatrix(const QList<cv::Mat> cameraMatrix);
+    void setDistCoeffs(const QList<cv::Mat> distCoeffs);
+    void setPerpTransfMatrix(const QList<cv::Mat> perspTransfMatrix);
+    void setRobotOffsets(const QList<RobotOffset> robotOffsets);
+    void setVideoCapture(const QList<cv::VideoCapture> &videoCapture);
+    void setUdpSettings(const UDPSettings udpStruct);
+    void setDebugMode(bool debugMode);
 
     friend cv::Point3f operator*(const cv::Point3f& a, const cv::Point3f& b);
-
 
 private:
     MyUDP *udpClient;
@@ -46,12 +54,12 @@ private:
     QList<cv::Point3f> robotLocationStd;
     QList<int> robotLocationStd1d;
     bool calibrateOffset_ON_OFF = false;
-    bool debugMode = true;
+    bool debugMode = false;
     bool measureData = false;
     int taskThreshold = 0;
     int taskRectMinSize = 0;
     int robotCount = 0;
-    QList<cv::Mat> warpedImage;
+    QList<cv::Mat> liveViewImage;
     QList<cv::Mat> cameraMatrix;
     QList<cv::Mat> distCoeffs;
     QList<cv::Mat> perspTransfMatrix;
@@ -62,6 +70,7 @@ signals:
     //void updateGui(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<cv::Point3f> robotLocationsStd, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
     void updateGui(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
     void finishedUDPData(QList<cv::Point3f> robotLocations, QTime timeStamp);
+    void requestSettingsUpdate();
 
 public slots:
     void processImages();

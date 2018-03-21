@@ -198,12 +198,14 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
         imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
+        imgWorker->setDebugMode(this->ui->checkBoxLiveView->isChecked());
         imgWorker->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
         //connect(&workerThread, &QThread::started, imgWorker, &ImageProcessingWorker::processImages);
         connect(timer, &QTimer::timeout, imgWorker, &ImageProcessingWorker::processImages, Qt::DirectConnection);
         connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage, Qt::DirectConnection);
+        connect(imgWorker, &ImageProcessingWorker::requestSettingsUpdate, this, &RobotDetectionMainWindow::settingsUpdateRequested, Qt::DirectConnection);
 
         workerThread.start(QThread::HighestPriority);
 
@@ -224,7 +226,7 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
 
     // Display either camera images or white background
     cv::Mat guiImage(GUI_HEIGTH, GUI_WIDTH, CV_8UC3);
-    if (ui->checkBoxLiveView->isChecked())   // show real frames
+    if (ui->checkBoxLiveView->isChecked() && !cameraImage.empty())   // show real frames
     {
         guiImage.setTo(COLOR_BLACK);
         for (int i = 0; i < NR_OF_CAMS; i++)
@@ -660,5 +662,19 @@ void RobotDetectionMainWindow::updateIDNameMap() {
     for (int i = 0; i < tableRows; i++) {
         defaultArucoDict.setNameById(this->ui->tableWidget_Aruco->item(i, 0)->text().toInt(), this->ui->tableWidget_Aruco->item(i, 1)->text());
     }
+}
+
+void RobotDetectionMainWindow::settingsUpdateRequested(){
+    if(!settingsUpdateMutex.tryLock())
+    {
+        return;
+    }
+    imgWorker->setTaskThreshold(ui->slider_threshold->value());
+    imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
+    imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
+    imgWorker->setDebugMode(this->ui->checkBoxLiveView->isChecked());
+    imgWorker->setArucoParameters(readArucoParameters());
+    imgWorker->setArucoDict(defaultArucoDict.get());
+    settingsUpdateMutex.unlock();
 }
 

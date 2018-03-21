@@ -66,8 +66,8 @@ void ImgTask::run()
     {
         //Build Rect´s (AOI´s)
         rect = cv::boundingRect(contours[i]);
-        cv::rectangle(workImage,rect, COLOR_WHITE, 2, CV_AA);
-        cv::imwrite((QString("img/")+QString::number(QDateTime::currentMSecsSinceEpoch())+QString(".jpg")).toUtf8().constData(), workImage);
+        //cv::rectangle(workImage,rect, COLOR_WHITE, 2, CV_AA);
+        //cv::imwrite((QString("img/")+QString::number(QDateTime::currentMSecsSinceEpoch())+QString(".jpg")).toUtf8().constData(), workImage);
         //Filter the Rect´s by size
         if(rect.size().area() > 1000 && rect.size().area() < MinSizeofRects)
         {
@@ -128,7 +128,7 @@ void ImgTask::run()
     {
         //Draw the detected Marker
         cv::aruco::drawDetectedMarkers(image, markerCorners, markerIds);
-        warpedImage = image;
+        liveViewImage = image;
     }
 
     //CALCULATE ANGLE AND POSITION OF ALL DETECTED MARKER
@@ -306,7 +306,7 @@ void ImgTask::setArucoDict(cv::Ptr<cv::aruco::Dictionary> arucoDict)
     this->arucoDict = arucoDict;
 }
 
-void ImgTask::setthreshold(int threshold)
+void ImgTask::setThreshold(int threshold)
 {
     this->threshold_max = threshold;
 }
@@ -529,9 +529,9 @@ QList<RobotPosition> ImgTask::getdetectRobots()
     return detectedRobots;
 }
 
-cv::Mat ImgTask::getWarpedImage()
+cv::Mat ImgTask::getLiveViewImage()
 {
-    return warpedImage;
+    return liveViewImage;
 }
 
 Pointlist ImgTask::stdVectorToPointlist(std::vector<cv::Point2f> vec)
