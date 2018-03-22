@@ -20,7 +20,7 @@
    <string>Robot Detection</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="ressource.qrc">
+   <iconset>
     <normaloff>:/images/Hawhamburg-logo.png</normaloff>:/images/Hawhamburg-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -110,7 +110,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="tab_3">
              <attribute name="title">
@@ -205,7 +205,7 @@
                  <string/>
                 </property>
                 <property name="pixmap">
-                 <pixmap resource="ressource.qrc">:/images/HAW_Hamburg.png</pixmap>
+                 <pixmap>:/images/HAW_Hamburg.png</pixmap>
                 </property>
                 <property name="scaledContents">
                  <bool>true</bool>
@@ -287,7 +287,7 @@
                  <number>33</number>
                 </attribute>
                 <attribute name="verticalHeaderStretchLastSection">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </attribute>
                 <row>
                  <property name="text">
@@ -432,7 +432,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>319</width>
-                     <height>631</height>
+                     <height>595</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1248,9 +1248,7 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="ressource.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>slider_threshold</sender>

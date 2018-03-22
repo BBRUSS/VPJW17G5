@@ -181,7 +181,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
     {
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
-            videoCapture[i].open(0); //TÓDO: 0 -> i
+            videoCapture[i].open(i); //TÓDO: 0 -> i
             videoCapture[i].set(CV_CAP_PROP_FRAME_WIDTH, CAMERA_IMG_WIDTH);
             videoCapture[i].set(CV_CAP_PROP_FRAME_HEIGHT, CAMERA_IMG_HEIGTH);
             videoCapture[i].set(CV_CAP_PROP_BRIGHTNESS, brightnessValue[i]);
@@ -199,6 +199,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
         imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
         imgWorker->setDebugMode(this->ui->checkBoxLiveView->isChecked());
+        imgWorker->setMeasureData(this->ui->checkBox_Measurement->isChecked());
         imgWorker->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
@@ -224,6 +225,7 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     }
     fpsCount++;
 
+    writeRobotLocationsToTable(robotLocations);
     // Display either camera images or white background
     cv::Mat guiImage(GUI_HEIGTH, GUI_WIDTH, CV_8UC3);
     if (ui->checkBoxLiveView->isChecked() && !cameraImage.empty())   // show real frames
@@ -270,7 +272,6 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     // invert y-axis
     cv::flip(guiImage, guiImage, 0);
 
-
     //Draw Line and Circle for Robots in GUI
     for(int i = 0; i < robotLocations.size();i++)
     {
@@ -284,9 +285,8 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
             double angledegree = 2*3.14159265359-(robotLocations[i].z*3.14159265359/180);
             cv::Point2f directionPoint = cv::Point2f(scaleToGui(centerPoint).x + scaleToGui(ROBOT_RADIUS)*cos(angledegree ), scaleToGui(centerPoint).y + scaleToGui(ROBOT_RADIUS)*sin(angledegree));
 
-
-
             //Draw circles and lines for center and orientation circles
+
             if (robotLocationsStd1d[i] > ROBOT_STD_THRESH) {
                 cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_RED, 2, CV_AA);
             } else {
@@ -294,8 +294,8 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
             }
 
             cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius), COLOR_GREEN, 2, CV_AA);
-            cv::line  (guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
-            cv::putText(guiImage, defaultArucoDict.getNameById(i).toUtf8().constData(),scaleToGui(centerPoint),cv::FONT_HERSHEY_SIMPLEX,1,COLOR_GREEN, 2, CV_AA);
+            cv::line(guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
+
         }
     }
 
@@ -357,10 +357,16 @@ void RobotDetectionMainWindow::fpsCounter()
 void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> robotLocations)
 {
     int robotCount = defaultArucoDict.getMarkerCount()/2;
-    this->ui->tableWidget_Aruco->setRowCount(0);
+    this->ui->tableWidget->setRowCount(0);
+
     // init tableWidget during first run
-    for(int row = 0; row < robotCount; row++)
+
+    for(int row = 0; row < robotCount; row++){
+
+        this->ui->tableWidget->insertRow(row);
+
         for(int col = 0; col < 3; col++)
+        {
             if (ui->tableWidget->item(row, col) == 0)
             {
                 QTableWidgetItem *itab = new QTableWidgetItem;
@@ -368,6 +374,9 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> rob
                 ui->tableWidget->setItem(row, col, itab);
             }
 
+        }
+
+    }
     // write RobotLocations to tableWidget
     for(int row = 0; row < robotCount; row++)
     {
@@ -380,14 +389,19 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> rob
 void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations)
 {
     int robotCount = defaultArucoDict.getMarkerCount()/2;
-    cv::Point2f offset = cv::Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
-    for (unsigned int i = 0; i < robotCount; i++)
+
+    cv::Point2f offsetId = cv::Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
+    cv::Point2f offsetName = cv::Point2f(ROBOT_RADIUS, + ROBOT_RADIUS);
+
+    for (int i = 0; i < robotCount; i++)
     {
         cv::Point2f center = cv::Point2f(robotLocations.at(i).x, FIELD_HEIGTH - robotLocations.at(i).y);
         if (center.y != FIELD_HEIGTH)
         {
-            cv::putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offset),
+            cv::putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offsetId),
                          CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
+            cv::putText(guiImage, defaultArucoDict.getNameById(i).toUtf8().constData(),scaleToGui(center) + scaleToGui(offsetName),
+                        CV_FONT_HERSHEY_PLAIN, 1, COLOR_RED, 2, CV_AA, false);
         }
     }
 }
@@ -558,8 +572,13 @@ QMap<QString, QXmlStreamAttributes> RobotDetectionMainWindow::parseCamera(QXmlSt
 
 void RobotDetectionMainWindow::on_pushButton_addAruco_clicked()
 {
-    defaultArucoDict.add(2);
-    initArucoTab();
+    if (defaultArucoDict.getMarkerCount() < MAX_NR_OF_ROBOTS*2)
+    {
+        defaultArucoDict.add(2);
+        initArucoTab();
+    } else {
+        this->ui->statusBar->showMessage("Maximum number of robots is reached. (" + QString::number(MAX_NR_OF_ROBOTS) + ")");
+    }
 }
 
 void RobotDetectionMainWindow::initArucoTab()
@@ -673,6 +692,7 @@ void RobotDetectionMainWindow::settingsUpdateRequested(){
     imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
     imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
     imgWorker->setDebugMode(this->ui->checkBoxLiveView->isChecked());
+    imgWorker->setMeasureData(this->ui->checkBox_Measurement->isChecked());
     imgWorker->setArucoParameters(readArucoParameters());
     imgWorker->setArucoDict(defaultArucoDict.get());
     settingsUpdateMutex.unlock();

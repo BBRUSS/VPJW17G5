@@ -154,7 +154,7 @@ void ImageProcessingWorker::processImages() {
         threadPool.start( tasks[i]);
     }
     threadPool.waitForDone();
-    qDebug() << localRobotCount;
+
     for (int i = 0; i < NR_OF_CAMS; i++)
     {
         detectedRobots.append(tasks[i]->getdetectRobots());
@@ -297,6 +297,10 @@ void ImageProcessingWorker::processImages() {
                 tempStdVal += (robotIDLocation[a].at(i).coordinates-tempMeanVal)*(robotIDLocation[a].at(i).coordinates-tempMeanVal);
             }
             tempStdVal = tempStdVal / (robotIDLocation[a].size() - 1);
+            tempStdVal1d = tempStdVal1d / (robotIDLocation[a].size() - 1);
+            if (tempStdVal1d > ROBOT_STD_THRESH_MAX)  {
+                tempMeanVal = cv::Point3f(0, 0, 0);
+            }
         }
         robotLocations[a] = tempMeanVal;
         robotLocationStd[a] = tempStdVal;
