@@ -15,6 +15,13 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::on_pushButtonSave_clicked()
 {
     Settings s;
+    Size cams;
+    cams.height = 2;
+    cams.width = 2;
+    s.setCamFieldSize(cams);
+    for (int i = 0; i<s.camFieldSize.area(); i++){
+     s.cams.at(i)->cameraID = i;
+    }
     s.save();
 //    FileStorage fs(s.filename, FileStorage::WRITE);
 //    fs << "MySettings"<< s;

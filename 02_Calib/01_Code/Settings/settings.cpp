@@ -31,6 +31,8 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     fs << "squareSize" << squareSize;
     fs << "nrFrames" << nrFrames;
 
+    qDebug() << "s0";
+
     //    Camera Settings
     for (int i = 0; i<camFieldSize.area(); i++){
         string cam_ID = "cam_" ;
@@ -52,8 +54,32 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
         fs << "maxValue" << cams.at(i)->maxValue;
 
         fs << "}";
-
+        qDebug() << "s" << i+1;
     }
+
+    //    Navigation Settings
+    fs << "UDPSettings" << "{";
+    fs << "sendToIP" << udpStruct.sendToIp;
+    fs << "sendToPort" << udpStruct.sendToPort;
+    fs << "sendToIp_SyncService" << udpStruct.sendToIp_SyncService;
+    fs << "sendToPort_SyncService" << udpStruct.sendToPort_SyncService;
+    fs << "reciveIp_SyncService" << udpStruct.reciveIp_SyncService;
+    fs << "recivePort_SyncService" << udpStruct.recivePort_SyncService;
+    fs << "}";
+
+    fs << "timerMilSecs" << timerMilSecs;
+    fs << "cornerRefinementMaxIterations" << cornerRefinementMaxIterations;
+    fs << "cornerRefinementMinAccuracy" << cornerRefinementMinAccuracy;
+    fs << "errorCorrectionRate" << errorCorrectionRate;
+    fs << "adaptiveThreshWinSizeMin" << adaptiveThreshWinSizeMin;
+    fs << "adaptiveThreshWinSizeStep" << adaptiveThreshWinSizeStep;
+    fs << "adaptiveThreshConstant" << adaptiveThreshConstant;
+    fs << "minMarkerPerimeterRate" << minMarkerPerimeterRate;
+    fs << "slider_maxMarkerPerimeterRate" << slider_maxMarkerPerimeterRate;
+    fs << "slider_polygonalApproxAccuracyRate" << slider_polygonalApproxAccuracyRate;
+    fs << "slider_perspectiveRemovePixelPerCell" << slider_perspectiveRemovePixelPerCell;
+    fs << "threshold" << threshold;
+    fs << "MinSizeofRects" << MinSizeofRects;
 
     fs << "}";
 }
@@ -65,14 +91,17 @@ void Settings::read(const FileNode& node){              //Read serialization for
     //    Global Settings
     node["boardSize"] >> boardSize;
     node["camFieldSize"] >> camFieldSize;
+    this->setCamFieldSize(this->camFieldSize);
     node["patternToUse"] >> patternToUse;
     node["squareSize"] >> squareSize;
     node["nrFrames"] >> nrFrames;
 
+    qDebug() << "l0";
+
     //    Camera Settings
     for (int i = 0; i<camFieldSize.area(); i++){
         string actCam = "cam_" ;
-        actCam += to_string(cams.at(i)->cameraID);
+        actCam += to_string(i);
 
         FileNode nodeActCam;
         nodeActCam = node[actCam];
@@ -89,12 +118,38 @@ void Settings::read(const FileNode& node){              //Read serialization for
         nodeActCam["tvecs"] >> cams.at(i)->tvecs;
         nodeActCam["blackWhiteThreshold"] >> cams.at(i)->blackWhiteThreshold;
         nodeActCam["maxValue"] >> cams.at(i)->maxValue;
+        qDebug() << "l" << i+1;
     }
 
     calibrationPattern = Settings::NOT_EXISTING;
     if (!patternToUse.compare("CHESSBOARD")) calibrationPattern = Settings::CHESSBOARD;
     else if (!patternToUse.compare("CIRCLES_GRID")) calibrationPattern = Settings::CIRCLES_GRID;
     else if (!patternToUse.compare("ASYMMETRIC_CIRCLES_GRID")) calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
+
+    //    Navigation Settings
+    FileNode nodeUDP;
+    nodeUDP = node["UDPSettings"];
+
+    nodeUDP["sendToIP"] >> udpStruct.sendToIp;
+    nodeUDP["sendToPort"] >> udpStruct.sendToPort;
+    nodeUDP["sendToIp_SyncService"] >> udpStruct.sendToIp_SyncService;
+    nodeUDP["sendToPort_SyncService"] >> udpStruct.sendToPort_SyncService;
+    nodeUDP["reciveIp_SyncService"] >> udpStruct.reciveIp_SyncService;
+    nodeUDP["recivePort_SyncService"] >> udpStruct.recivePort_SyncService;
+
+    node["timerMilSecs"] >> timerMilSecs;
+    node["cornerRefinementMaxIterations"] >> cornerRefinementMaxIterations;
+    node["cornerRefinementMinAccuracy"] >> cornerRefinementMinAccuracy;
+    node["errorCorrectionRate"] >> errorCorrectionRate;
+    node["adaptiveThreshWinSizeMin"] >> adaptiveThreshWinSizeMin;
+    node["adaptiveThreshWinSizeStep"] >> adaptiveThreshWinSizeStep;
+    node["adaptiveThreshConstant"] >> adaptiveThreshConstant;
+    node["minMarkerPerimeterRate"] >> minMarkerPerimeterRate;
+    node["slider_maxMarkerPerimeterRate"] >> slider_maxMarkerPerimeterRate;
+    node["slider_polygonalApproxAccuracyRate"] >> slider_polygonalApproxAccuracyRate;
+    node["slider_perspectiveRemovePixelPerCell"] >> slider_perspectiveRemovePixelPerCell;
+    node["threshold"] >> threshold;
+    node["MinSizeofRects"] >> MinSizeofRects;
 }
 
 void Settings::save(){                                  //save with write serialization for this class
