@@ -9,6 +9,7 @@
 #include <QDataStream>
 #include <QFile>
 #include <QTextStream>
+#include "constants.h"
 
 struct UDPSettings {
     QString sendToIp;

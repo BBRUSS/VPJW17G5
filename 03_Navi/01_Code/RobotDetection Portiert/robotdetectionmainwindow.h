@@ -34,6 +34,7 @@ public:
 
 public slots:
     void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
+    void settingsUpdateRequested();
 
 private:
     UDPSettings udpStruct;
@@ -54,6 +55,7 @@ private:
     QList<cv::VideoCapture> videoCapture;
     //cv::VideoCapture videoCapture[NR_OF_CAMS];
     QMutex guiUpdateMutex;
+    QMutex settingsUpdateMutex;
     cv::Mat originalImages[NR_OF_CAMS];
     bool mainloopIsActive;
     bool calibrateOffset_ON_OFF;

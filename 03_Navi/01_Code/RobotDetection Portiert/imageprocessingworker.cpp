@@ -41,6 +41,42 @@ ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::
 ImageProcessingWorker::~ImageProcessingWorker() {
 }
 
+void ImageProcessingWorker::setArucoDict(cv::Ptr<cv::aruco::Dictionary> arucoDict){
+    this->arucoDict = arucoDict;
+}
+
+void ImageProcessingWorker::setArucoParameters(cv::Ptr<cv::aruco::DetectorParameters> arucoParameters) {
+    this->arucoParameters = arucoParameters;
+}
+
+void ImageProcessingWorker::setCameraMatrix(const QList<cv::Mat> cameraMatrix){
+    this->cameraMatrix = cameraMatrix;
+}
+
+void ImageProcessingWorker::setDistCoeffs(const QList<cv::Mat> distCoeffs){
+    this->distCoeffs = distCoeffs;
+}
+
+void ImageProcessingWorker::setPerpTransfMatrix(const QList<cv::Mat> perspTransfMatrix) {
+    this->perspTransfMatrix = perspTransfMatrix;
+}
+
+void ImageProcessingWorker::setRobotOffsets(const QList<RobotOffset> robotOffsets) {
+    this->robotOffsets = robotOffsets;
+}
+
+void ImageProcessingWorker::setUdpSettings(const UDPSettings udpStruct) {
+    // create UDP-Client and open socket
+    udpClient->setSendConfig (udpStruct.sendToIp,udpStruct.sendToPort);
+
+    udpClient->setReciveConfig_SyncService(udpStruct.reciveIp_SyncService,udpStruct.recivePort_SyncService);
+    udpClient->setSendConfig_SyncService(udpStruct.sendToIp_SyncService,udpStruct.sendToPort_SyncService);
+}
+
+void ImageProcessingWorker::setVideoCapture(const QList<cv::VideoCapture> &videoCapture) {
+    this->videoCapture = videoCapture;
+}
+
 void ImageProcessingWorker::setMeasureData(bool measure) {
     measureData = measure;
 }
@@ -51,6 +87,10 @@ void ImageProcessingWorker::setTaskThreshold(int threshold) {
 
 void ImageProcessingWorker::setTaskRectMinSize(int minSize) {
     this->taskRectMinSize = minSize;
+}
+
+void ImageProcessingWorker::setDebugMode(bool debugMode) {
+    this->debugMode = debugMode;
 }
 
 void ImageProcessingWorker::processImages() {
@@ -108,7 +148,7 @@ void ImageProcessingWorker::processImages() {
         tasks[i]->setCalibrateOffset(calibrateOffset_ON_OFF);
         tasks[i]->setArucoParameters(arucoParameters);
         tasks[i]->setArucoDict(arucoDict);
-        tasks[i]->setthreshold(taskThreshold);
+        tasks[i]->setThreshold(taskThreshold);
         tasks[i]->setMinSizeofRects(taskRectMinSize);
         tasks[i]->setRobotCount(localRobotCount);
         threadPool.start( tasks[i]);
@@ -257,6 +297,10 @@ void ImageProcessingWorker::processImages() {
                 tempStdVal += (robotIDLocation[a].at(i).coordinates-tempMeanVal)*(robotIDLocation[a].at(i).coordinates-tempMeanVal);
             }
             tempStdVal = tempStdVal / (robotIDLocation[a].size() - 1);
+            tempStdVal1d = tempStdVal1d / (robotIDLocation[a].size() - 1);
+            if (tempStdVal1d > ROBOT_STD_THRESH_MAX)  {
+                tempMeanVal = cv::Point3f(0, 0, 0);
+            }
         }
         robotLocations[a] = tempMeanVal;
         robotLocationStd[a] = tempStdVal;
@@ -283,16 +327,19 @@ void ImageProcessingWorker::processImages() {
     emit finishedUDPData(robotLocations, timeStamp);
     //udpClient->sendUdpData(robotLocations, timeStamp);
 
-    for (int i = 0; i < NR_OF_CAMS; i++)
-    {
-        warpedImage.append(tasks[i]->getWarpedImage());
+    if (debugMode) {
+        for (int i = 0; i < NR_OF_CAMS; i++)
+        {
+            liveViewImage.append(tasks[i]->getLiveViewImage());
+        }
     }
 
+    emit requestSettingsUpdate();
     //emit updateGui(warpedImage, robotLocations, robotLocationStd, robotIDLocation, detectedRobots);
-    emit updateGui(warpedImage, robotLocations, robotLocationStd1d, robotIDLocation, detectedRobots);
+    emit updateGui(liveViewImage, robotLocations, robotLocationStd1d, robotIDLocation, detectedRobots);
 
     robotIDLocation.clear();
-    warpedImage.clear();
+    liveViewImage.clear();
     detectedRobots.clear();
     robotLocations.clear();
     workerMutex.unlock();
