@@ -22,6 +22,8 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 using namespace std;
@@ -44,32 +46,13 @@ public:
     void saveCameraCalibrationParameters();     // Save parameters to XML file
     Mat showUndistorted(Mat distorted);         // get and show undistorted picture to compare to distorted one
     // TODO: Reprojection-Error calculation
-    int getID()
-    {
-        return id;
-    }
-    void setContrast(int blackWhiteThreshold, int maxValue)
-    {
-        this->blackWhiteThreshold = blackWhiteThreshold;
-        this->maxValue = maxValue;
-        qInfo() <<"Cam" << this->id << " B/W Thr.:" << this->blackWhiteThreshold << ", Max val: " << this->maxValue;
-    }
-
-//    void setUI(CameraContrast *ui)
-//    {
-//        this->ui = ui;
-//    }
-
-
-
-private slots:
-
+    int getID();
+    void setContrast(int blackWhiteThreshold, int maxValue);
 
 
 private:
     int id;
     Ui::MainWindow *ui;
-    //CameraContrast *ui;
     Settings *s;
 
     Mat cameraMatrix;           // intrinsic parameters
@@ -80,7 +63,6 @@ private:
     int blackWhiteThreshold;    // Threshold gained by slider in "Contrast Window"
     int maxValue;               // Max value gained by slider in "Contrast Window"
 
-    // TODO: Weitere Variablen für Kontrasteinstellung etc.
 };
 
 #endif // CAMERA_H

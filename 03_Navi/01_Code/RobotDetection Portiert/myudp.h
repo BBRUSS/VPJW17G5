@@ -10,12 +10,21 @@
 #include <QFile>
 #include <QTextStream>
 
+struct UDPSettings {
+    QString sendToIp;
+    int sendToPort;
+    QString sendToIp_SyncService;
+    int sendToPort_SyncService;
+    QString reciveIp_SyncService;
+    int recivePort_SyncService;
+};
+
 class MyUDP : public QObject
 {
     Q_OBJECT
 public:
     explicit MyUDP(QObject *parent = 0);
-    void sendUdpData(QList<cv::Point3f> robotLocations, QTime timeStamp);
+
     void setSendConfig( QString SendToIp, int SendToPort);
     void setReciveConfig(QString ReciveFromIp,int ReciveFromPort);
     void setSendConfig_SyncService (QString SendToIp_SyncService, int SendToPort_SyncService);
@@ -38,6 +47,7 @@ signals:
 public slots:
     void readReady();
     void readReady_SyncService();
+    void sendUdpData(QList<cv::Point3f> robotLocations, QTime timeStamp);
 
 private:
 

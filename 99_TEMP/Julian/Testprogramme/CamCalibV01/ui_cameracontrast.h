@@ -63,7 +63,7 @@ public:
     {
         if (CameraContrast->objectName().isEmpty())
             CameraContrast->setObjectName(QStringLiteral("CameraContrast"));
-        CameraContrast->resize(931, 526);
+        CameraContrast->resize(929, 532);
         horizontalLayoutWidget = new QWidget(CameraContrast);
         horizontalLayoutWidget->setObjectName(QStringLiteral("horizontalLayoutWidget"));
         horizontalLayoutWidget->setGeometry(QRect(10, 470, 254, 23));
@@ -72,12 +72,15 @@ public:
         horizontalLayout->setContentsMargins(0, 0, 0, 0);
         pushButtonStartCam = new QPushButton(horizontalLayoutWidget);
         pushButtonStartCam->setObjectName(QStringLiteral("pushButtonStartCam"));
+        pushButtonStartCam->setMouseTracking(true);
+        pushButtonStartCam->setToolTipDuration(-1);
 
         horizontalLayout->addWidget(pushButtonStartCam);
 
         pushButtonStopCam = new QPushButton(horizontalLayoutWidget);
         pushButtonStopCam->setObjectName(QStringLiteral("pushButtonStopCam"));
         pushButtonStopCam->setEnabled(false);
+        pushButtonStopCam->setToolTipDuration(-1);
 
         horizontalLayout->addWidget(pushButtonStopCam);
 
@@ -95,6 +98,8 @@ public:
         horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
         horizontalSliderThreshold = new QSlider(horizontalLayoutWidget_2);
         horizontalSliderThreshold->setObjectName(QStringLiteral("horizontalSliderThreshold"));
+        horizontalSliderThreshold->setEnabled(false);
+        horizontalSliderThreshold->setToolTipDuration(-1);
         horizontalSliderThreshold->setMaximum(255);
         horizontalSliderThreshold->setValue(128);
         horizontalSliderThreshold->setOrientation(Qt::Horizontal);
@@ -103,6 +108,7 @@ public:
 
         horizontalSliderMaxValue = new QSlider(horizontalLayoutWidget_2);
         horizontalSliderMaxValue->setObjectName(QStringLiteral("horizontalSliderMaxValue"));
+        horizontalSliderMaxValue->setEnabled(false);
         horizontalSliderMaxValue->setMaximum(255);
         horizontalSliderMaxValue->setValue(128);
         horizontalSliderMaxValue->setOrientation(Qt::Horizontal);
@@ -218,16 +224,43 @@ public:
     void retranslateUi(QDialog *CameraContrast)
     {
         CameraContrast->setWindowTitle(QApplication::translate("CameraContrast", "Calibration", nullptr));
+#ifndef QT_NO_TOOLTIP
+        pushButtonStartCam->setToolTip(QApplication::translate("CameraContrast", "Connect to camera with chosen ID", nullptr));
+#endif // QT_NO_TOOLTIP
         pushButtonStartCam->setText(QApplication::translate("CameraContrast", "Start Camera", nullptr));
+#ifndef QT_NO_TOOLTIP
+        pushButtonStopCam->setToolTip(QApplication::translate("CameraContrast", "Disconnect from camera", nullptr));
+#endif // QT_NO_TOOLTIP
         pushButtonStopCam->setText(QApplication::translate("CameraContrast", "Stop Camera", nullptr));
+#ifndef QT_NO_TOOLTIP
+        pushButtonSaveContrast->setToolTip(QApplication::translate("CameraContrast", "Save threshold and max value to camera, in order to use them in calibration processes", nullptr));
+#endif // QT_NO_TOOLTIP
         pushButtonSaveContrast->setText(QApplication::translate("CameraContrast", "Save", nullptr));
+#ifndef QT_NO_TOOLTIP
+        horizontalSliderThreshold->setToolTip(QApplication::translate("CameraContrast", "Slide this value to change the black / white treshold", nullptr));
+#endif // QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
+        horizontalSliderMaxValue->setToolTip(QApplication::translate("CameraContrast", "Slide this value to change the maximum value", nullptr));
+#endif // QT_NO_TOOLTIP
         lineEdit->setText(QApplication::translate("CameraContrast", "Black/White Threshold", nullptr));
         lineEdit_2->setText(QApplication::translate("CameraContrast", "Max-Value", nullptr));
         labelImageContrast->setText(QString());
         labelImageOrig->setText(QString());
         lineEdit_3->setText(QApplication::translate("CameraContrast", "Camera ID:", nullptr));
+#ifndef QT_NO_TOOLTIP
+        spinBoxCameraID->setToolTip(QString());
+#endif // QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
+        pushButtonGetIntrinsics->setToolTip(QApplication::translate("CameraContrast", "Start calibration process for chosen camera to get intrinsic parameters", nullptr));
+#endif // QT_NO_TOOLTIP
         pushButtonGetIntrinsics->setText(QApplication::translate("CameraContrast", "get Intrinsics", nullptr));
+#ifndef QT_NO_TOOLTIP
+        pushButtonGetExtrinsics->setToolTip(QApplication::translate("CameraContrast", "Start calibration process for chosen camera to get extrinsic parameters", nullptr));
+#endif // QT_NO_TOOLTIP
         pushButtonGetExtrinsics->setText(QApplication::translate("CameraContrast", "get Extrinsics", nullptr));
+#ifndef QT_NO_TOOLTIP
+        pushButtonResetThr->setToolTip(QApplication::translate("CameraContrast", "Reset threshold and max-value", nullptr));
+#endif // QT_NO_TOOLTIP
         pushButtonResetThr->setText(QApplication::translate("CameraContrast", "Reset", nullptr));
         pushButtonCloseCalibWindow->setText(QApplication::translate("CameraContrast", "Close", nullptr));
     } // retranslateUi

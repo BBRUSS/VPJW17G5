@@ -18,16 +18,14 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    int camID;
-    //Camera *cam1;
+
     vector<Camera*> cams;
     Settings *s;
 
 private slots:
-//    void on_pushButtonCalibIntrinsics_clicked();
-//    void on_pushButtonCalibExtrinsics_clicked();
     void on_pushButtonSetContrast_clicked();
     void changedValue();
+    void on_pushButtonSave_clicked();
 
 private:
     Ui::MainWindow *ui;
