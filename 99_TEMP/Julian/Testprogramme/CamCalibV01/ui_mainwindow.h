@@ -37,6 +37,7 @@ public:
     QVBoxLayout *verticalLayout;
     QPushButton *pushButtonSetContrast;
     QPushButton *pushButtonSave;
+    QPushButton *pushButtonLoad;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -80,6 +81,9 @@ public:
         pushButtonSave = new QPushButton(centralWidget);
         pushButtonSave->setObjectName(QStringLiteral("pushButtonSave"));
         pushButtonSave->setGeometry(QRect(220, 220, 80, 21));
+        pushButtonLoad = new QPushButton(centralWidget);
+        pushButtonLoad->setObjectName(QStringLiteral("pushButtonLoad"));
+        pushButtonLoad->setGeometry(QRect(310, 220, 80, 21));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -112,6 +116,7 @@ public:
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Calibration pattern</p></body></html>", nullptr));
         pushButtonSetContrast->setText(QApplication::translate("MainWindow", "Calibrate", nullptr));
         pushButtonSave->setText(QApplication::translate("MainWindow", "Save Settings", nullptr));
+        pushButtonLoad->setText(QApplication::translate("MainWindow", "Load Settings", nullptr));
     } // retranslateUi
 
 };

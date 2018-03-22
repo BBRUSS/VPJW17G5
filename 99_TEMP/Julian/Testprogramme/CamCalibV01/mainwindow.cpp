@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     s = new Settings();
     s->setCamFieldSize(Size(3,2));
     //s->load()== ok ? calibrieren : frage user nach size -> s.cameraField;
+    // TODO: Am Ende die Settings aus der XML laden und dementsprechend Kamerafeld etc. erzeugen
     s->calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
     s->boardSize.height = 11;    // number of corners in height
     s->boardSize.width = 4;      // number of corners in width
@@ -44,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
         qInfo() << "created new cam object with id <" << id << ">" << endl;
     }
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -132,4 +134,10 @@ void MainWindow::on_pushButtonSave_clicked()
     }
     s->calibrationPattern = Settings::CIRCLES_GRID;
    s->save();
+}
+
+
+void MainWindow::on_pushButtonLoad_clicked()
+{
+   s->load();
 }

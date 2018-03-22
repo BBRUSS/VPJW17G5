@@ -134,34 +134,16 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="mouseTracking">
-       <bool>false</bool>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
+     <widget class="QLabel" name="labelBWThreshold">
       <property name="text">
        <string>Black/White Threshold</string>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit_2">
-      <property name="mouseTracking">
-       <bool>false</bool>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
+     <widget class="QLabel" name="labelMaxValue">
       <property name="text">
        <string>Max-Value</string>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -213,15 +195,9 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_5">
     <item>
-     <widget class="QLineEdit" name="lineEdit_3">
-      <property name="mouseTracking">
-       <bool>false</bool>
-      </property>
+     <widget class="QLabel" name="labelCamID">
       <property name="text">
-       <string>Camera ID:</string>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
+       <string> Camera ID: </string>
       </property>
      </widget>
     </item>

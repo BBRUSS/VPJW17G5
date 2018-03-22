@@ -48,6 +48,10 @@ public:
     // TODO: Reprojection-Error calculation
     int getID();
     void setContrast(int blackWhiteThreshold, int maxValue);
+    double computeReprojectionErrors(vector<vector<Point3f> > &objectPoints,
+                              vector<Vec2f> &imagePoints,
+                              vector<Mat> &rvecs, vector<Mat> &tvecs,
+                              Mat &cameraMatrix , Mat &distCoeffs);
 
 
 private:

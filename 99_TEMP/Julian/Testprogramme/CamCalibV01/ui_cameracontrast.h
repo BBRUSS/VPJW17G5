@@ -40,15 +40,15 @@ public:
     QSlider *horizontalSliderMaxValue;
     QWidget *horizontalLayoutWidget_3;
     QHBoxLayout *horizontalLayout_3;
-    QLineEdit *lineEdit;
-    QLineEdit *lineEdit_2;
+    QLabel *labelBWThreshold;
+    QLabel *labelMaxValue;
     QWidget *horizontalLayoutWidget_4;
     QHBoxLayout *horizontalLayout_4;
     QLabel *labelImageContrast;
     QLabel *labelImageOrig;
     QWidget *horizontalLayoutWidget_5;
     QHBoxLayout *horizontalLayout_5;
-    QLineEdit *lineEdit_3;
+    QLabel *labelCamID;
     QSpinBox *spinBoxCameraID;
     QLineEdit *lineEditStatus;
     QWidget *horizontalLayoutWidget_6;
@@ -121,21 +121,15 @@ public:
         horizontalLayout_3 = new QHBoxLayout(horizontalLayoutWidget_3);
         horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
         horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
-        lineEdit = new QLineEdit(horizontalLayoutWidget_3);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
-        lineEdit->setMouseTracking(false);
-        lineEdit->setAutoFillBackground(true);
-        lineEdit->setReadOnly(true);
+        labelBWThreshold = new QLabel(horizontalLayoutWidget_3);
+        labelBWThreshold->setObjectName(QStringLiteral("labelBWThreshold"));
 
-        horizontalLayout_3->addWidget(lineEdit);
+        horizontalLayout_3->addWidget(labelBWThreshold);
 
-        lineEdit_2 = new QLineEdit(horizontalLayoutWidget_3);
-        lineEdit_2->setObjectName(QStringLiteral("lineEdit_2"));
-        lineEdit_2->setMouseTracking(false);
-        lineEdit_2->setAutoFillBackground(true);
-        lineEdit_2->setReadOnly(true);
+        labelMaxValue = new QLabel(horizontalLayoutWidget_3);
+        labelMaxValue->setObjectName(QStringLiteral("labelMaxValue"));
 
-        horizontalLayout_3->addWidget(lineEdit_2);
+        horizontalLayout_3->addWidget(labelMaxValue);
 
         horizontalLayoutWidget_4 = new QWidget(CameraContrast);
         horizontalLayoutWidget_4->setObjectName(QStringLiteral("horizontalLayoutWidget_4"));
@@ -162,12 +156,10 @@ public:
         horizontalLayout_5 = new QHBoxLayout(horizontalLayoutWidget_5);
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
         horizontalLayout_5->setContentsMargins(0, 0, 0, 0);
-        lineEdit_3 = new QLineEdit(horizontalLayoutWidget_5);
-        lineEdit_3->setObjectName(QStringLiteral("lineEdit_3"));
-        lineEdit_3->setMouseTracking(false);
-        lineEdit_3->setReadOnly(true);
+        labelCamID = new QLabel(horizontalLayoutWidget_5);
+        labelCamID->setObjectName(QStringLiteral("labelCamID"));
 
-        horizontalLayout_5->addWidget(lineEdit_3);
+        horizontalLayout_5->addWidget(labelCamID);
 
         spinBoxCameraID = new QSpinBox(horizontalLayoutWidget_5);
         spinBoxCameraID->setObjectName(QStringLiteral("spinBoxCameraID"));
@@ -242,11 +234,11 @@ public:
 #ifndef QT_NO_TOOLTIP
         horizontalSliderMaxValue->setToolTip(QApplication::translate("CameraContrast", "Slide this value to change the maximum value", nullptr));
 #endif // QT_NO_TOOLTIP
-        lineEdit->setText(QApplication::translate("CameraContrast", "Black/White Threshold", nullptr));
-        lineEdit_2->setText(QApplication::translate("CameraContrast", "Max-Value", nullptr));
+        labelBWThreshold->setText(QApplication::translate("CameraContrast", "Black/White Threshold", nullptr));
+        labelMaxValue->setText(QApplication::translate("CameraContrast", "Max-Value", nullptr));
         labelImageContrast->setText(QString());
         labelImageOrig->setText(QString());
-        lineEdit_3->setText(QApplication::translate("CameraContrast", "Camera ID:", nullptr));
+        labelCamID->setText(QApplication::translate("CameraContrast", " Camera ID: ", nullptr));
 #ifndef QT_NO_TOOLTIP
         spinBoxCameraID->setToolTip(QString());
 #endif // QT_NO_TOOLTIP

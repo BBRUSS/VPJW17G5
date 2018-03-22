@@ -292,24 +292,23 @@ int Camera::doCalibrationExtrinsics()
         }
 
         // find and show calibration pattern corners
-        // TODO: convert frame to black and white with high contrast (see CalibResizing.pro)
-        //        vector<Vec2f> foundPoints;
-        //        bool found = findCirclesGrid(frame, Size(2,1), foundPoints );
+        vector<Vec2f> foundPoints;
+        bool found = findCirclesGrid(frame, Size(3,2), foundPoints );
 
+        frame.copyTo(drawToFrame);
+        drawChessboardCorners(drawToFrame, Size(3,2), foundPoints, found);
+        if(found)
+        {
+            imshow("Webcam", drawToFrame);
+        }
+        else
+        {
+            imshow("Webcam", frame);
+        }
 
-        //        frame.copyTo(drawToFrame);
-        //        drawChessboardCorners(drawToFrame, Size(2,1), foundPoints, found);
-        //        if(found)
-        //        {
-        //            imshow("Webcam", drawToFrame);
-        //        }
-        //        else
-        //        {
-        //            imshow("Webcam", frame);
-        //        }
         // save images for calibration, and calibrate if enough good images
         char key = waitKey(1000 / framesPerSecond);
-        bool found = true;
+        //bool found = true;
         switch(key)
         {
         case SPACE_KEY:
@@ -325,6 +324,7 @@ int Camera::doCalibrationExtrinsics()
 
         case ENTER_KEY:
             // start calibration
+            // 1. Overlay all pictures into one picture
             if(savedImages.size() > 6-1)
             {
                 // TODO: Put all 6 images together with cv::add
@@ -340,8 +340,9 @@ int Camera::doCalibrationExtrinsics()
                     cv::add(images, temp, images);
                     qInfo() << "add successfull" << i;
                 }
+                imshow("Test-Add",images);
 
-                // 1. Find circle positions in image plane
+                // 2. Find circle positions in image plane
                 vector<Vec2f> foundPoints;
                 Mat drawToImages;
                 bool foundCircles = false;
@@ -362,28 +363,32 @@ int Camera::doCalibrationExtrinsics()
                     if(waitKey(50)==ESC_KEY) break;
                 }
 
-                // 2. Create circle positions in real 3D world
+                // 3. Create circle positions in real 3D world
                 vector<vector<Point3f>> corners(1);
                 createKnownBoardPositions(corners[0], Size(3,2), 13.0, Settings::CIRCLES_GRID);
-
                 corners.resize(foundPoints.size(), corners[0]);
 
 
+                // 4. Calibration process
+                qInfo() << "calibrating cam" << "<" <<id << ">" << endl;
+                Mat origCameraMatrix, origDistCoeffs;
 
-
-                //                qInfo() << "calibrating cam" << "<" <<id << ">" << endl;
-                //                Mat origCameraMatrix, origDistCoeffs;
-
-                //                cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
-                //                distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
-                //                double error = calibrateCamera(corners, foundPoints, Size(3,2), cameraMatrix,
-                //                                               distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
-                //                //                // TODO: calculate reprojection error with new camera matrix, compare to original ones
-                //                //                // and decide, which to use
-                //                origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
-                //                origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
-                //                //                //cout << rvecs << endl;
-                //                //                //cout << tvecs << endl;
+                cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
+                distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
+                double error = calibrateCamera(corners, foundPoints, Size(3,2), cameraMatrix,
+                                               distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
+                // 5. calculate reprojection error with new camera matrix, compare to original ones
+                //    and decide, which to use
+                double origError = computeReprojectionErrors(corners, foundPoints, rvecs, tvecs, origCameraMatrix, origDistCoeffs);
+                double newError = computeReprojectionErrors(corners, foundPoints, rvecs, tvecs, cameraMatrix, distCoeffs);
+                qInfo() << "orig. Reprojection Error: " << origError << " - new one: " << newError << endl;
+                if(origError < newError)
+                {
+                    origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
+                    origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
+                }
+                // cout << rvecs << endl;
+                // cout << tvecs << endl;
             }
             break;
 
@@ -490,3 +495,38 @@ void Camera::setContrast(int blackWhiteThreshold, int maxValue)
 }
 
 
+/**
+ * Compute the reprojection error to evaluate the quality of camera calibratiob
+ * @brief Camera::computeReprojectionErrors
+ * @param objectPoints - in real 3D world
+ * @param imagePoints  - in 2D image plane
+ * @param rvecs - rotational matrix
+ * @param tvecs - translation vector
+ * @param cameraMatrix
+ * @param distCoeffs
+ * @return reprojection error
+ */
+double Camera::computeReprojectionErrors( vector<vector<Point3f> >& objectPoints,
+                                          vector<Vec2f>& imagePoints,
+                                          vector<Mat>& rvecs, vector<Mat>& tvecs,
+                                          Mat& cameraMatrix , Mat& distCoeffs)
+{
+    vector<Point2f> imagePoints2;
+    int i, totalPoints = 0;
+    double totalErr = 0, err;
+    //perViewErrors.resize(objectPoints.size());
+
+    for( i = 0; i < (int)objectPoints.size(); ++i )
+    {
+        projectPoints( Mat(objectPoints[i]), rvecs[i], tvecs[i], cameraMatrix,  // project
+                       distCoeffs, imagePoints2);
+        err = norm(Mat(imagePoints[i]), Mat(imagePoints2), CV_L2);              // difference
+
+        int n = (int)objectPoints[i].size();
+        //perViewErrors[i] = (float) std::sqrt(err*err/n);                        // save for this view
+        totalErr        += err*err;                                             // sum it up
+        totalPoints     += n;
+    }
+
+    return std::sqrt(totalErr/totalPoints);              // calculate the arithmetical mean
+}

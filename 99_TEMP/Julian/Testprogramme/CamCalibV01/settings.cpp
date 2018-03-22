@@ -72,7 +72,7 @@ void Settings::read(const FileNode& node){              //Read serialization for
     //    Camera Settings
     for (int i = 0; i<camFieldSize.area(); i++){
         string actCam = "cam_" ;
-        actCam += to_string(cams.at(i)->cameraID);
+        actCam += to_string(i);
 
         FileNode nodeActCam;
         nodeActCam = node[actCam];

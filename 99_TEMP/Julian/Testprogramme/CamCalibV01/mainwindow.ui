@@ -111,6 +111,19 @@ p, li { white-space: pre-wrap; }
      <string>Save Settings</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButtonLoad">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>220</y>
+      <width>80</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load Settings</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
