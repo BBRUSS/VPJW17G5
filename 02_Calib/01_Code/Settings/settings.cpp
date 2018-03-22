@@ -31,8 +31,6 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     fs << "squareSize" << squareSize;
     fs << "nrFrames" << nrFrames;
 
-    qDebug() << "s0";
-
     //    Camera Settings
     for (int i = 0; i<camFieldSize.area(); i++){
         string cam_ID = "cam_" ;
@@ -54,7 +52,6 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
         fs << "maxValue" << cams.at(i)->maxValue;
 
         fs << "}";
-        qDebug() << "s" << i+1;
     }
 
     //    Navigation Settings
@@ -95,8 +92,6 @@ void Settings::read(const FileNode& node){              //Read serialization for
     node["patternToUse"] >> patternToUse;
     node["squareSize"] >> squareSize;
     node["nrFrames"] >> nrFrames;
-
-    qDebug() << "l0";
 
     //    Camera Settings
     for (int i = 0; i<camFieldSize.area(); i++){
