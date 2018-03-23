@@ -11,13 +11,13 @@ MAKEFILE      = Makefile.Debug
 
 CC            = cl
 CXX           = cl
-DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
+DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DWIN64 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_QML_DEBUG
 CFLAGS        = -nologo -Zc:wchar_t -FS -Zc:strictStrings -Zi -MDd -W3 -w44456 -w44457 -w44458 /Fddebug\RobotDetection.vc.pdb $(DEFINES)
 CXXFLAGS      = -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zi -MDd -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -EHsc /Fddebug\RobotDetection.vc.pdb $(DEFINES)
 INCPATH       = -I. -ID:\opencv\build\include -ID:\Qt\5.9.3\msvc2015_64\include -ID:\Qt\5.9.3\msvc2015_64\include\QtWidgets -ID:\Qt\5.9.3\msvc2015_64\include\QtGui -ID:\Qt\5.9.3\msvc2015_64\include\QtANGLE -ID:\Qt\5.9.3\msvc2015_64\include\QtNetwork -ID:\Qt\5.9.3\msvc2015_64\include\QtCore -Idebug -I. -ID:\Qt\5.9.3\msvc2015_64\mkspecs\win32-msvc 
 LINKER        = link
 LFLAGS        = /NOLOGO /DYNAMICBASE /NXCOMPAT /DEBUG /SUBSYSTEM:WINDOWS "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'"
-LIBS          = /LIBPATH:D:\Qt\5.9.3\msvc2015_64\lib D:\Qt\5.9.3\msvc2015_64\lib\qtmaind.lib /LIBPATH:C:\utils\my_sql\my_sql\lib /LIBPATH:C:\utils\postgresql\pgsql\lib shell32.lib /LIBPATH:D:\opencv\build\x64\vc14\lib D:\opencv\build\x64\vc14\lib\opencv_world331.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Widgetsd.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Guid.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Networkd.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Cored.lib 
+LIBS          = /LIBPATH:D:\Qt\5.9.3\msvc2015_64\lib D:\Qt\5.9.3\msvc2015_64\lib\qtmaind.lib /LIBPATH:C:\utils\my_sql\my_sql\lib /LIBPATH:C:\utils\postgresql\pgsql\lib shell32.lib /LIBPATH:D:\opencv\build\x64\vc14\lib D:\opencv\build\x64\vc14\lib\opencv_world340.lib D:\opencv\build\x64\vc14\lib\opencv_world340d.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Widgetsd.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Guid.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Networkd.lib D:\Qt\5.9.3\msvc2015_64\lib\Qt5Cored.lib 
 QMAKE         = D:\Qt\5.9.3\msvc2015_64\bin\qmake.exe
 IDC           = idc
 IDL           = midl /NOLOGO
@@ -138,12 +138,12 @@ $(LIBS)
 	copy release\*.exe  "deploy\"
 
 qmake: FORCE
-	@$(QMAKE) -o Makefile.Debug RobotDetection.pro -spec win32-msvc
+	@$(QMAKE) -o Makefile.Debug RobotDetection.pro -spec win32-msvc "CONFIG+=debug" "CONFIG+=qml_debug"
 
 qmake_all: FORCE
 
 dist:
-	$(ZIP) RobotDetection.zip $(SOURCES) $(DIST) RobotDetection.pro D:\Qt\5.9.3\msvc2015_64\mkspecs\features\spec_pre.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\common\angle.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\common\msvc-desktop.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\qconfig.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3danimation.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3danimation_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dcore.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dcore_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dextras.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dextras_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dinput.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dinput_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dlogic.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dlogic_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquick.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquick_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickanimation.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickextras.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickextras_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickinput.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickinput_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickrender.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickrender_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickscene2d.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3drender.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3drender_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_accessibility_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axbase.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axbase_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axcontainer.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axcontainer_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axserver.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axserver_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_bluetooth.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_bluetooth_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_bootstrap_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_concurrent.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_concurrent_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_core.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_core_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_dbus.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_dbus_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_designer.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_designer_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_designercomponents_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_egl_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_fb_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gamepad.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gamepad_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gui.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gui_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_help.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_help_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_location.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_location_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimedia.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimedia_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimediawidgets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_network.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_network_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_nfc.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_nfc_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_opengl.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_opengl_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_openglextensions.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_openglextensions_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_packetprotocol_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_positioning.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_positioning_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_printsupport.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_printsupport_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qml.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qml_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmldebug_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmldevtools_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmltest.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmltest_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quick.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quick_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickcontrols2.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickparticles_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickwidgets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickwidgets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_scxml.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_scxml_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sensors.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sensors_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialbus.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialbus_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialport.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialport_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sql.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sql_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_svg.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_svg_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_testlib.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_testlib_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_theme_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_uiplugin.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_uitools.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_uitools_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webchannel.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webchannel_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_websockets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_websockets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webview.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webview_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_widgets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_widgets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_winextras.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_winextras_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xml.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xml_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xmlpatterns.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_zlib_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qt_functions.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qt_config.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\win32-msvc\qmake.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\spec_post.prf .qmake.stash D:\Qt\5.9.3\msvc2015_64\mkspecs\features\exclusive_builds.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\common\msvc-version.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\toolchain.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\default_pre.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\win32\default_pre.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\resolve_config.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\exclusive_builds_post.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\default_post.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\build_pass.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qt.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\resources.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\moc.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\win32\opengl.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\uic.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\precompile_header.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\warn_on.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qmake_use.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\file_copies.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\win32\windows.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\testcase_targets.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\exceptions.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\yacc.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\lex.prf RobotDetection.pro ressource.qrc D:\Qt\5.9.3\msvc2015_64\lib\qtmaind.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Widgetsd.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Guid.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Networkd.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Cored.prl  ressource.qrc D:\Qt\5.9.3\msvc2015_64\mkspecs\features\data\dummy.cpp robotdetectionmainwindow.h myudp.h imgtask.h constants.h imageprocessingworker.h arucodictionary.h main.cpp robotdetectionmainwindow.cpp myudp.cpp imgtask.cpp imageprocessingworker.cpp arucodictionary.cpp robotdetectionmainwindow.ui     
+	$(ZIP) RobotDetection.zip $(SOURCES) $(DIST) RobotDetection.pro D:\Qt\5.9.3\msvc2015_64\mkspecs\features\spec_pre.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\common\angle.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\common\msvc-desktop.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\qconfig.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3danimation.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3danimation_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dcore.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dcore_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dextras.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dextras_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dinput.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dinput_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dlogic.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dlogic_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquick.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquick_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickanimation.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickextras.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickextras_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickinput.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickinput_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickrender.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickrender_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickscene2d.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3drender.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_3drender_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_accessibility_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axbase.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axbase_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axcontainer.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axcontainer_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axserver.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_axserver_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_bluetooth.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_bluetooth_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_bootstrap_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_concurrent.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_concurrent_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_core.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_core_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_dbus.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_dbus_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_designer.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_designer_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_designercomponents_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_egl_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_fb_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gamepad.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gamepad_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gui.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_gui_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_help.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_help_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_location.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_location_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimedia.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimedia_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimediawidgets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_network.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_network_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_nfc.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_nfc_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_opengl.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_opengl_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_openglextensions.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_openglextensions_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_packetprotocol_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_positioning.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_positioning_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_printsupport.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_printsupport_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qml.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qml_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmldebug_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmldevtools_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmltest.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qmltest_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quick.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quick_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickcontrols2.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickparticles_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickwidgets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_quickwidgets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_scxml.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_scxml_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sensors.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sensors_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialbus.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialbus_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialport.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_serialport_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sql.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_sql_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_svg.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_svg_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_testlib.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_testlib_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_theme_support_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_uiplugin.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_uitools.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_uitools_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webchannel.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webchannel_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_websockets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_websockets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webview.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_webview_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_widgets.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_widgets_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_winextras.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_winextras_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xml.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xml_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xmlpatterns.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\modules\qt_lib_zlib_private.pri D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qt_functions.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qt_config.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\win32-msvc\qmake.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\spec_post.prf .qmake.stash D:\Qt\5.9.3\msvc2015_64\mkspecs\features\exclusive_builds.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\common\msvc-version.conf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\toolchain.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\default_pre.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\win32\default_pre.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\resolve_config.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\exclusive_builds_post.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\default_post.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\build_pass.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qt.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\resources.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\moc.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\win32\opengl.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\uic.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qml_debug.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\precompile_header.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\warn_on.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\qmake_use.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\file_copies.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\win32\windows.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\testcase_targets.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\exceptions.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\yacc.prf D:\Qt\5.9.3\msvc2015_64\mkspecs\features\lex.prf RobotDetection.pro ressource.qrc D:\Qt\5.9.3\msvc2015_64\lib\qtmaind.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Widgetsd.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Guid.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Networkd.prl D:\Qt\5.9.3\msvc2015_64\lib\Qt5Cored.prl  ressource.qrc D:\Qt\5.9.3\msvc2015_64\mkspecs\features\data\dummy.cpp robotdetectionmainwindow.h myudp.h imgtask.h constants.h imageprocessingworker.h arucodictionary.h main.cpp robotdetectionmainwindow.cpp myudp.cpp imgtask.cpp imageprocessingworker.cpp arucodictionary.cpp robotdetectionmainwindow.ui     
 
 clean: compiler_clean 
 	-$(DEL_FILE) debug\main.obj debug\robotdetectionmainwindow.obj debug\myudp.obj debug\imgtask.obj debug\imageprocessingworker.obj debug\arucodictionary.obj debug\qrc_ressource.obj debug\moc_robotdetectionmainwindow.obj debug\moc_myudp.obj debug\moc_imageprocessingworker.obj
@@ -580,6 +580,7 @@ debug\moc_robotdetectionmainwindow.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\Q
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -660,17 +661,17 @@ debug\moc_robotdetectionmainwindow.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\Q
 		D:\Qt\5.9.3\msvc2015_64\include\QtNetwork\qhostaddress.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QBitArray \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream \
+		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QThreadPool \
 		imgtask.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QVector \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QRunnable \
-		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QMetaType \
 		arucoserializer.h \
 		robotdetectionmainwindow.h \
 		debug\moc_predefs.h \
 		D:\Qt\5.9.3\msvc2015_64\bin\moc.exe
-	D:\Qt\5.9.3\msvc2015_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include debug/moc_predefs.h -ID:/Qt/5.9.3/msvc2015_64/mkspecs/win32-msvc -I"D:/Users/Lennart/Documents/GitHub/VPJW17G5/03_Navi/01_Code/RobotDetection Portiert" -ID:/opencv/build/include -ID:/Qt/5.9.3/msvc2015_64/include -ID:/Qt/5.9.3/msvc2015_64/include/QtWidgets -ID:/Qt/5.9.3/msvc2015_64/include/QtGui -ID:/Qt/5.9.3/msvc2015_64/include/QtANGLE -ID:/Qt/5.9.3/msvc2015_64/include/QtNetwork -ID:/Qt/5.9.3/msvc2015_64/include/QtCore -I"D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE" -I"D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.15063.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\winrt" robotdetectionmainwindow.h -o debug\moc_robotdetectionmainwindow.cpp
+	D:\Qt\5.9.3\msvc2015_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include debug/moc_predefs.h -ID:/Qt/5.9.3/msvc2015_64/mkspecs/win32-msvc -I"D:/Users/Lennart/Documents/GitHub/VPJW17G5/03_Navi/01_Code/RobotDetection Portiert" -ID:/opencv/build/include -ID:/Qt/5.9.3/msvc2015_64/include -ID:/Qt/5.9.3/msvc2015_64/include/QtWidgets -ID:/Qt/5.9.3/msvc2015_64/include/QtGui -ID:/Qt/5.9.3/msvc2015_64/include/QtANGLE -ID:/Qt/5.9.3/msvc2015_64/include/QtNetwork -ID:/Qt/5.9.3/msvc2015_64/include/QtCore -I"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE" -I"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\shared" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\um" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\winrt" robotdetectionmainwindow.h -o debug\moc_robotdetectionmainwindow.cpp
 
 debug\moc_myudp.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObject \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qobject.h \
@@ -816,6 +817,7 @@ debug\moc_myudp.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObject \
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -870,10 +872,11 @@ debug\moc_myudp.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObject \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfile.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfiledevice.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream \
+		constants.h \
 		myudp.h \
 		debug\moc_predefs.h \
 		D:\Qt\5.9.3\msvc2015_64\bin\moc.exe
-	D:\Qt\5.9.3\msvc2015_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include debug/moc_predefs.h -ID:/Qt/5.9.3/msvc2015_64/mkspecs/win32-msvc -I"D:/Users/Lennart/Documents/GitHub/VPJW17G5/03_Navi/01_Code/RobotDetection Portiert" -ID:/opencv/build/include -ID:/Qt/5.9.3/msvc2015_64/include -ID:/Qt/5.9.3/msvc2015_64/include/QtWidgets -ID:/Qt/5.9.3/msvc2015_64/include/QtGui -ID:/Qt/5.9.3/msvc2015_64/include/QtANGLE -ID:/Qt/5.9.3/msvc2015_64/include/QtNetwork -ID:/Qt/5.9.3/msvc2015_64/include/QtCore -I"D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE" -I"D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.15063.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\winrt" myudp.h -o debug\moc_myudp.cpp
+	D:\Qt\5.9.3\msvc2015_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include debug/moc_predefs.h -ID:/Qt/5.9.3/msvc2015_64/mkspecs/win32-msvc -I"D:/Users/Lennart/Documents/GitHub/VPJW17G5/03_Navi/01_Code/RobotDetection Portiert" -ID:/opencv/build/include -ID:/Qt/5.9.3/msvc2015_64/include -ID:/Qt/5.9.3/msvc2015_64/include/QtWidgets -ID:/Qt/5.9.3/msvc2015_64/include/QtGui -ID:/Qt/5.9.3/msvc2015_64/include/QtANGLE -ID:/Qt/5.9.3/msvc2015_64/include/QtNetwork -ID:/Qt/5.9.3/msvc2015_64/include/QtCore -I"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE" -I"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\shared" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\um" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\winrt" myudp.h -o debug\moc_myudp.cpp
 
 debug\moc_imageprocessingworker.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObject \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qobject.h \
@@ -1020,6 +1023,7 @@ debug\moc_imageprocessingworker.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObj
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -1074,6 +1078,7 @@ debug\moc_imageprocessingworker.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObj
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfile.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfiledevice.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream \
+		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QThreadPool \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qthreadpool.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qthread.h \
@@ -1197,7 +1202,6 @@ debug\moc_imageprocessingworker.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObj
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qtcoreversion.h \
 		D:\opencv\build\include\opencv2\aruco.hpp \
 		D:\opencv\build\include\opencv2\aruco\dictionary.hpp \
-		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QMessageBox \
 		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qmessagebox.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qtwidgetsglobal.h \
@@ -1236,7 +1240,7 @@ debug\moc_imageprocessingworker.cpp: D:\Qt\5.9.3\msvc2015_64\include\QtCore\QObj
 		imageprocessingworker.h \
 		debug\moc_predefs.h \
 		D:\Qt\5.9.3\msvc2015_64\bin\moc.exe
-	D:\Qt\5.9.3\msvc2015_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include debug/moc_predefs.h -ID:/Qt/5.9.3/msvc2015_64/mkspecs/win32-msvc -I"D:/Users/Lennart/Documents/GitHub/VPJW17G5/03_Navi/01_Code/RobotDetection Portiert" -ID:/opencv/build/include -ID:/Qt/5.9.3/msvc2015_64/include -ID:/Qt/5.9.3/msvc2015_64/include/QtWidgets -ID:/Qt/5.9.3/msvc2015_64/include/QtGui -ID:/Qt/5.9.3/msvc2015_64/include/QtANGLE -ID:/Qt/5.9.3/msvc2015_64/include/QtNetwork -ID:/Qt/5.9.3/msvc2015_64/include/QtCore -I"D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE" -I"D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.15063.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.14393.0\winrt" imageprocessingworker.h -o debug\moc_imageprocessingworker.cpp
+	D:\Qt\5.9.3\msvc2015_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include debug/moc_predefs.h -ID:/Qt/5.9.3/msvc2015_64/mkspecs/win32-msvc -I"D:/Users/Lennart/Documents/GitHub/VPJW17G5/03_Navi/01_Code/RobotDetection Portiert" -ID:/opencv/build/include -ID:/Qt/5.9.3/msvc2015_64/include -ID:/Qt/5.9.3/msvc2015_64/include/QtWidgets -ID:/Qt/5.9.3/msvc2015_64/include/QtGui -ID:/Qt/5.9.3/msvc2015_64/include/QtANGLE -ID:/Qt/5.9.3/msvc2015_64/include/QtNetwork -ID:/Qt/5.9.3/msvc2015_64/include/QtCore -I"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE" -I"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\shared" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\um" -I"C:\Program Files (x86)\Windows Kits\8.1\include\\winrt" imageprocessingworker.h -o debug\moc_imageprocessingworker.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -1662,6 +1666,7 @@ debug\main.obj: main.cpp robotdetectionmainwindow.h \
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -1742,11 +1747,11 @@ debug\main.obj: main.cpp robotdetectionmainwindow.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtNetwork\qhostaddress.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QBitArray \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream \
+		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QThreadPool \
 		imgtask.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QVector \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QRunnable \
-		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QMetaType \
 		arucoserializer.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QApplication \
@@ -2156,6 +2161,7 @@ debug\robotdetectionmainwindow.obj: robotdetectionmainwindow.cpp robotdetectionm
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -2236,11 +2242,11 @@ debug\robotdetectionmainwindow.obj: robotdetectionmainwindow.cpp robotdetectionm
 		D:\Qt\5.9.3\msvc2015_64\include\QtNetwork\qhostaddress.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QBitArray \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream \
+		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QThreadPool \
 		imgtask.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QVector \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QRunnable \
-		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QMetaType \
 		arucoserializer.h \
 		ui_robotdetectionmainwindow.h \
@@ -2424,6 +2430,7 @@ debug\myudp.obj: myudp.cpp myudp.h \
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -2477,7 +2484,8 @@ debug\myudp.obj: myudp.cpp myudp.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QFile \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfile.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfiledevice.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream
+		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream \
+		constants.h
 
 debug\imgtask.obj: imgtask.cpp imgtask.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QVector \
@@ -2741,6 +2749,7 @@ debug\imgtask.obj: imgtask.cpp imgtask.h \
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -2938,6 +2947,7 @@ debug\imageprocessingworker.obj: imageprocessingworker.cpp imageprocessingworker
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \
@@ -2992,6 +3002,7 @@ debug\imageprocessingworker.obj: imageprocessingworker.cpp imageprocessingworker
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfile.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qfiledevice.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QTextStream \
+		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QThreadPool \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qthreadpool.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qthread.h \
@@ -3115,7 +3126,6 @@ debug\imageprocessingworker.obj: imageprocessingworker.cpp imageprocessingworker
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\qtcoreversion.h \
 		D:\opencv\build\include\opencv2\aruco.hpp \
 		D:\opencv\build\include\opencv2\aruco\dictionary.hpp \
-		constants.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QMessageBox \
 		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qmessagebox.h \
 		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qtwidgetsglobal.h \
@@ -3229,6 +3239,7 @@ debug\arucodictionary.obj: arucodictionary.cpp arucodictionary.h \
 		D:\opencv\build\include\opencv2\videoio\videoio_c.h \
 		D:\opencv\build\include\opencv2\imgproc.hpp \
 		D:\opencv\build\include\opencv2\ml.hpp \
+		D:\opencv\build\include\opencv2\ml\ml.inl.hpp \
 		D:\opencv\build\include\opencv2\objdetect.hpp \
 		D:\opencv\build\include\opencv2\objdetect\detection_based_tracker.hpp \
 		D:\opencv\build\include\opencv2\objdetect\objdetect_c.h \

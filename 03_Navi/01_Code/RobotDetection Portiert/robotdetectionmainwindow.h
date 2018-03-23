@@ -19,6 +19,7 @@
 #include "imageprocessingworker.h"
 #include "myudp.h"
 #include "constants.h"
+#include "../../../02_Calib/01_Code/Settings/settings.h"
 
 namespace Ui {
 class RobotDetectionMainWindow;
@@ -37,6 +38,7 @@ public slots:
     void settingsUpdateRequested();
 
 private:
+    Settings programSettings;
     UDPSettings udpStruct;
     Ui::RobotDetectionMainWindow *ui;
     int timerMilSecs;
