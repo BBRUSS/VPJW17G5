@@ -24,29 +24,31 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     // read settings from ini file
-    QSettings settings("settings.ini", QSettings::IniFormat);
-    settings.beginGroup("RobotDetectionSettings");
-    udpStruct.sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
-    udpStruct.sendToPort = settings.value("SendToPort", 25000).toInt();
+//    QSettings settings("settings.ini", QSettings::IniFormat);
+//    settings.beginGroup("RobotDetectionSettings");
+//    udpStruct.sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
+//    udpStruct.sendToPort = settings.value("SendToPort", 25000).toInt();
 
-    udpStruct.sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
-    udpStruct.sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
-    udpStruct.reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
-    udpStruct.recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
+//    udpStruct.sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
+//    udpStruct.sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
+//    udpStruct.reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
+//    udpStruct.recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
 
-    timerMilSecs = settings.value("TimerMilSecs", 20).toInt();
-    ui->slider_cornerRefinementMaxIterations->setValue( settings.value("cornerRefinementMaxIterations", 1).toInt());
-    ui->slider_cornerRefinementMinAccuracy->setValue  ( settings.value("cornerRefinementMinAccuracy", 10).toDouble() );
-    ui->slider_errorCorrectionRate->setValue  ( settings.value("errorCorrectionRate", 511).toDouble());
-    ui->slider_adaptiveThreshWinSizeMin->setValue( settings.value("adaptiveThreshWinSizeMin", 10).toInt());
-    ui->slider_adaptiveThreshWinSizeStep->setValue( settings.value("adaptiveThreshWinSizeStep", 99).toInt());
-    ui->slider_adaptiveThreshConstant->setValue( settings.value("adaptiveThreshConstant", 10).toInt() );
-    ui->slider_minMarkerPerimeterRate->setValue( settings.value("minMarkerPerimeterRate", 91).toDouble());
-    ui->slider_maxMarkerPerimeterRate->setValue( settings.value("slider_maxMarkerPerimeterRate", 300).toDouble() );
-    ui->slider_polygonalApproxAccuracyRate->setValue( settings.value("slider_polygonalApproxAccuracyRate", 11).toDouble());
-    ui->slider_perspectiveRemovePixelPerCell->setValue( settings.value("slider_perspectiveRemovePixelPerCell", 1).toInt());
-    ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
-    ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
+//    timerMilSecs = settings.value("TimerMilSecs", 20).toInt();
+//    ui->slider_cornerRefinementMaxIterations->setValue( settings.value("cornerRefinementMaxIterations", 1).toInt());
+//    ui->slider_cornerRefinementMinAccuracy->setValue  ( settings.value("cornerRefinementMinAccuracy", 10).toDouble() );
+//    ui->slider_errorCorrectionRate->setValue  ( settings.value("errorCorrectionRate", 511).toDouble());
+//    ui->slider_adaptiveThreshWinSizeMin->setValue( settings.value("adaptiveThreshWinSizeMin", 10).toInt());
+//    ui->slider_adaptiveThreshWinSizeStep->setValue( settings.value("adaptiveThreshWinSizeStep", 99).toInt());
+//    ui->slider_adaptiveThreshConstant->setValue( settings.value("adaptiveThreshConstant", 10).toInt() );
+//    ui->slider_minMarkerPerimeterRate->setValue( settings.value("minMarkerPerimeterRate", 91).toDouble());
+//    ui->slider_maxMarkerPerimeterRate->setValue( settings.value("slider_maxMarkerPerimeterRate", 300).toDouble() );
+//    ui->slider_polygonalApproxAccuracyRate->setValue( settings.value("slider_polygonalApproxAccuracyRate", 11).toDouble());
+//    ui->slider_perspectiveRemovePixelPerCell->setValue( settings.value("slider_perspectiveRemovePixelPerCell", 1).toInt());
+//    ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
+//    ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
+
+    udpStruct = programSettings.
 
     //load aruco dict
     this->defaultArucoDict = ArucoDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
