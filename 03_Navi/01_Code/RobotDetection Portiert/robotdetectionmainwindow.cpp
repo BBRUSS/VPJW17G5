@@ -24,8 +24,8 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     // read settings from ini file
-//    QSettings settings("settings.ini", QSettings::IniFormat);
-//    settings.beginGroup("RobotDetectionSettings");
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    settings.beginGroup("RobotDetectionSettings");
 //    udpStruct.sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
 //    udpStruct.sendToPort = settings.value("SendToPort", 25000).toInt();
 
@@ -47,8 +47,21 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 //    ui->slider_perspectiveRemovePixelPerCell->setValue( settings.value("slider_perspectiveRemovePixelPerCell", 1).toInt());
 //    ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
 //    ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
-
-    udpStruct = programSettings.
+    programSettings.load();
+    udpStruct = programSettings.udpStruct;
+    timerMilSecs = programSettings.timerMilSecs;
+    ui->slider_cornerRefinementMaxIterations->setValue(programSettings.cornerRefinementMaxIterations);
+    ui->slider_cornerRefinementMinAccuracy->setValue(programSettings.cornerRefinementMinAccuracy);
+    ui->slider_errorCorrectionRate->setValue(programSettings.errorCorrectionRate);
+    ui->slider_adaptiveThreshWinSizeMin->setValue(programSettings.adaptiveThreshWinSizeMin);
+    ui->slider_adaptiveThreshWinSizeStep->setValue(programSettings.adaptiveThreshWinSizeStep);
+    ui->slider_adaptiveThreshConstant->setValue(programSettings.adaptiveThreshConstant);
+    ui->slider_minMarkerPerimeterRate->setValue(programSettings.minMarkerPerimeterRate);
+    ui->slider_maxMarkerPerimeterRate->setValue(programSettings.slider_maxMarkerPerimeterRate);
+    ui->slider_polygonalApproxAccuracyRate->setValue(programSettings.slider_polygonalApproxAccuracyRate);
+    ui->slider_perspectiveRemovePixelPerCell->setValue(programSettings.slider_perspectiveRemovePixelPerCell);
+    ui->slider_threshold->setValue(programSettings.threshold);
+    ui->slider_MinSizeofRects->setValue(programSettings.MinSizeofRects);
 
     //load aruco dict
     this->defaultArucoDict = ArucoDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
@@ -63,7 +76,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
         RobotOffset temp = {i,settings.value("Robot"+QString::number(i)+"MEven",2).toFloat(),settings.value("Robot"+QString::number(i)+"MNotEven",2).toFloat()};
         robotOffsets.append(temp);
     }
-    settings.endGroup();
+    //settings.endGroup();
 
     for (int i = 0; i < NR_OF_CAMS; i++)
     {
@@ -100,25 +113,25 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
     workerThread.wait();
 
     // write settings to ini file
-    QSettings settings("settings.ini", QSettings::IniFormat);
-    settings.beginGroup("RobotDetectionSettings");
-    settings.setValue("SendToIP", udpStruct.sendToIp);
-    settings.setValue("SendToPort", udpStruct.sendToPort);
-    settings.setValue("TimerMilSecs", timerMilSecs);
+//    QSettings settings("settings.ini", QSettings::IniFormat);
+//    settings.beginGroup("RobotDetectionSettings");
+//    settings.setValue("SendToIP", udpStruct.sendToIp);
+//    settings.setValue("SendToPort", udpStruct.sendToPort);
+//    settings.setValue("TimerMilSecs", timerMilSecs);
 
-    settings.setValue("cornerRefinementMaxIterations", ui->slider_cornerRefinementMaxIterations->value());
-    settings.setValue("cornerRefinementMinAccuracy", ui->slider_cornerRefinementMinAccuracy->value());
-    settings.setValue("errorCorrectionRate", ui->slider_errorCorrectionRate->value());
-    settings.setValue("adaptiveThreshWinSizeMin", ui->slider_adaptiveThreshWinSizeMin->value());
-    settings.setValue("adaptiveThreshWinSizeStep", ui->slider_adaptiveThreshWinSizeStep->value());
-    settings.setValue("adaptiveThreshConstant", ui->slider_adaptiveThreshConstant->value());
-    settings.setValue("minMarkerPerimeterRate", ui->slider_minMarkerPerimeterRate->value());
-    settings.setValue("maxMarkerPerimeterRate", ui->slider_maxMarkerPerimeterRate->value());
-    settings.setValue("polygonalApproxAccuracyRate", ui->slider_polygonalApproxAccuracyRate->value());
-    settings.setValue("perspectiveRemovePixelPerCell", ui->slider_perspectiveRemovePixelPerCell->value());
-    settings.setValue("threshold", ui->slider_threshold->value());
-    settings.setValue("MinSizeofRects", ui->slider_MinSizeofRects->value());
-    settings.endGroup();
+//    settings.setValue("cornerRefinementMaxIterations", ui->slider_cornerRefinementMaxIterations->value());
+//    settings.setValue("cornerRefinementMinAccuracy", ui->slider_cornerRefinementMinAccuracy->value());
+//    settings.setValue("errorCorrectionRate", ui->slider_errorCorrectionRate->value());
+//    settings.setValue("adaptiveThreshWinSizeMin", ui->slider_adaptiveThreshWinSizeMin->value());
+//    settings.setValue("adaptiveThreshWinSizeStep", ui->slider_adaptiveThreshWinSizeStep->value());
+//    settings.setValue("adaptiveThreshConstant", ui->slider_adaptiveThreshConstant->value());
+//    settings.setValue("minMarkerPerimeterRate", ui->slider_minMarkerPerimeterRate->value());
+//    settings.setValue("maxMarkerPerimeterRate", ui->slider_maxMarkerPerimeterRate->value());
+//    settings.setValue("polygonalApproxAccuracyRate", ui->slider_polygonalApproxAccuracyRate->value());
+//    settings.setValue("perspectiveRemovePixelPerCell", ui->slider_perspectiveRemovePixelPerCell->value());
+//    settings.setValue("threshold", ui->slider_threshold->value());
+//    settings.setValue("MinSizeofRects", ui->slider_MinSizeofRects->value());
+//    settings.endGroup();
 
     defaultArucoDict.save(ARUCO_DICT_NAME);
 

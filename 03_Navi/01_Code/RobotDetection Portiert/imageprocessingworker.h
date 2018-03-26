@@ -8,15 +8,16 @@
 #include <QMessageBox>
 #include <QMetaType>
 #include "arucoserializer.h"
-
+#include "D:\Users\Lennart\Documents\GitHub\VPJW17G5\02_Calib\01_Code\Settings\settings.h"
 
 class ImageProcessingWorker : public QObject
 {
     Q_OBJECT
 public:
     //explicit ImageProcessingWorker();
-    explicit ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets);
+    explicit ImageProcessingWorker(Settings::UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets);
     ~ImageProcessingWorker();
+
     void setMeasureData(bool measure);
     void setTaskThreshold(int threshold);
     void setTaskRectMinSize(int minSize);
@@ -28,7 +29,7 @@ public:
     void setPerpTransfMatrix(const QList<cv::Mat> perspTransfMatrix);
     void setRobotOffsets(const QList<RobotOffset> robotOffsets);
     void setVideoCapture(const QList<cv::VideoCapture> &videoCapture);
-    void setUdpSettings(const UDPSettings udpStruct);
+    void setUdpSettings(const Settings::UDPSettings udpStruct);
     void setDebugMode(bool debugMode);
 
     friend cv::Point3f operator*(const cv::Point3f& a, const cv::Point3f& b);
@@ -39,6 +40,8 @@ private:
     QList<ImgTask*> tasks;
     //ImgTask *tasks[NR_OF_CAMS];
     QMutex workerMutex;
+    bool mainLoopActive;
+
     QString sendToIp;
     int sendToPort;
     QString sendToIp_SyncService;

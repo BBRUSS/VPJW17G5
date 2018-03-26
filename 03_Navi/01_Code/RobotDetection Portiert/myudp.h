@@ -11,14 +11,14 @@
 #include <QTextStream>
 #include "constants.h"
 
-struct UDPSettings {
-    QString sendToIp;
-    int sendToPort;
-    QString sendToIp_SyncService;
-    int sendToPort_SyncService;
-    QString reciveIp_SyncService;
-    int recivePort_SyncService;
-};
+//struct UDPSettings {
+//    QString sendToIp;
+//    int sendToPort;
+//    QString sendToIp_SyncService;
+//    int sendToPort_SyncService;
+//    QString reciveIp_SyncService;
+//    int recivePort_SyncService;
+//};
 
 class MyUDP : public QObject
 {

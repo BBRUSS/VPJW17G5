@@ -1,7 +1,7 @@
 #include "imageprocessingworker.h"
 #include <QDebug>
 
-ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets)
+ImageProcessingWorker::ImageProcessingWorker(Settings::UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets)
 {
     qRegisterMetaType<QList<cv::Mat>>("QList<cv::Mat>");
     qRegisterMetaType<QList<cv::Point3f>>("QList<cv::Point3f>");
@@ -9,10 +9,9 @@ ImageProcessingWorker::ImageProcessingWorker(UDPSettings udpStruct, cv::Ptr<cv::
 
     udpClient = new MyUDP(nullptr);
     // create UDP-Client and open socket
-    udpClient->setSendConfig (udpStruct.sendToIp,udpStruct.sendToPort);
-
-    udpClient->setReciveConfig_SyncService(udpStruct.reciveIp_SyncService,udpStruct.recivePort_SyncService);
-    udpClient->setSendConfig_SyncService(udpStruct.sendToIp_SyncService,udpStruct.sendToPort_SyncService);
+    udpClient->setSendConfig (QString::fromStdString(udpStruct.sendToIp), udpStruct.sendToPort);
+    udpClient->setReciveConfig_SyncService(QString::fromStdString(udpStruct.reciveIp_SyncService),udpStruct.recivePort_SyncService);
+    udpClient->setSendConfig_SyncService(QString::fromStdString(udpStruct.sendToIp_SyncService),udpStruct.sendToPort_SyncService);
 
     connect(this, &ImageProcessingWorker::finishedUDPData, udpClient, &MyUDP::sendUdpData);
 
@@ -65,12 +64,11 @@ void ImageProcessingWorker::setRobotOffsets(const QList<RobotOffset> robotOffset
     this->robotOffsets = robotOffsets;
 }
 
-void ImageProcessingWorker::setUdpSettings(const UDPSettings udpStruct) {
+void ImageProcessingWorker::setUdpSettings(const Settings::UDPSettings udpStruct) {
     // create UDP-Client and open socket
-    udpClient->setSendConfig (udpStruct.sendToIp,udpStruct.sendToPort);
-
-    udpClient->setReciveConfig_SyncService(udpStruct.reciveIp_SyncService,udpStruct.recivePort_SyncService);
-    udpClient->setSendConfig_SyncService(udpStruct.sendToIp_SyncService,udpStruct.sendToPort_SyncService);
+    udpClient->setSendConfig (QString::fromStdString(udpStruct.sendToIp), udpStruct.sendToPort);
+    udpClient->setReciveConfig_SyncService(QString::fromStdString(udpStruct.reciveIp_SyncService),udpStruct.recivePort_SyncService);
+    udpClient->setSendConfig_SyncService(QString::fromStdString(udpStruct.sendToIp_SyncService),udpStruct.sendToPort_SyncService);
 }
 
 void ImageProcessingWorker::setVideoCapture(const QList<cv::VideoCapture> &videoCapture) {
