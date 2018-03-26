@@ -38,67 +38,63 @@ public slots:
     void settingsUpdateRequested();
 
 private:
-    Settings programSettings;
-    Settings::UDPSettings udpStruct;
-    Ui::RobotDetectionMainWindow *ui;
+    ArucoDictionary defaultArucoDict;
+    bool calibrateOffset_ON_OFF;
+    bool mainloopIsActive;
+    cv::Mat originalImages[NR_OF_CAMS];
+    //cv::VideoCapture videoCapture[NR_OF_CAMS];
+    //QTimer * timer;
+    ImageProcessingWorker* imgWorker;
+    int fpsCount = 0;
     int timerMilSecs;
-    QTimer * timer;
-    QTimer * timerFPS;
+    int udpCount = 0;
     QList<cv::Mat> cameraMatrix;
     QList<cv::Mat> distCoeffs;
-    QList<cv::Mat> perspTransfMatrix;
     QList<cv::Mat> guiTransfMatrix;
-    QList<RobotOffset> robotOffsets;
-    QThread workerThread;
-    QList<int> exposureValue;
-    QList<int> contrastValue;
-    QList<int> brightnessValue;
-    ImageProcessingWorker* imgWorker;
+    QList<cv::Mat> perspTransfMatrix;
     QList<cv::VideoCapture> videoCapture;
-    //cv::VideoCapture videoCapture[NR_OF_CAMS];
+    QList<int> brightnessValue;
+    QList<int> contrastValue;
+    QList<int> exposureValue;
+    QList<RobotOffset> robotOffsets;
     QMutex guiUpdateMutex;
     QMutex settingsUpdateMutex;
-    cv::Mat originalImages[NR_OF_CAMS];
-    bool mainloopIsActive;
-    bool calibrateOffset_ON_OFF;
-    int fpsCount = 0;
-    int udpCount = 0;
+    QThread workerThread;
+    QTimer * timerFPS;
     QTime timeStamp;
-    ArucoDictionary defaultArucoDict;
+    Settings::UDPSettings udpStruct;
+    Settings programSettings;
+    Ui::RobotDetectionMainWindow *ui;
 
 protected:
-    void writeRobotLocationsToTable(QList<cv::Point3f> robotLocations);
-    void writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations);
-    void readXmlCalibrationFile();
-    cv::Ptr<cv::aruco::DetectorParameters> readArucoParameters();
-    void updateArucoTab(int SelectedRow);
-    void initArucoTab();
-    void updateIDNameMap();
-//    void saveIDNameMap(QMap<int, QString> map);
-//    QMap<int, QString> loadIDNameMap();
-
-
-    double scaleToGui(double value);
-    double distanceBetweenPoints(cv::Point2f a, cv::Point2f b);
-
     cv::Point2f scaleToGui(cv::Point2f srcDot);
     cv::Point3f scaleToGui(cv::Point3f srcDot);
-
+    cv::Ptr<cv::aruco::DetectorParameters> readArucoParameters();
+    double distanceBetweenPoints(cv::Point2f a, cv::Point2f b);
+    double scaleToGui(double value);
     QMap<QString, QXmlStreamAttributes> parseCamera(QXmlStreamReader& xmlReader);
+    void initArucoTab();
+    void readXmlCalibrationFile();
+    void updateArucoTab(int SelectedRow);
+    void updateIDNameMap();
+    void writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations);
+    void writeRobotLocationsToTable(QList<cv::Point3f> robotLocations);
 
 private slots:
 
+    void fpsCounter();
+    void incrementUDPCounter();
     void on_pushButtonCalibrateOffset_clicked();
     void on_pushButtonStartStop_clicked();
-    void fpsCounter();
-
-
     void on_pushButton_addAruco_clicked();
-    void on_tabMain_tabBarClicked(int index);
-    void on_tableWidget_Aruco_cellChanged(int row, int column);
-    void on_tableWidget_Aruco_cellClicked(int row, int column);
     void on_pushButton_deleteAruco_clicked();
     void on_pushButton_SaveToImage_clicked();
+    void on_tableWidget_Aruco_cellChanged(int row, int column);
+    void on_tableWidget_Aruco_cellClicked(int row, int column);
+    void on_tabMain_tabBarClicked(int index);
+
+signals:
+    void stopWorker();
 };
 
 #endif // ROBOTDETECTIONMAINWINDOW_H

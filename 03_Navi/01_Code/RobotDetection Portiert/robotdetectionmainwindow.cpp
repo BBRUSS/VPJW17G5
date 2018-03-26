@@ -26,27 +26,27 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     // read settings from ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
     settings.beginGroup("RobotDetectionSettings");
-//    udpStruct.sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
-//    udpStruct.sendToPort = settings.value("SendToPort", 25000).toInt();
+    //    udpStruct.sendToIp = settings.value("SendToIP", "192.168.0.255").toString();
+    //    udpStruct.sendToPort = settings.value("SendToPort", 25000).toInt();
 
-//    udpStruct.sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
-//    udpStruct.sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
-//    udpStruct.reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
-//    udpStruct.recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
+    //    udpStruct.sendToIp_SyncService = settings.value("SendToIP_SyncService", "192.168.0.255").toString();
+    //    udpStruct.sendToPort_SyncService = settings.value("SendToPort", 25110).toInt();
+    //    udpStruct.reciveIp_SyncService = settings.value("ReciveIP_SyncService", "192.168.0.20").toString();
+    //    udpStruct.recivePort_SyncService = settings.value("RecivePort_SyncService", 25111).toInt();
 
-//    timerMilSecs = settings.value("TimerMilSecs", 20).toInt();
-//    ui->slider_cornerRefinementMaxIterations->setValue( settings.value("cornerRefinementMaxIterations", 1).toInt());
-//    ui->slider_cornerRefinementMinAccuracy->setValue  ( settings.value("cornerRefinementMinAccuracy", 10).toDouble() );
-//    ui->slider_errorCorrectionRate->setValue  ( settings.value("errorCorrectionRate", 511).toDouble());
-//    ui->slider_adaptiveThreshWinSizeMin->setValue( settings.value("adaptiveThreshWinSizeMin", 10).toInt());
-//    ui->slider_adaptiveThreshWinSizeStep->setValue( settings.value("adaptiveThreshWinSizeStep", 99).toInt());
-//    ui->slider_adaptiveThreshConstant->setValue( settings.value("adaptiveThreshConstant", 10).toInt() );
-//    ui->slider_minMarkerPerimeterRate->setValue( settings.value("minMarkerPerimeterRate", 91).toDouble());
-//    ui->slider_maxMarkerPerimeterRate->setValue( settings.value("slider_maxMarkerPerimeterRate", 300).toDouble() );
-//    ui->slider_polygonalApproxAccuracyRate->setValue( settings.value("slider_polygonalApproxAccuracyRate", 11).toDouble());
-//    ui->slider_perspectiveRemovePixelPerCell->setValue( settings.value("slider_perspectiveRemovePixelPerCell", 1).toInt());
-//    ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
-//    ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
+    //    timerMilSecs = settings.value("TimerMilSecs", 20).toInt();
+    //    ui->slider_cornerRefinementMaxIterations->setValue( settings.value("cornerRefinementMaxIterations", 1).toInt());
+    //    ui->slider_cornerRefinementMinAccuracy->setValue  ( settings.value("cornerRefinementMinAccuracy", 10).toDouble() );
+    //    ui->slider_errorCorrectionRate->setValue  ( settings.value("errorCorrectionRate", 511).toDouble());
+    //    ui->slider_adaptiveThreshWinSizeMin->setValue( settings.value("adaptiveThreshWinSizeMin", 10).toInt());
+    //    ui->slider_adaptiveThreshWinSizeStep->setValue( settings.value("adaptiveThreshWinSizeStep", 99).toInt());
+    //    ui->slider_adaptiveThreshConstant->setValue( settings.value("adaptiveThreshConstant", 10).toInt() );
+    //    ui->slider_minMarkerPerimeterRate->setValue( settings.value("minMarkerPerimeterRate", 91).toDouble());
+    //    ui->slider_maxMarkerPerimeterRate->setValue( settings.value("slider_maxMarkerPerimeterRate", 300).toDouble() );
+    //    ui->slider_polygonalApproxAccuracyRate->setValue( settings.value("slider_polygonalApproxAccuracyRate", 11).toDouble());
+    //    ui->slider_perspectiveRemovePixelPerCell->setValue( settings.value("slider_perspectiveRemovePixelPerCell", 1).toInt());
+    //    ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
+    //    ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
     programSettings.load();
     udpStruct = programSettings.udpStruct;
     timerMilSecs = programSettings.timerMilSecs;
@@ -87,17 +87,9 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     mainloopIsActive = false;
     calibrateOffset_ON_OFF = false;
 
-    timer = new QTimer(this);
     timerFPS = new QTimer(this);
-    // init timers for mainloop and frames-per-second counting
-
     connect(timerFPS, &QTimer::timeout, this, &RobotDetectionMainWindow::fpsCounter);
-    //connect(&timerFPS, SIGNAL(timeout()), this, SLOT(fpsCounter()));
     fpsCount = 0;
-
-    //connect GUI elements
-    //connect(this->ui->tableWidget_Aruco, &QTableWidget::itemChanged, this, &RobotDetectionMainWindow::updateIDNameMap );
-    //connect(this->ui, &Q::, RobotDetectionMainWindow, &RobotDetectionMainWindow::updateArucoTab());
 
     // read camera calibration data and perspective transform matrices from xml
     readXmlCalibrationFile();
@@ -109,29 +101,32 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
 RobotDetectionMainWindow::~RobotDetectionMainWindow()
 {
+    emit stopWorker();
     workerThread.quit();
     workerThread.wait();
 
     // write settings to ini file
-//    QSettings settings("settings.ini", QSettings::IniFormat);
-//    settings.beginGroup("RobotDetectionSettings");
-//    settings.setValue("SendToIP", udpStruct.sendToIp);
-//    settings.setValue("SendToPort", udpStruct.sendToPort);
-//    settings.setValue("TimerMilSecs", timerMilSecs);
+    //    QSettings settings("settings.ini", QSettings::IniFormat);
+    //    settings.beginGroup("RobotDetectionSettings");
+    //    settings.setValue("SendToIP", udpStruct.sendToIp);
+    //    settings.setValue("SendToPort", udpStruct.sendToPort);
+    //    settings.setValue("TimerMilSecs", timerMilSecs);
 
-//    settings.setValue("cornerRefinementMaxIterations", ui->slider_cornerRefinementMaxIterations->value());
-//    settings.setValue("cornerRefinementMinAccuracy", ui->slider_cornerRefinementMinAccuracy->value());
-//    settings.setValue("errorCorrectionRate", ui->slider_errorCorrectionRate->value());
-//    settings.setValue("adaptiveThreshWinSizeMin", ui->slider_adaptiveThreshWinSizeMin->value());
-//    settings.setValue("adaptiveThreshWinSizeStep", ui->slider_adaptiveThreshWinSizeStep->value());
-//    settings.setValue("adaptiveThreshConstant", ui->slider_adaptiveThreshConstant->value());
-//    settings.setValue("minMarkerPerimeterRate", ui->slider_minMarkerPerimeterRate->value());
-//    settings.setValue("maxMarkerPerimeterRate", ui->slider_maxMarkerPerimeterRate->value());
-//    settings.setValue("polygonalApproxAccuracyRate", ui->slider_polygonalApproxAccuracyRate->value());
-//    settings.setValue("perspectiveRemovePixelPerCell", ui->slider_perspectiveRemovePixelPerCell->value());
-//    settings.setValue("threshold", ui->slider_threshold->value());
-//    settings.setValue("MinSizeofRects", ui->slider_MinSizeofRects->value());
-//    settings.endGroup();
+    //    settings.setValue("cornerRefinementMaxIterations", ui->slider_cornerRefinementMaxIterations->value());
+    //    settings.setValue("cornerRefinementMinAccuracy", ui->slider_cornerRefinementMinAccuracy->value());
+    //    settings.setValue("errorCorrectionRate", ui->slider_errorCorrectionRate->value());
+    //    settings.setValue("adaptiveThreshWinSizeMin", ui->slider_adaptiveThreshWinSizeMin->value());
+    //    settings.setValue("adaptiveThreshWinSizeStep", ui->slider_adaptiveThreshWinSizeStep->value());
+    //    settings.setValue("adaptiveThreshConstant", ui->slider_adaptiveThreshConstant->value());
+    //    settings.setValue("minMarkerPerimeterRate", ui->slider_minMarkerPerimeterRate->value());
+    //    settings.setValue("maxMarkerPerimeterRate", ui->slider_maxMarkerPerimeterRate->value());
+    //    settings.setValue("polygonalApproxAccuracyRate", ui->slider_polygonalApproxAccuracyRate->value());
+    //    settings.setValue("perspectiveRemovePixelPerCell", ui->slider_perspectiveRemovePixelPerCell->value());
+    //    settings.setValue("threshold", ui->slider_threshold->value());
+    //    settings.setValue("MinSizeofRects", ui->slider_MinSizeofRects->value());
+    //    settings.endGroup();
+
+    programSettings.save();
 
     defaultArucoDict.save(ARUCO_DICT_NAME);
 
@@ -181,7 +176,8 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
 
     if(mainloopIsActive)
     {
-        timer->stop();
+        //timer->stop();
+        emit stopWorker();
         timerFPS->stop();
         for (int i = 0; i < NR_OF_CAMS; i++)
         {
@@ -218,14 +214,17 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         imgWorker->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
-        //connect(&workerThread, &QThread::started, imgWorker, &ImageProcessingWorker::processImages);
-        connect(timer, &QTimer::timeout, imgWorker, &ImageProcessingWorker::processImages, Qt::DirectConnection);
-        connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage, Qt::DirectConnection);
-        connect(imgWorker, &ImageProcessingWorker::requestSettingsUpdate, this, &RobotDetectionMainWindow::settingsUpdateRequested, Qt::DirectConnection);
+        connect(&workerThread, &QThread::started, imgWorker, &ImageProcessingWorker::startProcessing);
+        connect(this, &RobotDetectionMainWindow::stopWorker, imgWorker, &ImageProcessingWorker::stopProcessing);
+
+        connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);
+        connect(imgWorker, &ImageProcessingWorker::requestSettingsUpdate, this, &RobotDetectionMainWindow::settingsUpdateRequested);
+        connect(imgWorker, &ImageProcessingWorker::requestUDPIncrement, this, &RobotDetectionMainWindow::incrementUDPCounter);
+
 
         workerThread.start(QThread::HighestPriority);
 
-        timer->start(33);
+        //timer->start(33);
         timerFPS->start(1000);
         ui->pushButtonStartStop->setText("Stop Detection");
         mainloopIsActive = true;
@@ -233,11 +232,13 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
 }
 
 void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots){
-    udpCount++;
-    if(!guiUpdateMutex.tryLock())
-    {
-        return;
-    }
+    disconnect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);
+
+//    udpCount++;
+//    if(!guiUpdateMutex.tryLock())
+//    {
+//        return;
+//    }
     fpsCount++;
 
     writeRobotLocationsToTable(robotLocations);
@@ -354,7 +355,13 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     QPixmap pixmap;
     pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
     ui->labelImage->setPixmap(pixmap);
-    guiUpdateMutex.unlock();
+    //guiUpdateMutex.unlock();
+    connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);
+
+}
+
+void RobotDetectionMainWindow::incrementUDPCounter() {
+    udpCount++;
 }
 
 void RobotDetectionMainWindow::fpsCounter()
@@ -699,10 +706,11 @@ void RobotDetectionMainWindow::updateIDNameMap() {
 }
 
 void RobotDetectionMainWindow::settingsUpdateRequested(){
-    if(!settingsUpdateMutex.tryLock())
-    {
-        return;
-    }
+    disconnect(imgWorker, &ImageProcessingWorker::requestSettingsUpdate, this, &RobotDetectionMainWindow::settingsUpdateRequested);
+//    if(!settingsUpdateMutex.tryLock())
+//    {
+//        return;
+//    }
     imgWorker->setTaskThreshold(ui->slider_threshold->value());
     imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
     imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
@@ -710,6 +718,7 @@ void RobotDetectionMainWindow::settingsUpdateRequested(){
     imgWorker->setMeasureData(this->ui->checkBox_Measurement->isChecked());
     imgWorker->setArucoParameters(readArucoParameters());
     imgWorker->setArucoDict(defaultArucoDict.get());
-    settingsUpdateMutex.unlock();
+    //settingsUpdateMutex.unlock();
+    connect(imgWorker, &ImageProcessingWorker::requestSettingsUpdate, this, &RobotDetectionMainWindow::settingsUpdateRequested);
 }
 
