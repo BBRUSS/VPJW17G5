@@ -19,6 +19,9 @@ bool operator< (const RobotMarker & lhs, const RobotMarker & rhs)
 
 void ImgTask::run()
 {
+    int lastTime = 0;
+    int currentTime = 0;
+
     if(image.cols < 1)
     {
         return;
@@ -121,8 +124,6 @@ void ImgTask::run()
 
         markerList[j].warpedCornerPoints.append(stdVectorToPointlist(tempVec));
     }
-    QElapsedTimer timer;
-    timer.start();
 
     if (liveViewMode)
     {

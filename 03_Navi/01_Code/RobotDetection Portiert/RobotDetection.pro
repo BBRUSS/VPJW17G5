@@ -52,14 +52,16 @@ SOURCES += main.cpp\
     myudp.cpp \
     imgtask.cpp \
     imageprocessingworker.cpp \
-    arucodictionary.cpp
+    arucodictionary.cpp \
+    ../../../02_Calib/01_Code/Settings/settings.cpp
 
 HEADERS  += robotdetectionmainwindow.h \
     myudp.h \
     imgtask.h \
     constants.h \
     imageprocessingworker.h \
-    arucodictionary.h
+    arucodictionary.h \
+    ../../../02_Calib/01_Code/Settings/settings.h
 
 FORMS    += robotdetectionmainwindow.ui
 
