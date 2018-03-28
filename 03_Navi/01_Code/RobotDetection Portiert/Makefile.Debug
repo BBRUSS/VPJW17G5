@@ -2238,40 +2238,7 @@ debug\robotdetectionmainwindow.obj: robotdetectionmainwindow.cpp robotdetectionm
 		D:\Users\Lennart\Documents\GitHub\VPJW17G5\02_Calib\01_Code\Settings\settings.h \
 		D:\opencv\build\include\opencv2\core\core.hpp \
 		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QDebug \
-		ui_robotdetectionmainwindow.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtCore\QVariant \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QAction \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qaction.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qactiongroup.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QApplication \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qapplication.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qdesktopwidget.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QButtonGroup \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qbuttongroup.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QCheckBox \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qcheckbox.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qabstractbutton.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QHBoxLayout \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qboxlayout.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qlayout.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qlayoutitem.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qgridlayout.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QHeaderView \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qheaderview.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QLabel \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qlabel.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QPushButton \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qpushbutton.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QScrollArea \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qscrollarea.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QSlider \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QSpacerItem \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QStatusBar \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\qstatusbar.h \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QTabWidget \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QTableWidget \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QVBoxLayout \
-		D:\Qt\5.9.3\msvc2015_64\include\QtWidgets\QWidget
+		ui_robotdetectionmainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fodebug\robotdetectionmainwindow.obj robotdetectionmainwindow.cpp
 
 debug\myudp.obj: myudp.cpp myudp.h \

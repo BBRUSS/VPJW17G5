@@ -20,7 +20,7 @@
    <string>Robot Detection</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="ressource.qrc">
     <normaloff>:/images/Hawhamburg-logo.png</normaloff>:/images/Hawhamburg-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -110,7 +110,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_3">
              <attribute name="title">
@@ -205,7 +205,7 @@
                  <string/>
                 </property>
                 <property name="pixmap">
-                 <pixmap>:/images/HAW_Hamburg.png</pixmap>
+                 <pixmap resource="ressource.qrc">:/images/HAW_Hamburg.png</pixmap>
                 </property>
                 <property name="scaledContents">
                  <bool>true</bool>
@@ -225,7 +225,7 @@
               <item>
                <widget class="QTableWidget" name="tableWidget">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -289,58 +289,6 @@
                 <attribute name="verticalHeaderStretchLastSection">
                  <bool>false</bool>
                 </attribute>
-                <row>
-                 <property name="text">
-                  <string>Robot 1</string>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>MS Shell Dlg 2</family>
-                   <pointsize>8</pointsize>
-                   <weight>50</weight>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>Robot 2</string>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>MS Shell Dlg 2</family>
-                   <pointsize>8</pointsize>
-                   <weight>50</weight>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>Robot 3</string>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>MS Shell Dlg 2</family>
-                   <pointsize>8</pointsize>
-                   <weight>50</weight>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>Robot 4</string>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>MS Shell Dlg 2</family>
-                   <pointsize>8</pointsize>
-                   <weight>50</weight>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                </row>
                 <column>
                  <property name="text">
                   <string>x</string>
@@ -381,7 +329,7 @@
               <item>
                <widget class="QLabel" name="labelVersion">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -432,7 +380,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>319</width>
-                     <height>595</height>
+                     <height>631</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1248,7 +1196,9 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="ressource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>slider_threshold</sender>

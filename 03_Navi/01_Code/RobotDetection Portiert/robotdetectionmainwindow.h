@@ -84,6 +84,7 @@ private slots:
 
     void fpsCounter();
     void incrementUDPCounter();
+    //void updateRobotOffsets();
     void on_pushButtonCalibrateOffset_clicked();
     void on_pushButtonStartStop_clicked();
     void on_pushButton_addAruco_clicked();

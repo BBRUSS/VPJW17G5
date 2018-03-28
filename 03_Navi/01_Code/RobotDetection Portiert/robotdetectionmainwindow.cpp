@@ -47,7 +47,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     //    ui->slider_perspectiveRemovePixelPerCell->setValue( settings.value("slider_perspectiveRemovePixelPerCell", 1).toInt());
     //    ui->slider_threshold->setValue( settings.value("threshold", 160).toInt());
     //    ui->slider_MinSizeofRects->setValue( settings.value("MinSizeofRects", 8000).toInt());
-    programSettings.load();
+    //programSettings.load();
     udpStruct = programSettings.udpStruct;
     timerMilSecs = programSettings.timerMilSecs;
     ui->slider_cornerRefinementMaxIterations->setValue(programSettings.cornerRefinementMaxIterations);
@@ -126,6 +126,19 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
     //    settings.setValue("MinSizeofRects", ui->slider_MinSizeofRects->value());
     //    settings.endGroup();
 
+    programSettings.cornerRefinementMaxIterations = ui->slider_cornerRefinementMaxIterations->value();
+    programSettings.cornerRefinementMinAccuracy = ui->slider_cornerRefinementMinAccuracy->value();
+    programSettings.errorCorrectionRate = ui->slider_errorCorrectionRate->value();
+    programSettings.adaptiveThreshWinSizeMin = ui->slider_adaptiveThreshWinSizeMin->value();
+    programSettings.adaptiveThreshWinSizeStep = ui->slider_adaptiveThreshWinSizeStep->value();
+    programSettings.adaptiveThreshConstant = ui->slider_adaptiveThreshConstant->value();
+    programSettings.minMarkerPerimeterRate = ui->slider_minMarkerPerimeterRate->value();
+    programSettings.slider_maxMarkerPerimeterRate = ui->slider_maxMarkerPerimeterRate->value();
+    programSettings.slider_polygonalApproxAccuracyRate = ui->slider_polygonalApproxAccuracyRate->value();
+    programSettings.slider_perspectiveRemovePixelPerCell = ui->slider_perspectiveRemovePixelPerCell->value();
+    programSettings.threshold = ui->slider_threshold->value();
+    programSettings.MinSizeofRects = ui->slider_MinSizeofRects->value();
+
     programSettings.save();
 
     defaultArucoDict.save(ARUCO_DICT_NAME);
@@ -141,13 +154,6 @@ cv::Ptr<cv::aruco::DetectorParameters> RobotDetectionMainWindow::readArucoParame
     //Read Settings
     cv::Ptr<cv::aruco::DetectorParameters> arucoParameters = cv::aruco::DetectorParameters::create();
 
-    //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
-    //    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
-    //    {
-    //        arucoParameters->doCornerRefinement = true;
-    //    } else {
-    //        arucoParameters->doCornerRefinement = false;
-    //    }
     QList<double> temp;
 
     arucoParameters->perspectiveRemovePixelPerCell = ui->slider_perspectiveRemovePixelPerCell->value();

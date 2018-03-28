@@ -111,17 +111,6 @@ void ImageProcessingWorker::startProcessing() {
         int localRobotCount = robotCount;
         // GRAB TIMESTAMP
         timeStamp = QTime::currentTime(); // read system time
-        //TODO: Gui-Elemente zu den entsprechenden Optionen entfernen.
-        //    if(ui->slider_cornerRefinementMaxIterations->value() > 2)
-        //    {
-        //        arucoParameters->doCornerRefinement = true;
-        //    } else {
-        //        arucoParameters->doCornerRefinement = false;
-        //    }
-
-        //Signal an Main class
-        //ui->t4_label->setText(QString::number(udpClient.msg_4));
-
 
         // READ IMAGES FROM CAMERAS
         // grab frames with smallest time difference possible
@@ -223,38 +212,6 @@ void ImageProcessingWorker::startProcessing() {
             robotLocationStd1d.append(0);
         }
 
-        //Check all Robots of double detections
-        //That mean, two or more Robots, are detected on the same Place (This is not possible!)
-        //    QList<int> doubledetecterobots;
-        //    for(int a = 0;a<MAX_NR_OF_ROBOTS;a++)
-        //    {
-        //        for(int i = 0; i < detectedRobots.size();i++)
-        //        {
-        //            if(detectedRobots[i].id == a)
-        //            {
-        //                for(int b = 0; b < detectedRobots.size(); b++)
-        //                {
-
-        //                    if(i != b
-        //                            && (detectedRobots[i].coordinates.x >= detectedRobots[b].coordinates.x-250 && detectedRobots[i].coordinates.x <= detectedRobots[b].coordinates.x+250)
-        //                            && (detectedRobots[i].coordinates.y >= detectedRobots[b].coordinates.y-250 && detectedRobots[i].coordinates.y <= detectedRobots[b].coordinates.y+250))
-        //                    {
-        //                        if (detectedRobots[i].id != detectedRobots[b].id) {
-        //                            doubledetecterobots.append(a);
-        //                        } else {
-        //                        }
-        //                    }
-
-        //                }
-        //                robotLocations[a] = detectedRobots[i].coordinates;
-        //            }
-        //        }
-
-        //        for(int i =0;i < doubledetecterobots.size();i++)
-        //        {
-        //            robotLocations[doubledetecterobots.at(i)] = cv::Point3f(0, 0, 0);
-        //        }
-        //    }
 
         QVector<int> falseDetection = QVector<int>(detectedRobots.size());
         for(int a = 0;a<localRobotCount;a++)
@@ -290,26 +247,34 @@ void ImageProcessingWorker::startProcessing() {
 
         for (int a = 0;a<localRobotCount;a++) {
             cv::Point3f tempMeanVal = cv::Point3f(0, 0, 0);
-            cv::Point3f tempStdVal3f = cv::Point3f(0, 0, 0);
+            cv::Point3f tempVariance3f = cv::Point3f(0, 0, 0);
             cv::Point3f tempStdVal = cv::Point3f(0, 0, 0);
+
             int tempStdVal1d = 0;
 
             if (!robotIDLocation[a].empty()) {
+
                 for(int i = 0; i < robotIDLocation[a].size(); i++) {
                     tempMeanVal += robotIDLocation[a].at(i).coordinates;
                 }
                 tempMeanVal = tempMeanVal / robotIDLocation[a].size();
 
-                for(int i = 0; i < robotIDLocation[a].size(); i++) {
-                    tempStdVal3f = (robotIDLocation[a].at(i).coordinates-tempMeanVal)*(robotIDLocation[a].at(i).coordinates-tempMeanVal);
-                    tempStdVal1d += sqrt(tempStdVal3f.x + tempStdVal3f.y);
-                    tempStdVal += (robotIDLocation[a].at(i).coordinates-tempMeanVal)*(robotIDLocation[a].at(i).coordinates-tempMeanVal);
+                if (robotIDLocation[a].size() > 1) {
+                    for(int i = 0; i < robotIDLocation[a].size(); i++) {
+                        tempVariance3f += (robotIDLocation[a].at(i).coordinates-tempMeanVal)*(robotIDLocation[a].at(i).coordinates-tempMeanVal);
+                    }
+                    tempVariance3f = tempVariance3f / (robotIDLocation[a].size()-1);
+                    tempStdVal.x = sqrt(tempVariance3f.x);
+                    tempStdVal.y = sqrt(tempVariance3f.y);
+                    tempStdVal.z = sqrt(tempVariance3f.z);
+
+                    tempStdVal1d = sqrt(tempVariance3f.x + tempVariance3f.y);
+
+                    if (tempStdVal1d > ROBOT_STD_THRESH_MAX)  {
+                        tempMeanVal = cv::Point3f(0, 0, 0);
+                    }
                 }
-                tempStdVal = tempStdVal / (robotIDLocation[a].size() - 1);
-                tempStdVal1d = tempStdVal1d / (robotIDLocation[a].size() - 1);
-                if (tempStdVal1d > ROBOT_STD_THRESH_MAX)  {
-                    tempMeanVal = cv::Point3f(0, 0, 0);
-                }
+
             }
             robotLocations[a] = tempMeanVal;
             robotLocationStd[a] = tempStdVal;
