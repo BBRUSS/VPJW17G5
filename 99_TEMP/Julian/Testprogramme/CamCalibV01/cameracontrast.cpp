@@ -198,3 +198,8 @@ void CameraContrast::on_pushButtonCloseCalibWindow_clicked()
     capture.release();
     this->close();
 }
+
+void CameraContrast::on_checkBoxInvertGrayscale_stateChanged(int arg1)
+{
+
+}

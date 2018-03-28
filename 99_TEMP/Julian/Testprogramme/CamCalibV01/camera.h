@@ -7,6 +7,7 @@
   * https://www.youtube.com/watch?v=GYIQiV9Aw74&t=305s
   * http://aishack.in/tutorials/calibrating-undistorting-opencv-oh-yeah/
   *
+  * ####### Passwort Softwareinstallateur PC VPJ Raum: eckehaard #######
   */
 
 #ifndef CAMERA_H
@@ -39,8 +40,9 @@ public:
 
     // According to George Lecaces Youtube video "OpenCV Basics"
     void createKnownBoardPositions(vector<Point3f>& corners, Size size, float squareSize, Settings::Pattern pattern);
-    bool getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
+    bool getCalibPatternCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
     void cameraCalibration(vector<Mat> calibrationImages, Size boardSize);
+    void cameraCalibration(vector<Mat> calibrationImages, Size boardSize, vector<vector<Point2f>> chessboardImageSpacePoints, vector<vector<Point3f>> worldSpaceCornerPoints);
     int doCalibrationIntrinsics();              // Function to get intrinsics
     int doCalibrationExtrinsics();              // Function to get extrinsics
     void saveCameraCalibrationParameters();     // Save parameters to XML file
