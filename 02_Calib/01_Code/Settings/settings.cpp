@@ -30,9 +30,10 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     fs << "patternToUse" << patternToUse;
     fs << "squareSize" << squareSize;
     fs << "nrFrames" << nrFrames;
+    fs << "calibPatternWhiteOnBlack" << calibPatternWhiteOnBlack;
 
     //    Camera Settings
-    for (int i = 0; i<camFieldSize.area(); i++){
+    for (int i = 0; i<cams.size(); i++){
         string cam_ID = "cam_" ;
         cam_ID += to_string(cams.at(i)->cameraID);
 
@@ -72,11 +73,18 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     fs << "adaptiveThreshWinSizeStep" << adaptiveThreshWinSizeStep;
     fs << "adaptiveThreshConstant" << adaptiveThreshConstant;
     fs << "minMarkerPerimeterRate" << minMarkerPerimeterRate;
-    fs << "slider_maxMarkerPerimeterRate" << slider_maxMarkerPerimeterRate;
-    fs << "slider_polygonalApproxAccuracyRate" << slider_polygonalApproxAccuracyRate;
-    fs << "slider_perspectiveRemovePixelPerCell" << slider_perspectiveRemovePixelPerCell;
-    fs << "threshold" << threshold;
+    fs << "maxMarkerPerimeterRate" << maxMarkerPerimeterRate;
+    fs << "polygonalApproxAccuracyRate" << polygonalApproxAccuracyRate;
+    fs << "perspectiveRemovePixelPerCell" << perspectiveRemovePixelPerCell;
+    fs << "cameraImageThreshold" << cameraImageThreshold;
     fs << "MinSizeofRects" << MinSizeofRects;
+
+    for (int i = 0; i<robotOffset.size(); i++){
+        string actRobotOffset = "robotOffset" ;
+        actRobotOffset += to_string(i);
+
+        fs << actRobotOffset << robotOffset.at(i);
+    }
 
     fs << "}";
 }
@@ -92,9 +100,11 @@ void Settings::read(const FileNode& node){              //Read serialization for
     node["patternToUse"] >> patternToUse;
     node["squareSize"] >> squareSize;
     node["nrFrames"] >> nrFrames;
+    node["calibPatternWhiteOnBlack"] >> calibPatternWhiteOnBlack;
+
 
     //    Camera Settings
-    for (int i = 0; i<camFieldSize.area(); i++){
+    for (int i = 0; i<cams.size(); i++){
         string actCam = "cam_" ;
         actCam += to_string(i);
 
@@ -140,10 +150,10 @@ void Settings::read(const FileNode& node){              //Read serialization for
     node["adaptiveThreshWinSizeStep"] >> adaptiveThreshWinSizeStep;
     node["adaptiveThreshConstant"] >> adaptiveThreshConstant;
     node["minMarkerPerimeterRate"] >> minMarkerPerimeterRate;
-    node["slider_maxMarkerPerimeterRate"] >> slider_maxMarkerPerimeterRate;
-    node["slider_polygonalApproxAccuracyRate"] >> slider_polygonalApproxAccuracyRate;
-    node["slider_perspectiveRemovePixelPerCell"] >> slider_perspectiveRemovePixelPerCell;
-    node["threshold"] >> threshold;
+    node["maxMarkerPerimeterRate"] >> maxMarkerPerimeterRate;
+    node["polygonalApproxAccuracyRate"] >> polygonalApproxAccuracyRate;
+    node["perspectiveRemovePixelPerCell"] >> perspectiveRemovePixelPerCell;
+    node["cameraImageThreshold"] >> cameraImageThreshold;
     node["MinSizeofRects"] >> MinSizeofRects;
 }
 

@@ -49,13 +49,14 @@ public:
     Size boardSize;                 // The size of the board -> Number of items by width and height
     Size camFieldSize;              // The size of camara field
     Pattern calibrationPattern;     // One of the Chessboard, circles, or asymmetric circle pattern
-    float squareSize = 0.0;               // The size of a square in your defined unit (point, millimeter,etc).
-    int nrFrames = 10;                   // The number of frames to use from the input for calibration
+    float squareSize = 0.0;         // The size of a square in your defined unit (point, millimeter,etc).
+    int nrFrames = 10;              // The number of frames to use from the input for calibration
+    bool calibPatternWhiteOnBlack;  // pattern color white on black = 1
 
     // Camera Settings
     vector<cam*> cams;
 
-    // Navidation Settings
+    // Navigation Settings
     UDPSettings udpStruct;
     int timerMilSecs = 20;
     int cornerRefinementMaxIterations = 1;
@@ -65,11 +66,14 @@ public:
     int adaptiveThreshWinSizeStep = 99;
     int adaptiveThreshConstant = 10;
     double minMarkerPerimeterRate = 91;
-    double slider_maxMarkerPerimeterRate = 300;
-    double slider_polygonalApproxAccuracyRate = 11;
-    int slider_perspectiveRemovePixelPerCell = 1;
-    int threshold = 160;
+    double maxMarkerPerimeterRate = 300;
+    double polygonalApproxAccuracyRate = 11;
+    int perspectiveRemovePixelPerCell = 1;
+    int cameraImageThreshold = 160;
     int MinSizeofRects = 8000;
+
+    vector<double> robotOffset {61.6811, 60.3357, 59.4646, 57.2372, 60.0, 60.0, 60.0, 60.0};
+
 
     // Methods in Settings
 
