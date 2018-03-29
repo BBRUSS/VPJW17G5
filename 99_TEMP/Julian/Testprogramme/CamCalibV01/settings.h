@@ -17,34 +17,62 @@ public:
 
     enum Pattern { NOT_EXISTING, CHESSBOARD, CIRCLES_GRID, ASYMMETRIC_CIRCLES_GRID };
 
-    struct cam
-    {
-        int calibFixAspectratio;        // Assume fix aspect ratio (usual for lens cameras)
-        int calibZeroTangentDist;       // Assume zero tangential distortion
-        int calibFixPrincipalPoint;     // Fix the principal point at the center
-        bool showUndistorsed;           // Show undistorted images after calibration (Do we really need that in Settings?)
-        int cameraID;                   // Camera windows id
-        int calibFlag;                  // Flag(s) for calibration
+    struct cam{
+
+        bool calibFixAspectratio = 0;       // Assume fix aspect ratio (usual for lens cameras)
+        bool calibZeroTangentDist = 0;      // Assume zero tangential distortion
+        bool calibFixPrincipalPoint = 0;    // Fix the principal point at the center
+        bool showUndistorsed = 0;           // Show undistorted images after calibration (Do we really need that in Settings?)
+        int cameraID = -1;
+        int calibFlag = 0;                  // Flag(s) for calibration
         Mat cameraMatrix;               // intrinsic parameters
         Mat distCoeffs;                 // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
         Mat rvecs;                      // rotation vectors estimated for each pattern view
         Mat tvecs;                      // translation vectors estimated for each pattern view
-        int blackWhiteThreshold;        // Threshold gained by slider in "Contrast Window"
-        int maxValue;                   // Max value gained by slider in "Contrast Window"
+        int blackWhiteThreshold = -1;        // Threshold gained by slider in "Contrast Window"
+        int maxValue = -1;                   // Max value gained by slider in "Contrast Window"
+    };
+
+    struct UDPSettings {
+
+        string sendToIp = "192.168.0.255";
+        int sendToPort = 25000;
+        string sendToIp_SyncService = "192.168.0.255";
+        int sendToPort_SyncService = 25110;
+        string reciveIp_SyncService = "192.168.0.20";
+        int recivePort_SyncService = 25111;
     };
 
     const string filename = "settings.xml"; // The name of the file where to write
 
     // Global Settings
-    Size boardSize;                     // The size of the board -> Number of items by width and height
-    Size camFieldSize;                  // The size of camara field
-    Pattern calibrationPattern;         // One of the Chessboard, circles, or asymmetric circle pattern
-    float squareSize;                   // The size of a square in your defined unit (point, millimeter,etc).
-    int nrFrames;                       // The number of frames to use from the input for calibration
-    bool calibPatternWhiteOnBlack;  // Calibration Pattern is white on black and will need to be inverted
+    Size boardSize;                 // The size of the board -> Number of items by width and height
+    Size camFieldSize;              // The size of camara field
+    Pattern calibrationPattern;     // One of the Chessboard, circles, or asymmetric circle pattern
+    float squareSize = 0.0;         // The size of a square in your defined unit (point, millimeter,etc).
+    int nrFrames = 10;              // The number of frames to use from the input for calibration
+    bool calibPatternWhiteOnBlack;  // pattern color white on black = 1
 
     // Camera Settings
     vector<cam*> cams;
+
+    // Navigation Settings
+    UDPSettings udpStruct;
+    int timerMilSecs = 20;
+    int cornerRefinementMaxIterations = 1;
+    double cornerRefinementMinAccuracy = 10;
+    double errorCorrectionRate = 511;
+    int adaptiveThreshWinSizeMin = 10;
+    int adaptiveThreshWinSizeStep = 99;
+    int adaptiveThreshConstant = 10;
+    double minMarkerPerimeterRate = 91;
+    double maxMarkerPerimeterRate = 300;
+    double polygonalApproxAccuracyRate = 11;
+    int perspectiveRemovePixelPerCell = 1;
+    int cameraImageThreshold = 160;
+    int MinSizeofRects = 8000;
+
+    vector<double> robotOffset {61.6811, 60.3357, 59.4646, 57.2372, 60.0, 60.0, 60.0, 60.0};
 
 
     // Methods in Settings

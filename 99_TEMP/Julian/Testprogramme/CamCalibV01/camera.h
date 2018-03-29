@@ -35,14 +35,14 @@ class Camera : public QMainWindow
     Q_OBJECT
 public:
     Camera();
-    Camera(int id, Ui::MainWindow *ui, Settings *s);
+    Camera(int nr, int id, Ui::MainWindow *ui, Settings *s);
 
 
     // According to George Lecaces Youtube video "OpenCV Basics"
     void createKnownBoardPositions(vector<Point3f>& corners, Size size, float squareSize, Settings::Pattern pattern);
     bool getCalibPatternCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
     void cameraCalibration(vector<Mat> calibrationImages, Size boardSize);
-    void cameraCalibration(vector<Mat> calibrationImages, Size boardSize, vector<vector<Point2f>> chessboardImageSpacePoints, vector<vector<Point3f>> worldSpaceCornerPoints);
+    void cameraCalibration(vector<vector<Point2f>> chessboardImageSpacePoints, vector<vector<Point3f>> worldSpaceCornerPoints, Size boardSize);
     int doCalibrationIntrinsics();              // Function to get intrinsics
     int doCalibrationExtrinsics();              // Function to get extrinsics
     void saveCameraCalibrationParameters();     // Save parameters to XML file
@@ -50,14 +50,15 @@ public:
     // TODO: Reprojection-Error calculation
     int getID();
     void setContrast(int blackWhiteThreshold, int maxValue);
-    double computeReprojectionErrors(vector<vector<Point3f> > &objectPoints,
-                              vector<Vec2f> &imagePoints,
+    double computeReprojectionErrors(vector<vector<Point3f>> &objectPoints,
+                              vector<Point2f> &imagePoints,
                               vector<Mat> &rvecs, vector<Mat> &tvecs,
-                              Mat &cameraMatrix , Mat &distCoeffs);
+                              Mat &cameraMatrix, Mat &distCoeffs);
 
 
 private:
-    int id;
+    int id;                     // Windows ID of the camera
+    int nr;                     // Number of camera in the camera field
     Ui::MainWindow *ui;
     Settings *s;
 

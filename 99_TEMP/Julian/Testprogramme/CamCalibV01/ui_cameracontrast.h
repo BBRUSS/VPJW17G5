@@ -49,7 +49,7 @@ public:
     QWidget *horizontalLayoutWidget_5;
     QHBoxLayout *horizontalLayout_5;
     QLabel *labelCamID;
-    QSpinBox *spinBoxCameraID;
+    QSpinBox *spinBoxCameraNr;
     QLineEdit *lineEditStatus;
     QWidget *horizontalLayoutWidget_6;
     QHBoxLayout *horizontalLayout_6;
@@ -110,7 +110,7 @@ public:
         horizontalSliderMaxValue->setObjectName(QStringLiteral("horizontalSliderMaxValue"));
         horizontalSliderMaxValue->setEnabled(false);
         horizontalSliderMaxValue->setMaximum(255);
-        horizontalSliderMaxValue->setValue(128);
+        horizontalSliderMaxValue->setValue(255);
         horizontalSliderMaxValue->setOrientation(Qt::Horizontal);
 
         horizontalLayout_2->addWidget(horizontalSliderMaxValue);
@@ -161,11 +161,11 @@ public:
 
         horizontalLayout_5->addWidget(labelCamID);
 
-        spinBoxCameraID = new QSpinBox(horizontalLayoutWidget_5);
-        spinBoxCameraID->setObjectName(QStringLiteral("spinBoxCameraID"));
-        spinBoxCameraID->setValue(1);
+        spinBoxCameraNr = new QSpinBox(horizontalLayoutWidget_5);
+        spinBoxCameraNr->setObjectName(QStringLiteral("spinBoxCameraNr"));
+        spinBoxCameraNr->setValue(1);
 
-        horizontalLayout_5->addWidget(spinBoxCameraID);
+        horizontalLayout_5->addWidget(spinBoxCameraNr);
 
         lineEditStatus = new QLineEdit(horizontalLayoutWidget_5);
         lineEditStatus->setObjectName(QStringLiteral("lineEditStatus"));
@@ -238,9 +238,9 @@ public:
         labelMaxValue->setText(QApplication::translate("CameraContrast", "Max-Value", nullptr));
         labelImageContrast->setText(QString());
         labelImageOrig->setText(QString());
-        labelCamID->setText(QApplication::translate("CameraContrast", " Camera ID: ", nullptr));
+        labelCamID->setText(QApplication::translate("CameraContrast", " Camera Nr: ", nullptr));
 #ifndef QT_NO_TOOLTIP
-        spinBoxCameraID->setToolTip(QString());
+        spinBoxCameraNr->setToolTip(QString());
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_TOOLTIP
         pushButtonGetIntrinsics->setToolTip(QApplication::translate("CameraContrast", "Start calibration process for chosen camera to get intrinsic parameters", nullptr));

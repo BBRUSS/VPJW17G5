@@ -38,7 +38,7 @@ private slots:
 
     void on_pushButtonCloseCalibWindow_clicked();
 
-    void on_checkBoxInvertGrayscale_stateChanged(int arg1);
+    //void on_checkBoxInvertGrayscale_stateChanged(int arg1);
 
 public:
     void setCams(vector<Camera*> cams)
@@ -50,6 +50,7 @@ private:
     Settings* s;
     vector<Camera*> cams;
     int id;
+    int nr;
     Mat image,  imageOrig;
     VideoCapture capture;
     QTimer cameraTimer;

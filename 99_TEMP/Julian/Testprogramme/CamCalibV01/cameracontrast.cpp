@@ -36,7 +36,10 @@ void CameraContrast::on_pushButtonStartCam_clicked()
     //at the timeout() event, execute the cameraTimerTimeout() method
     //sender (source of signal): of type QTimer; signal (value of signal): timeout()
     //receiver: this Window - slot:a function of the receiver that processes the incoming signal
-    id = ui->spinBoxCameraID->value();
+
+    nr = ui->spinBoxCameraNr->value();
+    id = cams.at(nr)->getID();  // s->cams.at(nr)->cameraID
+    qInfo() << "Opening Cam Nr <" << nr << "> with id <" << id << ">";
 
     capture.open(id);
 
@@ -44,7 +47,7 @@ void CameraContrast::on_pushButtonStartCam_clicked()
     {
         connect(&cameraTimer, SIGNAL(timeout()), this, SLOT(frameReady()));
         ui->pushButtonStartCam->setEnabled(false);
-        ui->spinBoxCameraID->setEnabled(false);
+        ui->spinBoxCameraNr->setEnabled(false);
         ui->pushButtonStopCam->setEnabled(true);
         ui->pushButtonGetExtrinsics->setEnabled(true);
         ui->pushButtonGetIntrinsics->setEnabled(true);
@@ -86,7 +89,7 @@ void CameraContrast::on_pushButtonStopCam_clicked()
     ui->horizontalSliderMaxValue->setEnabled(false);
     ui->horizontalSliderThreshold->setEnabled(false);
     ui->pushButtonStartCam->setEnabled(true);
-    ui->spinBoxCameraID->setEnabled(true);
+    ui->spinBoxCameraNr->setEnabled(true);
 }
 
 
@@ -145,7 +148,7 @@ void CameraContrast::frameReady()
 void CameraContrast::on_pushButtonSaveContrast_clicked()
 {
     qInfo() <<"save id "<< id;
-    cams.at(id)->setContrast(ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value());
+    cams.at(nr)->setContrast(ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value());
 }
 
 
@@ -157,9 +160,9 @@ void CameraContrast::on_pushButtonSaveContrast_clicked()
 void CameraContrast::on_pushButtonGetIntrinsics_clicked()
 {
    capture.release();
-   int success = cams.at(id)->doCalibrationIntrinsics();
+   int success = cams.at(nr)->doCalibrationIntrinsics();
    capture.open(id);
-   qInfo() << "intrinsic success:" << success;
+   qInfo() << "intrinsic success: " << success;
 }
 
 
@@ -171,8 +174,9 @@ void CameraContrast::on_pushButtonGetIntrinsics_clicked()
 void CameraContrast::on_pushButtonGetExtrinsics_clicked()
 {
     capture.release();
-    cams.at(id)->doCalibrationExtrinsics();
+    int success = cams.at(nr)->doCalibrationExtrinsics();
     capture.open(id);
+    qInfo() << "extrinsic success: " << success;
 }
 
 
@@ -182,9 +186,9 @@ void CameraContrast::on_pushButtonGetExtrinsics_clicked()
  */
 void CameraContrast::on_pushButtonResetThr_clicked()
 {
-    ui->horizontalSliderMaxValue->setValue(128);
+    ui->horizontalSliderMaxValue->setValue(255);
     ui->horizontalSliderThreshold->setValue(128);
-    cams.at(id)->setContrast(-1, -1);
+    cams.at(nr)->setContrast(-1, -1);
 }
 
 
@@ -199,7 +203,7 @@ void CameraContrast::on_pushButtonCloseCalibWindow_clicked()
     this->close();
 }
 
-void CameraContrast::on_checkBoxInvertGrayscale_stateChanged(int arg1)
-{
+//void CameraContrast::on_checkBoxInvertGrayscale_stateChanged(int arg1)
+//{
 
-}
+//}
