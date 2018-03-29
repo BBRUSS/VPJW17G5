@@ -19,7 +19,7 @@
 #include "imageprocessingworker.h"
 #include "myudp.h"
 #include "constants.h"
-#include "D:\Users\Lennart\Documents\GitHub\VPJW17G5\02_Calib\01_Code\Settings\settings.h"
+#include "..\..\..\02_Calib\01_Code\Settings\settings.h"
 
 namespace Ui {
 class RobotDetectionMainWindow;

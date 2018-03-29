@@ -8,7 +8,7 @@
 #include <QMessageBox>
 #include <QMetaType>
 #include "arucoserializer.h"
-#include "D:\Users\Lennart\Documents\GitHub\VPJW17G5\02_Calib\01_Code\Settings\settings.h"
+#include "..\..\..\02_Calib\01_Code\Settings\settings.h"
 
 class ImageProcessingWorker : public QObject
 {
