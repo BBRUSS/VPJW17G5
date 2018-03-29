@@ -41,6 +41,7 @@ public:
     Pattern calibrationPattern;         // One of the Chessboard, circles, or asymmetric circle pattern
     float squareSize;                   // The size of a square in your defined unit (point, millimeter,etc).
     int nrFrames;                       // The number of frames to use from the input for calibration
+    bool calibPatternWhiteOnBlack;  // Calibration Pattern is white on black and will need to be inverted
 
     // Camera Settings
     vector<cam*> cams;

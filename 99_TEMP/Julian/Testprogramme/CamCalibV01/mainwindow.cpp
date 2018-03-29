@@ -26,10 +26,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //s->load()== ok ? calibrieren : frage user nach size -> s.cameraField;
     // TODO: Am Ende die Settings aus der XML laden und dementsprechend Kamerafeld etc. erzeugen
     s->calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
-    s->boardSize.height = 11;    // number of corners in height
-    s->boardSize.width = 4;      // number of corners in width
-    s->squareSize = 15.0f;       // size of squares in mm
-
+    s->boardSize.height = 11;       // number of corners in height
+    s->boardSize.width = 4;         // number of corners in width
+    s->squareSize = 15.0f;          // size of squares in mm
+    s->calibPatternWhiteOnBlack = true;   // Calibration Pattern is white on black and will need to be inverted
     s->nrFrames = 10;
 
     for(int i = 0; i < s->camFieldSize.area(); i++)

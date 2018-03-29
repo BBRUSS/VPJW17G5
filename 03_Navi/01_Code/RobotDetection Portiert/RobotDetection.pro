@@ -13,9 +13,14 @@ CONFIG += qt thread
 INCLUDEPATH += \
     "D:/opencv/build/include" \
 
-LIBS += \
+release:LIBS += \
     "-LD:/opencv/build/x64/vc14/lib" \
-    -lopencv_world331
+    -lopencv_world340
+
+debug:LIBS += \
+    "-LD:/opencv/build/x64/vc14/lib" \
+    -lopencv_world340d
+
 
 #debug:LIBS +=    -lopencv_core300d \
 #    -lopencv_videoio300d \
@@ -47,14 +52,16 @@ SOURCES += main.cpp\
     myudp.cpp \
     imgtask.cpp \
     imageprocessingworker.cpp \
-    arucodictionary.cpp
+    arucodictionary.cpp \
+    ../../../02_Calib/01_Code/Settings/settings.cpp
 
 HEADERS  += robotdetectionmainwindow.h \
     myudp.h \
     imgtask.h \
     constants.h \
     imageprocessingworker.h \
-    arucodictionary.h
+    arucodictionary.h \
+    ../../../02_Calib/01_Code/Settings/settings.h
 
 FORMS    += robotdetectionmainwindow.ui
 
