@@ -8,6 +8,7 @@
   <patternToUse>NOT_EXISTING</patternToUse>
   <squareSize>0.</squareSize>
   <nrFrames>10</nrFrames>
+  <calibPatternWhiteOnBlack>105</calibPatternWhiteOnBlack>
   <UDPSettings>
     <sendToIP>"192.168.0.255"</sendToIP>
     <sendToPort>25000</sendToPort>
@@ -23,9 +24,17 @@
   <adaptiveThreshWinSizeStep>99</adaptiveThreshWinSizeStep>
   <adaptiveThreshConstant>10</adaptiveThreshConstant>
   <minMarkerPerimeterRate>91.</minMarkerPerimeterRate>
-  <slider_maxMarkerPerimeterRate>300.</slider_maxMarkerPerimeterRate>
-  <slider_polygonalApproxAccuracyRate>11.</slider_polygonalApproxAccuracyRate>
-  <slider_perspectiveRemovePixelPerCell>1</slider_perspectiveRemovePixelPerCell>
-  <threshold>160</threshold>
-  <MinSizeofRects>8000</MinSizeofRects></Settings>
+  <maxMarkerPerimeterRate>300.</maxMarkerPerimeterRate>
+  <polygonalApproxAccuracyRate>11.</polygonalApproxAccuracyRate>
+  <perspectiveRemovePixelPerCell>1</perspectiveRemovePixelPerCell>
+  <cameraImageThreshold>160</cameraImageThreshold>
+  <MinSizeofRects>8000</MinSizeofRects>
+  <robotOffset0>6.1681100000000001e+01</robotOffset0>
+  <robotOffset1>6.0335700000000003e+01</robotOffset1>
+  <robotOffset2>5.9464599999999997e+01</robotOffset2>
+  <robotOffset3>5.7237200000000001e+01</robotOffset3>
+  <robotOffset4>60.</robotOffset4>
+  <robotOffset5>60.</robotOffset5>
+  <robotOffset6>60.</robotOffset6>
+  <robotOffset7>60.</robotOffset7></Settings>
 </opencv_storage>
