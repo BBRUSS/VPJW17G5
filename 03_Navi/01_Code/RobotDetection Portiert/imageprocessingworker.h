@@ -15,7 +15,7 @@ class ImageProcessingWorker : public QObject
     Q_OBJECT
 public:
     //explicit ImageProcessingWorker();
-    explicit ImageProcessingWorker(Settings::UDPSettings udpStruct, cv::Ptr<cv::aruco::DetectorParameters> arucoParameters, cv::Ptr<cv::aruco::Dictionary> arucoDict, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix, QList<RobotOffset> robotOffsets);
+    explicit ImageProcessingWorker(Settings::UDPSettings udpStruct, QList<cv::VideoCapture> &videoCapture, QList<cv::Mat> cameraMatrix, QList<cv::Mat> distCoeffs, QList<cv::Mat> perspTransfMatrix);
     ~ImageProcessingWorker();
 
     friend cv::Point3f operator*(const cv::Point3f& a, const cv::Point3f& b);
@@ -73,11 +73,20 @@ signals:
     void requestSettingsUpdate();
     void requestUDPIncrement();
     void updateGui(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
-    //void updateGui(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<cv::Point3f> robotLocationsStd, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
+    void finishedRobotOffsets(QList<RobotOffset> foundOffsets);
 
 public slots:
     void startProcessing();
     void stopProcessing();
+    void processSettingsUpdate(int taskThreshold,
+                               int taskRectMinSize,
+                               int robotCount,
+                               bool debugMode,
+                               bool measureData,
+                               cv::Ptr<cv::aruco::DetectorParameters> arucoParameters,
+                               cv::Ptr<cv::aruco::Dictionary> arucoDict,
+                               QList<RobotOffset> robotOffsets,
+                               bool calibrateOffset_ON_OFF);
 
 };
 
