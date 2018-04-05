@@ -13,7 +13,9 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -38,6 +40,8 @@ public:
     QPushButton *pushButtonSetContrast;
     QPushButton *pushButtonSave;
     QPushButton *pushButtonLoad;
+    QCheckBox *checkBoxWhiteOnBlack;
+    QLabel *labelSize;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -63,7 +67,9 @@ public:
         horizontalSliderCalibPattern = new QSlider(centralWidget);
         horizontalSliderCalibPattern->setObjectName(QStringLiteral("horizontalSliderCalibPattern"));
         horizontalSliderCalibPattern->setGeometry(QRect(370, 50, 41, 31));
-        horizontalSliderCalibPattern->setValue(1);
+        horizontalSliderCalibPattern->setMaximum(2);
+        horizontalSliderCalibPattern->setValue(2);
+        horizontalSliderCalibPattern->setSliderPosition(2);
         horizontalSliderCalibPattern->setOrientation(Qt::Horizontal);
         verticalLayoutWidget = new QWidget(centralWidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
@@ -84,6 +90,12 @@ public:
         pushButtonLoad = new QPushButton(centralWidget);
         pushButtonLoad->setObjectName(QStringLiteral("pushButtonLoad"));
         pushButtonLoad->setGeometry(QRect(310, 220, 80, 21));
+        checkBoxWhiteOnBlack = new QCheckBox(centralWidget);
+        checkBoxWhiteOnBlack->setObjectName(QStringLiteral("checkBoxWhiteOnBlack"));
+        checkBoxWhiteOnBlack->setGeometry(QRect(220, 90, 91, 19));
+        labelSize = new QLabel(centralWidget);
+        labelSize->setObjectName(QStringLiteral("labelSize"));
+        labelSize->setGeometry(QRect(220, 120, 191, 16));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -117,6 +129,8 @@ public:
         pushButtonSetContrast->setText(QApplication::translate("MainWindow", "Calibrate", nullptr));
         pushButtonSave->setText(QApplication::translate("MainWindow", "Save Settings", nullptr));
         pushButtonLoad->setText(QApplication::translate("MainWindow", "Load Settings", nullptr));
+        checkBoxWhiteOnBlack->setText(QApplication::translate("MainWindow", "White on Black", nullptr));
+        labelSize->setText(QApplication::translate("MainWindow", "TextLabel", nullptr));
     } // retranslateUi
 
 };

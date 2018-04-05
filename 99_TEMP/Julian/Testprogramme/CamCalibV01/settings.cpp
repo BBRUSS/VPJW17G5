@@ -123,7 +123,7 @@ void Settings::read(const FileNode& node){              //Read serialization for
         nodeActCam["tvecs"] >> cams.at(i)->tvecs;
         nodeActCam["blackWhiteThreshold"] >> cams.at(i)->blackWhiteThreshold;
         nodeActCam["maxValue"] >> cams.at(i)->maxValue;
-        qDebug() << "l" << i+1;
+        //qDebug() << "l" << i+1;
     }
 
     calibrationPattern = Settings::NOT_EXISTING;

@@ -56,7 +56,7 @@ public:
                               Mat &cameraMatrix, Mat &distCoeffs);
 
 
-private:
+public:
     int id;                     // Windows ID of the camera
     int nr;                     // Number of camera in the camera field
     Ui::MainWindow *ui;
@@ -64,8 +64,10 @@ private:
 
     Mat cameraMatrix;           // intrinsic parameters
     Mat distCoeffs;             // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
-    vector<Mat> rvecs;          // rotation vectors estimated for each pattern view
-    vector<Mat> tvecs;          // translation vectors estimated for each pattern view
+    Mat rvec;                   // rotation vectors estimated for extrinsics (TODO: in Settings einarbeiten)
+    Mat tvec;                   // translation vectors estimated for extrinsics (TODO: in Settings einarbeiten)
+    vector<Mat> rvecs;          // rotation vectors estimated for each pattern view (TODO: aus Settings entfernen)
+    vector<Mat> tvecs;          // translation vectors estimated for each pattern view (TODO: aus Settings entfernen)
 
     int blackWhiteThreshold;    // Threshold gained by slider in "Contrast Window"
     int maxValue;               // Max value gained by slider in "Contrast Window"

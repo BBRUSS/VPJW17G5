@@ -14,16 +14,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Toggle switch (Calibration Pattern) only for testing purpose
     ui->horizontalSliderCalibPattern->setSingleStep(1);
-    ui->horizontalSliderCalibPattern->setRange(0,1);
-    ui->textEditCalibPattern->setText("Chessboard");
+    ui->horizontalSliderCalibPattern->setRange(0,2);
     connect(ui->horizontalSliderCalibPattern, SIGNAL(valueChanged(int)),this, SLOT(changedValue()));
 
     ui->textEditCalibPattern->setText("Asym. Circlegrid");
 
     // Config Settings
     s = new Settings();
-    s->setCamFieldSize(Size(3,2));
+    s->setCamFieldSize(Size(3,2));      // Set camera field size to 2x3 = 6 cameras
+
     //s->load()== ok ? calibrieren : frage user nach size -> s.cameraField;
+    s->load();
     // TODO: Am Ende die Settings aus der XML laden und dementsprechend Kamerafeld etc. erzeugen
 
     // Config calibration pattern
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
         s->boardSize.width = 6;                 // number of corners in width
         s->squareSize = 23.1f;                  // size of squares in mm
         s->calibPatternWhiteOnBlack = false;    // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(false);
     }
     // Calibration Pattern at home (2)
     else if(s->calibrationPattern == Settings::ASYMMETRIC_CIRCLES_GRID)
@@ -44,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
         s->boardSize.width = 5;                 // number of corners in width
         s->squareSize = 15.0f;                  // size of squares in mm
         s->calibPatternWhiteOnBlack = false;    // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(false);
     }
     // Calibration Pattern in VPJ-room
     else if(s->calibrationPattern == Settings::CIRCLES_GRID)
@@ -52,9 +55,13 @@ MainWindow::MainWindow(QWidget *parent) :
         s->boardSize.width = 5;                 // number of corners in width
         s->squareSize = 200.0f;                 // size of squares in mm
         s->calibPatternWhiteOnBlack = true;     // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(true);
     }
 
-
+    string out = to_string( s->boardSize.width);
+    out.append(" x ");
+    out.append(to_string(s->boardSize.height));
+    ui->labelSize->setText(QString::fromStdString(out));
 
     s->nrFrames = 10;
 
@@ -71,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
         cams.push_back( new Camera(nr, s->cams.at(nr)->cameraID, ui, s));
         qInfo() << "created new cam object with id <" << cams.at(nr)->getID() << ">" << endl;
     }
+
 }
 
 
@@ -144,6 +152,16 @@ void MainWindow::changedValue()
     }
     else if(ui->horizontalSliderCalibPattern->value()==1)
     {
+        s->calibrationPattern = Settings::CIRCLES_GRID;
+        ui->textEditCalibPattern->setText("Circlegrid");
+        s->boardSize.height = 4;                // number of corners in height
+        s->boardSize.width = 5;                 // number of corners in width
+        s->squareSize = 200.0f;                 // size of squares in mm
+        s->calibPatternWhiteOnBlack = true;     // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(true);
+    }
+    else if(ui->horizontalSliderCalibPattern->value()==2)
+    {
         s->calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
         ui->textEditCalibPattern->setText("Asym. Circlegrid");
         s->boardSize.height = 11;    // number of corners in height
@@ -167,4 +185,16 @@ void MainWindow::on_pushButtonSave_clicked()
 void MainWindow::on_pushButtonLoad_clicked()
 {
     s->load();
+}
+
+void MainWindow::on_checkBoxWhiteOnBlack_stateChanged(int arg1)
+{
+    if(ui->checkBoxWhiteOnBlack->isChecked())
+    {
+        s->calibPatternWhiteOnBlack = true;
+    }
+    else
+    {
+        s->calibPatternWhiteOnBlack = false;
+    }
 }

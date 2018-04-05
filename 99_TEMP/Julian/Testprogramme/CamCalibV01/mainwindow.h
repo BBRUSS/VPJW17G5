@@ -28,6 +28,8 @@ private slots:
     void on_pushButtonSave_clicked();
     void on_pushButtonLoad_clicked();
 
+    void on_checkBoxWhiteOnBlack_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     CameraContrast *contrastWindow;

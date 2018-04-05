@@ -6,7 +6,7 @@
 #define ENTER_KEY 13
 #define SPACE_KEY 32 // ' '
 
-const Scalar RED(0,0,255), GREEN(0,255,0);
+const Scalar RED(0,0,255), GREEN(0,255,0), BLUE(255,0,0), BLACK(0,0,0), WHITE(255,255,255);
 
 Camera::Camera()
 {
@@ -21,9 +21,9 @@ Camera::Camera(int nr, int id, Ui::MainWindow *ui, Settings *s)
     this->id = id;
     this->ui = ui;
     this->s = s;
-    this->cameraMatrix = Mat::eye(3, 3, CV_64F);    // camera matrix 3x3
-    this->distCoeffs = Mat::zeros(8, 1, CV_64F);    // distortion coefficients 8x1
-    setContrast(-1, -1);                            // default: do not use these values, ergo -1
+    this->cameraMatrix = s->cams.at(nr)->cameraMatrix;  //Mat::eye(3, 3, CV_64F);    // camera matrix 3x3
+    this->distCoeffs = s->cams.at(nr)->distCoeffs;      //Mat::zeros(8, 1, CV_64F);    // distortion coefficients 8x1
+    setContrast(-1, -1);                                // default: do not use these values, ergo -1
 }
 
 
@@ -61,6 +61,8 @@ void Camera::createKnownBoardPositions(vector<Point3f>& corners, Size size, floa
 
 /** calibrate the camera with given images
  * @brief Camera::cameraCalibration
+ * @param calibrationImages : vector of images with found calibration patterns
+ * @param boardSize : Size object of calibration board dimensions
  */
 void Camera::cameraCalibration(vector<Mat> calibrationImages, Size boardSize)
 {
@@ -78,15 +80,21 @@ void Camera::cameraCalibration(vector<Mat> calibrationImages, Size boardSize)
 }
 
 
-/** calibrate the camera with given images
+/** calibrate the camera with given image space- and real world calibration points
  * @brief Camera::cameraCalibration
+ * @param chessboardImageSpacePoints: vector with pixel positions of found calibration corners
+ * @param worldSpaceCornerPoints : vector with real world positions of calibration corners
+ * @param boardSize : Size object of calibration board dimensions
  */
 void Camera::cameraCalibration(vector<vector<Point2f>> chessboardImageSpacePoints, vector<vector<Point3f>> worldSpaceCornerPoints, Size boardSize)
 {
+    qInfo() << "1 objectpoints size " << worldSpaceCornerPoints[0].size();
+    qInfo() << "1 imagepoints size " << chessboardImageSpacePoints[0].size();
+
     worldSpaceCornerPoints.resize(chessboardImageSpacePoints.size(), worldSpaceCornerPoints[0]);
 
-    qInfo() << "objectpoints size " << worldSpaceCornerPoints.size();
-    qInfo() << "imagepoints size " << chessboardImageSpacePoints.size();
+    qInfo() << "2 objectpoints size " << worldSpaceCornerPoints[0].size();
+    qInfo() << "2 imagepoints size " << chessboardImageSpacePoints[0].size();
     double error = calibrateCamera(worldSpaceCornerPoints, chessboardImageSpacePoints, boardSize, cameraMatrix,
                                    distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
     saveCameraCalibrationParameters();
@@ -97,6 +105,9 @@ void Camera::cameraCalibration(vector<vector<Point2f>> chessboardImageSpacePoint
 /** Find the corners of calibration pattern (e.g. chessboard) in the image plane
  * and show them, if wanted.
  * @brief Camera::getCalibPatternCorners
+ * @param images: vector of images with calibration pattern
+ * @param allFoundCorners : vector to store the found corner positions into
+ * @param showFoundCorners : Flag to set wether the found corners should be drawn into the picture or not
  */
 bool Camera::getCalibPatternCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners)
 {
@@ -233,7 +244,16 @@ int Camera::doCalibrationIntrinsics()
         Size textSize = getTextSize(msg, 1, 1, 1, &baseline);
         Point textOrigin(frame.cols - 2*textSize.width-10, frame.rows - 2*baseline-10);
 
-        putText(frame, msg, textOrigin, 1, 1, RED);
+        // Decide Text color
+        if(s->calibPatternWhiteOnBlack)
+        {
+            putText(frame, msg, textOrigin, 1, 1, WHITE);
+        }
+        else
+        {
+            putText(frame, msg, textOrigin, 1, 1, RED);
+        }
+
         frame.copyTo(drawToFrame);
         drawChessboardCorners(drawToFrame, s->boardSize, foundPoints, found);
         if(found)
@@ -292,7 +312,7 @@ int Camera::doCalibrationIntrinsics()
  */
 int Camera::doCalibrationExtrinsics()
 {
-    Size calibSizeExtrinsic(3,2);
+    Size calibSizeExtrinsic(9,6);           // Size of calibration pattern for extrinsic calibration
     Mat frame, raw;                         // Original video frame
     Mat drawToFrame;                        // Copy of original frame to draw found patterns within it
     Mat images;                             // hold overlayed images
@@ -300,7 +320,7 @@ int Camera::doCalibrationExtrinsics()
     //distCoeffsNew = Mat::zeros(8,1,CV_64F);    // Initialize distortion coefficients
     vector<Mat> savedImages;                // Vector for saving snapshots with found patterns
     VideoCapture vid(id);
-    vector<Point2f> foundPoints;
+    vector<Point2f> foundPoints;            // Found points in image plane
     vector<vector<Point2f>> savedImagePoints;
     bool found = false;
 
@@ -337,11 +357,11 @@ int Camera::doCalibrationExtrinsics()
             cvtColor(raw, viewGray, COLOR_BGR2GRAY);
             frame = cv::Scalar::all(255) - viewGray;
         }
-        else    // else use original frame
+        else    // else use original frame in B/W
         {
-            raw.copyTo(frame);
+            cvtColor(raw, frame, COLOR_BGR2GRAY);
         }
-
+        threshold(frame, frame, 128, 255, THRESH_BINARY);
 
 
         // find and show calibration pattern corners
@@ -350,18 +370,27 @@ int Camera::doCalibrationExtrinsics()
         params.minDistBetweenBlobs = 5;
         const Ptr<FeatureDetector>& blobDetector = SimpleBlobDetector::create(params);
 
-        found = findCirclesGrid(frame, calibSizeExtrinsic, foundPoints, CALIB_CB_SYMMETRIC_GRID, blobDetector );
-
+        //bool testfound = findCirclesGrid(frame, calibSizeExtrinsic, foundPoints, CALIB_CB_SYMMETRIC_GRID, blobDetector );
+        bool testfound = findChessboardCorners(frame,calibSizeExtrinsic,foundPoints); //ONLY FOR TESTING WITH CHESSBOARD
         // Text output on frame
         string  msg = format("%d / %d", (int)savedImages.size(), 6);
         int baseline = 0;
         Size textSize = getTextSize(msg, 1, 1, 1, &baseline);
         Point textOrigin(frame.cols - 2*textSize.width-10, frame.rows - 2*baseline-10);
 
-        putText(frame, msg, textOrigin, 1, 1, RED);
+        // Decide Text color
+        if(s->calibPatternWhiteOnBlack)
+        {
+            putText(frame, msg, textOrigin, 1, 1, WHITE);
+        }
+        else
+        {
+            putText(frame, msg, textOrigin, 1, 1, BLACK);
+        }
+
         frame.copyTo(drawToFrame);
-        drawChessboardCorners(drawToFrame, calibSizeExtrinsic, foundPoints, found);
-        if(found)
+        drawChessboardCorners(drawToFrame, calibSizeExtrinsic, foundPoints, testfound);
+        if(testfound)
         {
             imshow("Webcam", drawToFrame);
         }
@@ -377,40 +406,39 @@ int Camera::doCalibrationExtrinsics()
         {
         case SPACE_KEY:
             // save image and found points
-            if(found)
-            {
-                savedImages.push_back(frame);
-                qInfo() << "saving image...(" << savedImages.size() << "/" << 6 << ")" << endl;
-            }
-            break;
+            savedImages.push_back(frame);
+            qInfo() << "saving image...(" << savedImages.size() << "/" << 6 << ")" << endl;
+            // break;
 
-        case ENTER_KEY:
+            // case ENTER_KEY:
             // start calibration
             // 1. Overlay all pictures into one picture
 
-            if(savedImages.size() > 6-1)
+            if(savedImages.size() > /*calibSizeExtrinsic.area()*/6-1)
             {
+                qInfo() << "Enough frames, start adding them...";
                 // TODO: Put all 6 images together with cv::add
                 // TODO: create known circle position in 3D real world
                 // TODO: find circles in image plane
                 images = Mat::zeros(savedImages.at(0).rows, savedImages.at(0).cols, savedImages.at(0).type());
-                //savedImages.at(0).copyTo(images);
 
                 for(int i=0; i<savedImages.size(); i++)
                 {
                     Mat temp;
                     savedImages.at(i).copyTo(temp);
-                    cv::add(images, temp, images);
+                    savedImages.at(i).copyTo(images);//cv::add(images, temp, images);
                     qInfo() << "add successfull" << i;
                 }
                 imshow("Test-Add",images);
 
                 // 2. Find circle positions in image plane
+                qInfo() << "Searching for calibration corners ...";
                 Mat drawToImages;
-                //bool foundCircles = false;
                 while(!found)
                 {
-                    found = findCirclesGrid(images, calibSizeExtrinsic, foundPoints );
+                    //found = findCirclesGrid(images, calibSizeExtrinsic, foundPoints );
+                    found = findChessboardCorners(images,calibSizeExtrinsic,foundPoints);//ONLY FOR TESTING WITH CHESSBOARD
+                    if(found) {savedImagePoints.push_back(foundPoints); qInfo() << "added foundPoints " << savedImagePoints.size();}
 
                     images.copyTo(drawToImages);
                     drawChessboardCorners(drawToImages, calibSizeExtrinsic, foundPoints, found);
@@ -422,14 +450,15 @@ int Camera::doCalibrationExtrinsics()
                     {
                         imshow("Webcam", images);
                     }
-                    if(waitKey(50)==ESC_KEY) break;
+                    if(waitKey(33)==ESC_KEY) break;
                 }
 
                 if(found)
                 {
                     // 3. Create circle positions in real 3D world
+                    qInfo() << "Corners found, creating real 3D world corner positions...";
                     vector<vector<Point3f>> worldSpaceCornerPoints(1);  // 3x2 = width x height
-                    //createKnownBoardPositions(worldSpaceCornerPoints[0], calibSizeExtrinsic, 13.0, Settings::CIRCLES_GRID);
+                    // createKnownBoardPositions(worldSpaceCornerPoints[0], calibSizeExtrinsic, 13.0, Settings::CIRCLES_GRID);
                     // World space corners with home calib pattern (TODO: Offsets abhängig von Kameraposition in globalen Koordinaten)
                     for(int i = 0; i < calibSizeExtrinsic.height; i++)    // in original example description: ++i, ++j, they leave kind of space. With i++, the first corner is (0,0)
                     {
@@ -439,30 +468,37 @@ int Camera::doCalibrationExtrinsics()
                         }
                     }
 
-                    worldSpaceCornerPoints.resize(foundPoints.size(), worldSpaceCornerPoints[0]);
-
+                    worldSpaceCornerPoints.resize(savedImagePoints.size(), worldSpaceCornerPoints[0]);
 
                     // 4. Calibration process
-                    qInfo() << "calibrating cam <" << nr << "> with id <" <<id << ">" << endl;
                     Mat origCameraMatrix, origDistCoeffs;
-
                     cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
                     distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
-                    double error = calibrateCamera(worldSpaceCornerPoints, foundPoints, calibSizeExtrinsic, cameraMatrix,
+                    qInfo() << "calibrating cam <" << nr << "> with id <" <<id << ">" << endl;
+                    rvecs.clear(); tvecs.clear(); // TESTING
+                    double error = calibrateCamera(worldSpaceCornerPoints, savedImagePoints, calibSizeExtrinsic, cameraMatrix,
                                                    distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
 
-                    // 5. calculate reprojection error with new camera matrix, compare to original one
-                    //    and decide, which to use
-                    double origError = computeReprojectionErrors(worldSpaceCornerPoints, foundPoints, rvecs, tvecs, origCameraMatrix, origDistCoeffs);
-                    double newError = computeReprojectionErrors(worldSpaceCornerPoints, foundPoints, rvecs, tvecs, cameraMatrix, distCoeffs);
-                    qInfo() << "orig. Reprojection Error: " << origError << " - new one: " << newError << endl;
-                    if(origError < newError)
-                    {
-                        origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
-                        origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
-                    }
+                    qInfo() << "finished with error <" << error << ">";
+                    //                    // 5. calculate reprojection error with new camera matrix, compare to original one
+                    //                    //    and decide, which to use
+                    //                    double origError = computeReprojectionErrors(worldSpaceCornerPoints, foundPoints, rvecs, tvecs, origCameraMatrix, origDistCoeffs);
+                    //                    double newError = computeReprojectionErrors(worldSpaceCornerPoints, foundPoints, rvecs, tvecs, cameraMatrix, distCoeffs);
+                    //                    qInfo() << "orig. Reprojection Error: " << origError << " - new one: " << newError << endl;
+                    //                    if(origError < newError)
+                    //                    {
+                    //                        origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
+                    //                        origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
+                    //                    }
                     // cout << rvecs << endl;
                     // cout << tvecs << endl;
+                    saveCameraCalibrationParameters();
+                    found = false;
+                    testfound = false;
+                    savedImages.clear();
+                    savedImagePoints.clear();
+                    rvecs.clear();
+                    tvecs.clear();
                 }
             }
             break;
@@ -472,7 +508,7 @@ int Camera::doCalibrationExtrinsics()
             // exit
             qInfo() << "bye bye" << endl;
             destroyWindow("Webcam");
-            destroyWindow("Distorted | Undistorted");
+            destroyWindow("Test-Add");
             return 3;
             break;
         }
@@ -507,7 +543,12 @@ Mat Camera::showUndistorted(Mat distorted)
  */
 void Camera::saveCameraCalibrationParameters()
 {
-    qInfo() << "Camera Matrix (cout):" << endl;
+    s->cams.at(nr)->cameraMatrix = cameraMatrix;
+    s->cams.at(nr)->distCoeffs = distCoeffs;
+    s->cams.at(nr)->rvecs = rvec;
+    s->cams.at(nr)->tvecs = tvec;
+    s->save();
+    qInfo() << "Camera Matrix (cout):";
     cout << " " << cameraMatrix << endl;
     //    for(int r=0; r<cameraMatrix.rows;r++)
     //    {
@@ -520,7 +561,7 @@ void Camera::saveCameraCalibrationParameters()
     // Testoutput in matrix form
     // (remember: fx, fy are focal length in pixels, so fx = f/px with f = focal length in mm and px = pixel width
     //                                     analog:      fy = f/py with f = focal length in mm and py = pixel height)
-    qInfo() << "Camera Matrix (qInfo):" << endl;
+    qInfo() << "Camera Matrix (qInfo):";
     QString buf;
     buf.sprintf( "%.2f %.2f %.2f", cameraMatrix.at<double>(0, 0), cameraMatrix.at<double>(0, 1), cameraMatrix.at<double>(0, 2) );
     qInfo() << buf; buf.clear();
@@ -529,7 +570,7 @@ void Camera::saveCameraCalibrationParameters()
     buf.sprintf( "%.2f %.2f %.2f", cameraMatrix.at<double>(2, 0), cameraMatrix.at<double>(2, 1), cameraMatrix.at<double>(2, 2) );
     qInfo() << buf << endl;
 
-    qInfo() << "Distortion Coefficients:" << endl;
+    qInfo() << "Distortion Coefficients:";
     for(int r=0; r<distCoeffs.rows;r++)
     {
         for(int c=0;c<distCoeffs.cols;c++)
@@ -537,21 +578,33 @@ void Camera::saveCameraCalibrationParameters()
             qInfo() << distCoeffs.at<double>(r,c);
         }
     }
+    qInfo() << endl;
 
-    //    qInfo() << "rotational vectors:" << endl;
+    qInfo() << "rotational vector:";
+    for(int i=0; i<rvecs.size();i++)
+    {
+        for(int r=0; r<rvecs.at(i).rows;r++)
+        {
+            for(int c=0;c<rvecs.at(i).cols;c++)
+            {
+                qInfo() << i << ": " << "("<<r<<","<<c<<")" << rvecs.at(i).at<double>(r,c);
+            }
+        }
+    }
+    qInfo() << endl;
 
-    //        for(int r=0; r<rvecs.size(); r++)
-    //        {
-    //            qInfo() << rvecs.at(r);
-    //        }
-
-    //    qInfo() << "translational vectors:" << endl;
-
-    //        for(int r=0; r<tvecs.size(); r++)
-    //        {
-    //            qInfo() << tvecs.at(r);
-    //        }
-
+    qInfo() << "translational vector:";
+    for(int i=0; i<tvecs.size();i++)
+    {
+        for(int r=0; r<tvecs.at(i).rows;r++)
+        {
+            for(int c=0;c<tvecs.at(i).cols;c++)
+            {
+                qInfo() << i << ": " << "("<<r<<","<<c<<")" << tvecs.at(i).at<double>(r,c);
+            }
+        }
+    }
+    qInfo() << endl;
 }
 
 

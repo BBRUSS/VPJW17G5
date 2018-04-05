@@ -116,7 +116,6 @@ void CameraContrast::frameReady()
         cvtColor(imageOrig, imageOrig, CV_BGR2RGB);
 
         Mat threshold;
-
         cv::threshold(imageOrig, threshold, ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value(), THRESH_BINARY);
 
         //imshow("Test", threshold);
@@ -174,7 +173,13 @@ void CameraContrast::on_pushButtonGetIntrinsics_clicked()
 void CameraContrast::on_pushButtonGetExtrinsics_clicked()
 {
     capture.release();
-    int success = cams.at(nr)->doCalibrationExtrinsics();
+    int success = -1;
+    Size s = cams.at(nr)->cameraMatrix.size();
+    qInfo() << "CameraMatrix.size="<< s.area();
+    if(/*s->cams.at(nr)->*/s.area() > 0)
+        success = cams.at(nr)->doCalibrationExtrinsics();
+    else
+        ui->lineEditStatus->setText("No Camera Matrix found, do intrinsic calibration first!");
     capture.open(id);
     qInfo() << "extrinsic success: " << success;
 }
