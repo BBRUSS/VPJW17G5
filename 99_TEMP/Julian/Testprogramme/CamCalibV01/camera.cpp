@@ -430,7 +430,7 @@ int Camera::doCalibrationExtrinsics()
                     // 3. Create circle positions in real 3D world
                     vector<vector<Point3f>> worldSpaceCornerPoints(1);  // 3x2 = width x height
                     //createKnownBoardPositions(worldSpaceCornerPoints[0], calibSizeExtrinsic, 13.0, Settings::CIRCLES_GRID);
-                    // World space corners with home calib pattern
+                    // World space corners with home calib pattern (TODO: Offsets abhängig von Kameraposition in globalen Koordinaten)
                     for(int i = 0; i < calibSizeExtrinsic.height; i++)    // in original example description: ++i, ++j, they leave kind of space. With i++, the first corner is (0,0)
                     {
                         for(int j = 0; j < calibSizeExtrinsic.width; j++)
