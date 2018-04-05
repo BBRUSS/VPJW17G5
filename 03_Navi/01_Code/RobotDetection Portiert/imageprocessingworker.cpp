@@ -150,7 +150,7 @@ void ImageProcessingWorker::startProcessing() {
             tasks[i]->setArucoParameters(arucoParameters);
 
             tasks[i]->setArucoDict(arucoDict);
-
+            tasks[i]->setRobotOffsets(robotOffsets);
             tasks[i]->setThreshold(taskThreshold);
             tasks[i]->setMinSizeofRects(taskRectMinSize);
             tasks[i]->setRobotCount(robotCount);
@@ -226,6 +226,8 @@ void ImageProcessingWorker::startProcessing() {
 
         for (int a = 0;a<robotCount;a++) {
             cv::Point3f tempMeanVal = cv::Point3f(0, 0, 0);
+            cv::Point2f tempAngle = cv::Point2f(0, 0);
+            double finalAngle = 0;
             cv::Point3f tempVariance3f = cv::Point3f(0, 0, 0);
             cv::Point3f tempStdVal = cv::Point3f(0, 0, 0);
 
@@ -234,9 +236,13 @@ void ImageProcessingWorker::startProcessing() {
             if (!robotIDLocation[a].empty()) {
 
                 for(int i = 0; i < robotIDLocation[a].size(); i++) {
+                    tempAngle.x += sin(robotIDLocation[a].at(i).coordinates.z*PI/180); // for futher details check
+                    tempAngle.y += cos(robotIDLocation[a].at(i).coordinates.z*PI/180); // https://en.wikipedia.org/wiki/Mean_of_circular_quantities
                     tempMeanVal += robotIDLocation[a].at(i).coordinates;
                 }
                 tempMeanVal = tempMeanVal / robotIDLocation[a].size();
+                tempAngle = tempAngle/robotIDLocation[a].size();
+                finalAngle = atan2(tempAngle.x, tempAngle.y)*180/PI;
 
                 if (robotIDLocation[a].size() > 1) {
                     for(int i = 0; i < robotIDLocation[a].size(); i++) {
@@ -279,8 +285,6 @@ void ImageProcessingWorker::startProcessing() {
 
         // sendUDPdata...
         emit finishedUDPData(robotLocations, timeStamp);
-
-
 
         emit requestUDPIncrement();
 

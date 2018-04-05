@@ -509,20 +509,11 @@ double ImgTask::calculatemiddleangle(QList<double> angles, int prio)
 
 int ImgTask::getRobotId(int markerID)
 {
+    if (markerID >= robotCount*2) {
+        return InvalidRobotId;
+    }
 
-    if(markerID == 0||markerID == 1)
-        return 0;
-
-    if(markerID == 2||markerID == 3)
-        return 1;
-
-    if(markerID == 4||markerID == 5)
-        return 2;
-
-    if(markerID == 6||markerID == 7)
-        return 3;
-
-    return InvalidRobotId;
+    return markerID/2;
 }
 
 QList<RobotPosition> ImgTask::getdetectRobots()

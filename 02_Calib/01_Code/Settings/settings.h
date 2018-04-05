@@ -72,7 +72,7 @@ public:
     int cameraImageThreshold = 160;
     int MinSizeofRects = 8000;
 
-    vector<double> robotOffset {61.6811, 60.3357, 59.4646, 57.2372, 60.0, 60.0, 60.0, 60.0};
+    vector<double> robotOffset {69.5669, 68.9789, 68.7194, 69.2366, 69.0, 69.0, 69.0, 69.0};
 
 
     // Methods in Settings

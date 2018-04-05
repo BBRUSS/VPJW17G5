@@ -56,7 +56,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     robotOffsets.clear();
     for(int i = 0; i < MAX_NR_OF_ROBOTS; i++)
     {
-        RobotOffset temp = {i, programSettings.robotOffset[i], -programSettings.robotOffset[i]};
+        RobotOffset temp = {i, -programSettings.robotOffset[i], programSettings.robotOffset[i]};
         robotOffsets.append(temp);
     }
 
