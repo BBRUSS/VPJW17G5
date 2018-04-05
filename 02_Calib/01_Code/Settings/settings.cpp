@@ -185,5 +185,6 @@ void Settings::setCamFieldSize(Size camFieldSize){
 
     for(int i=0; i<this->camFieldSize.area(); i++){
         cams.push_back(new cam);
+        cams.at(i)->cameraID = i;
     }
 }
