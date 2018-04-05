@@ -438,7 +438,7 @@ int Camera::doCalibrationExtrinsics()
                 {
                     //found = findCirclesGrid(images, calibSizeExtrinsic, foundPoints );
                     found = findChessboardCorners(images,calibSizeExtrinsic,foundPoints);//ONLY FOR TESTING WITH CHESSBOARD
-                    if(found) {savedImagePoints.push_back(foundPoints); qInfo() << "added foundPoints " << savedImagePoints.size();}
+                    if(found) {savedImagePoints.push_back(foundPoints);}
 
                     images.copyTo(drawToImages);
                     drawChessboardCorners(drawToImages, calibSizeExtrinsic, foundPoints, found);
@@ -480,18 +480,17 @@ int Camera::doCalibrationExtrinsics()
                                                    distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
 
                     qInfo() << "finished with error <" << error << ">";
-                    //                    // 5. calculate reprojection error with new camera matrix, compare to original one
-                    //                    //    and decide, which to use
-                    //                    double origError = computeReprojectionErrors(worldSpaceCornerPoints, foundPoints, rvecs, tvecs, origCameraMatrix, origDistCoeffs);
-                    //                    double newError = computeReprojectionErrors(worldSpaceCornerPoints, foundPoints, rvecs, tvecs, cameraMatrix, distCoeffs);
-                    //                    qInfo() << "orig. Reprojection Error: " << origError << " - new one: " << newError << endl;
-                    //                    if(origError < newError)
-                    //                    {
-                    //                        origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
-                    //                        origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
-                    //                    }
-                    // cout << rvecs << endl;
-                    // cout << tvecs << endl;
+                    // 5. calculate reprojection error with new camera matrix, compare to original one
+                    //    and decide, which to use
+                    double origError = computeReprojectionErrors(worldSpaceCornerPoints, savedImagePoints, rvecs, tvecs, origCameraMatrix, origDistCoeffs);
+                    double newError = computeReprojectionErrors(worldSpaceCornerPoints, savedImagePoints, rvecs, tvecs, cameraMatrix, distCoeffs);
+                    qInfo() << "orig. Reprojection Error: " << origError << " - new one: " << newError << endl;
+                    if(origError < newError)
+                    {
+                        origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
+                        origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
+                    }
+
                     saveCameraCalibrationParameters();
                     found = false;
                     testfound = false;
@@ -548,15 +547,6 @@ void Camera::saveCameraCalibrationParameters()
     s->cams.at(nr)->rvecs = rvec;
     s->cams.at(nr)->tvecs = tvec;
     s->save();
-    qInfo() << "Camera Matrix (cout):";
-    cout << " " << cameraMatrix << endl;
-    //    for(int r=0; r<cameraMatrix.rows;r++)
-    //    {
-    //        for(int c=0;c<cameraMatrix.cols;c++)
-    //        {
-    //            //qInfo() << cameraMatrix.at<double>(r,c);
-    //        }
-    //    }
 
     // Testoutput in matrix form
     // (remember: fx, fy are focal length in pixels, so fx = f/px with f = focal length in mm and px = pixel width
@@ -636,7 +626,7 @@ void Camera::setContrast(int blackWhiteThreshold, int maxValue)
  * @return reprojection error
  */
 double Camera::computeReprojectionErrors( vector<vector<Point3f>> &objectPoints,
-                                          vector<Point2f> &imagePoints,
+                                          vector<vector<Point2f>> &imagePoints,
                                           vector<Mat> &rvecs, vector<Mat> &tvecs,
                                           Mat &cameraMatrix, Mat &distCoeffs)
 {

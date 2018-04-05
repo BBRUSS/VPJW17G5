@@ -51,7 +51,7 @@ public:
     int getID();
     void setContrast(int blackWhiteThreshold, int maxValue);
     double computeReprojectionErrors(vector<vector<Point3f>> &objectPoints,
-                              vector<Point2f> &imagePoints,
+                              vector<vector<Point2f> > &imagePoints,
                               vector<Mat> &rvecs, vector<Mat> &tvecs,
                               Mat &cameraMatrix, Mat &distCoeffs);
 
