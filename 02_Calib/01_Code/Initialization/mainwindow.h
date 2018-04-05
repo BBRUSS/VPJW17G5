@@ -32,7 +32,6 @@ private slots:
     void updateFrame();
     void on_pushButtonChange_clicked();
     void on_pushButtonResizeCamField_clicked();
-
     void on_pushButtonSaveSettings_clicked();
 
 private:
