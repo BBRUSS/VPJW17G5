@@ -31,7 +31,8 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     QSettings settings("settings.ini", QSettings::IniFormat);
     settings.beginGroup("RobotDetectionSettings");
 
-    //programSettings.load();
+
+    programSettings.load();
     udpStruct = programSettings.udpStruct;
     timerMilSecs = programSettings.timerMilSecs;
     ui->slider_cornerRefinementMaxIterations->setValue(programSettings.cornerRefinementMaxIterations);
@@ -56,7 +57,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     robotOffsets.clear();
     for(int i = 0; i < MAX_NR_OF_ROBOTS; i++)
     {
-        RobotOffset temp = {i, programSettings.robotOffset[i], -programSettings.robotOffset[i]};
+        RobotOffset temp = {i, -programSettings.robotOffset[i], programSettings.robotOffset[i]};
         robotOffsets.append(temp);
     }
 
@@ -722,7 +723,7 @@ void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Po
         {
             cv::putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offsetId),
                          CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
-            cv::putText(guiImage, defaultArucoDict.getNameById(i).toUtf8().constData(),scaleToGui(center) + scaleToGui(offsetName),
+            cv::putText(guiImage, defaultArucoDict.getNameById(i*2).toUtf8().constData(),scaleToGui(center) + scaleToGui(offsetName),
                         CV_FONT_HERSHEY_PLAIN, 1, COLOR_RED, 2, CV_AA, false);
         }
     }
