@@ -389,7 +389,7 @@
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>0</y>
+                       <y>-245</y>
                        <width>295</width>
                        <height>595</height>
                       </rect>
@@ -606,6 +606,55 @@
                          </widget>
                         </item>
                         <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_35">
+                          <item>
+                           <widget class="QLabel" name="labelMaxMiddle_9">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>160</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>Error Correction Rate 0.x</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="value_errorCorrectionRate">
+                            <property name="text">
+                             <string>0</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <widget class="QSlider" name="slider_errorCorrectionRate">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimum">
+                           <number>10</number>
+                          </property>
+                          <property name="maximum">
+                           <number>1000</number>
+                          </property>
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
                          <layout class="QHBoxLayout" name="horizontalLayout_34">
                           <item>
                            <widget class="QLabel" name="labelMaxMiddle_8">
@@ -652,9 +701,9 @@
                          </widget>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_35">
+                         <layout class="QHBoxLayout" name="horizontalLayout_40">
                           <item>
-                           <widget class="QLabel" name="labelMaxMiddle_9">
+                           <widget class="QLabel" name="labelMaxMiddle_14">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -668,12 +717,12 @@
                              </size>
                             </property>
                             <property name="text">
-                             <string>Error Correction Rate 0.x</string>
+                             <string>Max. Marker Perimet. Rate 0.0</string>
                             </property>
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLabel" name="value_errorCorrectionRate">
+                           <widget class="QLabel" name="value_maxMarkerPerimeterRate">
                             <property name="text">
                              <string>0</string>
                             </property>
@@ -682,7 +731,7 @@
                          </layout>
                         </item>
                         <item>
-                         <widget class="QSlider" name="slider_errorCorrectionRate">
+                         <widget class="QSlider" name="slider_maxMarkerPerimeterRate">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -690,10 +739,10 @@
                            </sizepolicy>
                           </property>
                           <property name="minimum">
-                           <number>10</number>
+                           <number>100</number>
                           </property>
                           <property name="maximum">
-                           <number>1000</number>
+                           <number>999</number>
                           </property>
                           <property name="orientation">
                            <enum>Qt::Horizontal</enum>
@@ -792,6 +841,52 @@
                           </property>
                           <property name="maximum">
                            <number>10</number>
+                          </property>
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_37">
+                          <item>
+                           <widget class="QLabel" name="labelMaxMiddle_12">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>160</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>Adaptive Thresh Win. Size Step</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="value_adaptiveThreshWinSizeStep">
+                            <property name="text">
+                             <string>0</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <widget class="QSlider" name="slider_adaptiveThreshWinSizeStep">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimum">
+                           <number>1</number>
                           </property>
                           <property name="orientation">
                            <enum>Qt::Horizontal</enum>
@@ -933,101 +1028,6 @@
                           </property>
                           <property name="maximum">
                            <number>10000</number>
-                          </property>
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_37">
-                          <item>
-                           <widget class="QLabel" name="labelMaxMiddle_12">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                             <size>
-                              <width>160</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>Adaptive Thresh Win. Size Step</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="value_adaptiveThreshWinSizeStep">
-                            <property name="text">
-                             <string>0</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <widget class="QSlider" name="slider_adaptiveThreshWinSizeStep">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimum">
-                           <number>1</number>
-                          </property>
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_40">
-                          <item>
-                           <widget class="QLabel" name="labelMaxMiddle_14">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                             <size>
-                              <width>160</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>Max. Marker Perimet. Rate 0.0</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="value_maxMarkerPerimeterRate">
-                            <property name="text">
-                             <string>0</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <widget class="QSlider" name="slider_maxMarkerPerimeterRate">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimum">
-                           <number>100</number>
-                          </property>
-                          <property name="maximum">
-                           <number>999</number>
                           </property>
                           <property name="orientation">
                            <enum>Qt::Horizontal</enum>

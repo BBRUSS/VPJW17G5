@@ -224,6 +224,13 @@ void ImageProcessingWorker::startProcessing() {
             }
         }
 
+        RobotPosition temp;
+        temp.coordinates = cv::Point3f(0, 0, 170);
+        temp.id = 0;
+        robotIDLocation[0].append(temp);
+        temp.coordinates = cv::Point3f(0, 0, -160);
+        robotIDLocation[0].append(temp);
+
         for (int a = 0;a<robotCount;a++) {
             cv::Point3f tempMeanVal = cv::Point3f(0, 0, 0);
             cv::Point2f tempAngle = cv::Point2f(0, 0);
@@ -243,6 +250,7 @@ void ImageProcessingWorker::startProcessing() {
                 tempMeanVal = tempMeanVal / robotIDLocation[a].size();
                 tempAngle = tempAngle/robotIDLocation[a].size();
                 finalAngle = atan2(tempAngle.x, tempAngle.y)*180/PI;
+                tempMeanVal.z = finalAngle;
 
                 if (robotIDLocation[a].size() > 1) {
                     for(int i = 0; i < robotIDLocation[a].size(); i++) {
@@ -276,7 +284,7 @@ void ImageProcessingWorker::startProcessing() {
             for(int a = 0;a<robotLocations.size();a++)
             {
                 f << robotLocations[a].x << "\t" << robotLocations[a].y << "\t" << robotLocations[a].z << "\t";
-                f << robotLocationStd[a].x << "\t" << robotLocationStd[a].y << "\t" << robotLocationStd[a].z << "\t";
+                f << robotLocationStd1d[a] << "\t";
             }
 
             f << "\n";
