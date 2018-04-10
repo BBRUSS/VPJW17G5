@@ -21,6 +21,7 @@
 #include "myudp.h"
 #include "constants.h"
 #include "settings.h"
+#include "camera.h"
 
 using namespace cv;
 using namespace std;
@@ -36,6 +37,7 @@ class RobotDetectionMainWindow : public QMainWindow
 public:
     explicit RobotDetectionMainWindow(QWidget *parent = 0);
     ~RobotDetectionMainWindow();
+    void setCams(vector<Camera*> cams);
 
 private:
     //cv::VideoCapture videoCapture[NR_OF_CAMS];
@@ -69,6 +71,13 @@ private:
     QTimer frames;
     Mat guiImage;
     Mat camImage;
+    vector<Camera*> cams;
+    int id;
+    int nr;
+    Mat image,  imageOrig;
+    VideoCapture capture;
+    QTimer cameraTimer;
+
 
 private:
     void initializeCams();
@@ -111,6 +120,13 @@ private slots:
     void on_pushButtonChange_clicked();
     void on_pushButtonResizeCamField_clicked();
     void on_pushButtonSaveSettings_clicked();
+    void frameReady();
+    void on_pushButtonStartCam_clicked();
+    void on_pushButtonStopCam_clicked();
+    void on_pushButtonSaveContrast_clicked();
+    void on_pushButtonGetIntrinsics_clicked();
+    void on_pushButtonGetExtrinsics_clicked();
+    void on_pushButtonResetThr_clicked();
 
 public slots:
     void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
