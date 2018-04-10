@@ -40,12 +40,9 @@ public:
     void setCams(vector<Camera*> cams);
 
 private:
-    //cv::VideoCapture videoCapture[NR_OF_CAMS];
-    //QTimer * timer;
     ArucoDictionary defaultArucoDict;
     bool calibrateOffset_ON_OFF;
     bool mainloopIsActive;
-    cv::Mat originalImages[NR_OF_CAMS];
     ImageProcessingWorker* imgWorker;
     int fpsCount = 0;
     int timerMilSecs;

@@ -45,7 +45,7 @@ private:
     int baseDict;
     cv::Ptr<cv::aruco::Dictionary> dictionary;
     int markerBits = 10;
-    int markerCount = 0;
+    int markerCount = 2;
 
 };
 

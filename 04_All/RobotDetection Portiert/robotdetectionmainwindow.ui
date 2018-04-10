@@ -43,7 +43,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabMain_Navigation">
        <property name="sizePolicy">
@@ -257,7 +257,7 @@
                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab">
                <attribute name="title">
@@ -1507,7 +1507,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabSettings">
+      <widget class="QWidget" name="tabMain_Settings">
        <attribute name="title">
         <string>Settings</string>
        </attribute>
@@ -1516,6 +1516,9 @@
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>50</number>
+            </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_10">
               <item>
@@ -1554,22 +1557,6 @@
              </layout>
             </item>
             <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Maximum</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
                <widget class="QSpinBox" name="spinBoxFieldHeight">
@@ -1578,6 +1565,9 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
                 </property>
                </widget>
               </item>
@@ -1602,6 +1592,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>1</number>
+                </property>
                </widget>
               </item>
               <item>
@@ -1618,22 +1614,6 @@
                </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Maximum</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_9">
@@ -1699,9 +1679,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-308</y>
                  <width>381</width>
-                 <height>907</height>
+                 <height>997</height>
                 </rect>
                </property>
                <property name="minimumSize">
@@ -1739,7 +1719,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEditSettingsFileName"/>
+                      <widget class="QLineEdit" name="lineEditSettingsFileName">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -1989,6 +1973,26 @@
                      <item>
                       <widget class="QLineEdit" name="lineEditRobotRadius"/>
                      </item>
+                     <item>
+                      <widget class="QLabel" name="labelRobotStdThresh">
+                       <property name="text">
+                        <string>Robot Position Standard Deviation Threshold (Divider of Radius)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditRobotStdThresh"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelRobotStdThreshMax">
+                       <property name="text">
+                        <string>Robot Position Standard Deviation Max (Factor of Deviation Thresh)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditRobotStdThreshMax"/>
+                     </item>
                     </layout>
                    </item>
                   </layout>
@@ -2013,14 +2017,14 @@
                       <widget class="QLineEdit" name="lineEditArucoDictionaryFileName"/>
                      </item>
                      <item>
-                      <widget class="QLabel" name="label_9">
+                      <widget class="QLabel" name="labelArucoMakerSizeInPixel">
                        <property name="text">
                         <string>Aruco Marker Size in Pixel</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_9"/>
+                      <widget class="QLineEdit" name="lineEditArucoMakerSizeInPixel"/>
                      </item>
                     </layout>
                    </item>

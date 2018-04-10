@@ -9,8 +9,6 @@
 #define GUI_HEIGTH 640
 #define GUI_SCALING  6.25  // = 8000mm / 1280pixel
 
-#define PI 3.14159265359
-
 #define NR_OF_CAMS 6
 #define MAX_NR_OF_ROBOTS 8
 #define ROBOT_RADIUS 180.0 // millimeters

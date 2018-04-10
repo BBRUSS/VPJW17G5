@@ -35,12 +35,11 @@ public:
 
 private:
 
-    //ImgTask *tasks[NR_OF_CAMS];
     bool calibrateOffset_ON_OFF = false;
     bool debugMode = false;
     bool mainLoopActive = false;
     bool measureData = false;
-    cv::Mat cameraImages[NR_OF_CAMS];
+    QList<cv::Mat> cameraImages;
     cv::Ptr<cv::aruco::DetectorParameters> arucoParameters;
     cv::Ptr<cv::aruco::Dictionary> arucoDict;
     int recivePort_SyncService;

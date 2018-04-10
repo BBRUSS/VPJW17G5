@@ -20,8 +20,12 @@ ImageProcessingWorker::ImageProcessingWorker(Settings::UDPSettings udpStruct, QL
 
     connect(this, &ImageProcessingWorker::finishedUDPData, udpClient, &MyUDP::sendUdpData);
 
-    threadPool.setMaxThreadCount(NR_OF_CAMS);
-    for (int i = 0; i < NR_OF_CAMS; i++)
+    for (int i = 0; i < videoCapture.size(); i++) {
+        cameraImages.append(cv::Mat());
+    }
+
+    threadPool.setMaxThreadCount(videoCapture.size());
+    for (int i = 0; i < videoCapture.size(); i++)
     {
         ImgTask* temp = new ImgTask();
 
@@ -119,7 +123,7 @@ void ImageProcessingWorker::startProcessing() {
         // grab frames with smallest time difference possible
         // "grab()" + "retrieve()" is faster than the combined function "read()"
 
-        for (int i = 0; i < NR_OF_CAMS; i++)
+        for (int i = 0; i < videoCapture.size(); i++)
         {
             if (videoCapture[i].isOpened())
             {
@@ -130,7 +134,7 @@ void ImageProcessingWorker::startProcessing() {
         // Fetch detected Robots from tasks
         QList<RobotPosition> detectedRobots;
 
-        for (int i = 0; i < NR_OF_CAMS; i++)
+        for (int i = 0; i < videoCapture.size(); i++)
         {
             if (videoCapture[i].isOpened())
             {
@@ -138,7 +142,7 @@ void ImageProcessingWorker::startProcessing() {
             }
             else     // no camera connected, use black image
             {
-                cv::Mat blackImage(CAMERA_IMG_HEIGTH, CAMERA_IMG_WIDTH, CV_8UC3);
+                cv::Mat blackImage(videoCapture[i].get(cv::CAP_PROP_FRAME_HEIGHT), videoCapture[i].get(cv::CAP_PROP_FRAME_WIDTH), CV_8UC3);
                 blackImage.setTo(COLOR_BLACK);
                 cameraImages[i] = blackImage;
             }
@@ -160,7 +164,7 @@ void ImageProcessingWorker::startProcessing() {
         }
         threadPool.waitForDone();
 
-        for (int i = 0; i < NR_OF_CAMS; i++)
+        for (int i = 0; i < videoCapture.size(); i++)
         {
             detectedRobots.append(tasks[i]->getdetectRobots());
         }
@@ -171,7 +175,7 @@ void ImageProcessingWorker::startProcessing() {
             //Fetch Calibration Data from Tasks
             QList<RobotOffset> foundOffsets;
 
-            for (int i = 0; i < NR_OF_CAMS; i++)
+            for (int i = 0; i < videoCapture.size(); i++)
             {
                 foundOffsets.append(tasks[i]->getNewRobotOffsets());
                 tasks[i]->clearNewRobotOffsets();
@@ -243,13 +247,13 @@ void ImageProcessingWorker::startProcessing() {
             if (!robotIDLocation[a].empty()) {
 
                 for(int i = 0; i < robotIDLocation[a].size(); i++) {
-                    tempAngle.x += sin(robotIDLocation[a].at(i).coordinates.z*PI/180); // for futher details check
-                    tempAngle.y += cos(robotIDLocation[a].at(i).coordinates.z*PI/180); // https://en.wikipedia.org/wiki/Mean_of_circular_quantities
+                    tempAngle.x += sin(robotIDLocation[a].at(i).coordinates.z*CV_PI/180); // for futher details check
+                    tempAngle.y += cos(robotIDLocation[a].at(i).coordinates.z*CV_PI/180); // https://en.wikipedia.org/wiki/Mean_of_circular_quantities
                     tempMeanVal += robotIDLocation[a].at(i).coordinates;
                 }
                 tempMeanVal = tempMeanVal / robotIDLocation[a].size();
                 tempAngle = tempAngle/robotIDLocation[a].size();
-                finalAngle = atan2(tempAngle.x, tempAngle.y)*180/PI;
+                finalAngle = atan2(tempAngle.x, tempAngle.y)*180/CV_PI;
                 tempMeanVal.z = finalAngle;
 
                 if (robotIDLocation[a].size() > 1) {
@@ -297,7 +301,7 @@ void ImageProcessingWorker::startProcessing() {
         emit requestUDPIncrement();
 
         if (debugMode) {
-            for (int i = 0; i < NR_OF_CAMS; i++)
+            for (int i = 0; i < videoCapture.size(); i++)
             {
                 liveViewImage.append(tasks[i]->getLiveViewImage());
             }
