@@ -30,9 +30,8 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     // read settings from ini file
     QSettings settings("settings.ini", QSettings::IniFormat);
     settings.beginGroup("RobotDetectionSettings");
-
-
-    if(!programSettings.load())
+    ui->centralWidget->adjustSize();
+    if(programSettings.load())
     {
         this->ui->tabMain->setCurrentIndex(3);
         this->ui->tabMain_Navigation->setEnabled(false);
@@ -58,19 +57,23 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->lineEditSettingsFileName->setText(QString::fromStdString(programSettings.filename));
     ui->lineEditArucoDictionaryFileName->setText(QString::fromStdString(programSettings.arucoDictFileName));
     ui->lineEditArucoMakerSizeInPixel->setText(QString::number(programSettings.arucoMarkerSizePixel));
-    ui->lineEditCameraFieldHeight->setText(QString::number(programSettings.cameraFieldHeight));
-    ui->lineEditCameraFieldWidth->setText(QString::number(programSettings.cameraFieldWidth));
-    ui->lineEditCameraImageHeight->setText(QString::number(programSettings.cameraImageHeight));
-    ui->lineEditCameraImageWidth->setText(QString::number(programSettings.cameraImageWidth));
+    ui->lineEditCameraFieldHeight->setText(QString::number(programSettings.cameraField.height));
+    ui->lineEditCameraFieldWidth->setText(QString::number(programSettings.cameraField.width));
+    ui->lineEditCameraImageHeight->setText(QString::number(programSettings.cameraImage.height));
+    ui->lineEditCameraImageWidth->setText(QString::number(programSettings.cameraImage.width));
     ui->lineEditMaxNumberOfRobots->setText(QString::number(programSettings.robotMaxNumber));
     ui->lineEditNumberOfCams->setText(QString::number(programSettings.nrOfCams));
     ui->lineEditReceiveIpSyncService->setText(QString::fromStdString(programSettings.udpStruct.reciveIp_SyncService));
     ui->lineEditReceivePortSyncService->setText(QString::number(programSettings.udpStruct.recivePort_SyncService));
     ui->lineEditRobotRadius->setText(QString::number(programSettings.robotRadius));
+    ui->lineEditRobotStdThresh->setText(QString::number(programSettings.robotStdThresh));
+    ui->lineEditRobotStdThreshMax->setText(QString::number(programSettings.robotStdThreshMax));
     ui->lineEditSendToIp->setText(QString::fromStdString(programSettings.udpStruct.sendToIp));
     ui->lineEditSendToIpSyncService->setText(QString::fromStdString(programSettings.udpStruct.sendToIp_SyncService));
     ui->lineEditSendToPort->setText(QString::number(programSettings.udpStruct.sendToPort));
     ui->lineEditSendToPortSyncService->setText(QString::number(programSettings.udpStruct.sendToPort_SyncService));
+    ui->spinBoxFieldHeight->setValue(programSettings.camFieldSize.height);
+    ui->spinBoxFieldWidth->setValue(programSettings.camFieldSize.width);
 
     //load aruco dict
     this->defaultArucoDict = ArucoDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
@@ -117,7 +120,7 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
 
     programSettings.save();
 
-    defaultArucoDict.save(ARUCO_DICT_NAME);
+    defaultArucoDict.save(QString::fromStdString(programSettings.arucoDictFileName));
 
     delete ui;
 }
@@ -151,24 +154,22 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
 
     writeRobotLocationsToTable(robotLocations);
     // Display either camera images or white background
-    int guiWidth = ui->labelImage->width();
-    int guiHeight = ui->labelImage->height();
-    float guiScale = 6.25;;
 
-    cv::Mat guiImage(guiHeight, guiWidth, CV_8UC3);
+    cv::Mat guiImage(programSettings.guiImageBase, CV_8UC3);
     if (ui->checkBoxLiveView->isChecked() && !cameraImage.empty())   // show real frames
     {
         guiImage.setTo(COLOR_BLACK);
         for (int i = 0; i < cameraImage.size(); i++)
         {
-
-            // Undistort Image
-            cv::Mat undistortedImage;
-            cv::Mat warpedImage;
-            cv::undistort(cameraImage[i], undistortedImage, cameraMatrix.at(i), distCoeffs.at(i));
-            // Apply perspective Transformation
-            cv::warpPerspective(undistortedImage, warpedImage, guiTransfMatrix.at(i), cv::Size(guiWidth, guiHeight), cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
-            cv::addWeighted(guiImage, 1, warpedImage, 1, 0, guiImage, -1);
+            if (!cameraImage[i].empty()) {
+                // Undistort Image
+                cv::Mat undistortedImage;
+                cv::Mat warpedImage;
+                cv::undistort(cameraImage[i], undistortedImage, cameraMatrix.at(i), distCoeffs.at(i));
+                // Apply perspective Transformation
+                cv::warpPerspective(undistortedImage, warpedImage, guiTransfMatrix.at(i), programSettings.guiImageBase, cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
+                cv::addWeighted(guiImage, 1, warpedImage, 1, 0, guiImage, -1);
+            }
         }
     }
     else     // show white background with grid
@@ -178,22 +179,22 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
         {
             if (i % 5 == 0)
             {
-                cv::line(guiImage, cv::Point(i * 200 / guiScale, 0), cv::Point(i * 200 / guiScale, guiImage.rows), COLOR_DARK_GREY,  1, 8, 0);
+                cv::line(guiImage, cv::Point(i * 200 / programSettings.getGuiScale(), 0), cv::Point(i * 200 / programSettings.getGuiScale(), guiImage.rows), COLOR_DARK_GREY,  1, 8, 0);
             }
             else
             {
-                cv::line(guiImage, cv::Point(i * 200 / guiScale, 0), cv::Point(i * 200 / guiScale, guiImage.rows), COLOR_LIGHT_GREY, 1, 8, 0);
+                cv::line(guiImage, cv::Point(i * 200 / programSettings.getGuiScale(), 0), cv::Point(i * 200 / programSettings.getGuiScale(), guiImage.rows), COLOR_LIGHT_GREY, 1, 8, 0);
             }
         }
         for (unsigned int i = 0; i < 20; i++)
         {
             if (i % 5 == 0)
             {
-                cv::line(guiImage, cv::Point(0, i * 200 / guiScale), cv::Point(guiImage.cols, i * 200 / guiScale), COLOR_DARK_GREY,  1, 8, 0);
+                cv::line(guiImage, cv::Point(0, i * 200 / programSettings.getGuiScale()), cv::Point(guiImage.cols, i * 200 / programSettings.getGuiScale()), COLOR_DARK_GREY,  1, 8, 0);
             }
             else
             {
-                cv::line(guiImage, cv::Point(0, i * 200 / guiScale), cv::Point(guiImage.cols, i * 200 / guiScale), COLOR_LIGHT_GREY, 1, 8, 0);
+                cv::line(guiImage, cv::Point(0, i * 200 / programSettings.getGuiScale()), cv::Point(guiImage.cols, i * 200 / programSettings.getGuiScale()), COLOR_LIGHT_GREY, 1, 8, 0);
             }
         }
     }
@@ -209,7 +210,7 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
         if(robotLocations[i].x != 0)
         {
 
-            cv::Point2f centerPoint = cv::Point2f(robotLocations[i].x, programSettings.cameraFieldHeight - robotLocations[i].y);
+            cv::Point2f centerPoint = cv::Point2f(robotLocations[i].x, programSettings.cameraField.height - robotLocations[i].y);
             double centerRadius = programSettings.robotRadius;
             double angledegree = 2*3.14159265359-(robotLocations[i].z*3.14159265359/180);
             cv::Point2f directionPoint = cv::Point2f(scaleToGui(centerPoint).x + scaleToGui(centerRadius)*cos(angledegree ), scaleToGui(centerPoint).y + scaleToGui(centerRadius)*sin(angledegree));
@@ -229,35 +230,20 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     }
 
     // show error message in image if camera is missing
-    for (int i = 0; i < programSettings.cams.size(); i++ )
+    for (int j = 0; j < programSettings.camFieldSize.width; j++)
     {
-        if( ! videoCapture[i].isOpened())
-        {
-            QString str = "Camera not connected. ID: ";
-            str.append(QString::number(i));
-            std::string str2 = str.toStdString();
-            double x = 0, y = 0;
-            if ( i % 2 == 0)
+        for (int i = 0; i < programSettings.camFieldSize.height; i++) {
+            int ID = i*programSettings.camFieldSize.width+j;
+
+            if( ! videoCapture[ID].isOpened())
             {
-                y = guiHeight / 4 - 20;
+                std::string numStr = QString("Camera not connected. ID: " + QString::number(ID)).toStdString();
+                int baseline = 0;
+                Size textSize = cv::getTextSize(numStr, CV_FONT_HERSHEY_PLAIN, 1, 1, &baseline);
+                int x = (programSettings.guiImageBase.width/programSettings.camFieldSize.width)*((float)j+0.5)-textSize.width/2.0;
+                int y = (programSettings.guiImageBase.height/programSettings.camFieldSize.height)*((float)i+0.5)-textSize.height/2.0;
+                cv::putText(guiImage, numStr, cv::Point2f(x, y), CV_FONT_HERSHEY_PLAIN, 1, COLOR_DARK_GREY, 1, 8, false);
             }
-            else
-            {
-                y = guiHeight * 3 / 4 + 20;
-            }
-            if ( (i == 0) || (i == 5) )
-            {
-                x = 60;
-            }
-            else if ( (i == 1) || (i == 2) )
-            {
-                x = 60 + guiWidth / 3;
-            }
-            else if ( (i == 3) || (i == 4) )
-            {
-                x = 60 + 2 * guiWidth / 3;
-            }
-            cv::putText(guiImage, str2, cv::Point2f(x, y), CV_FONT_HERSHEY_PLAIN, 1, COLOR_DARK_GREY, 1, 8, false);
         }
     }
 
@@ -268,7 +254,6 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     cv::cvtColor(guiImage, guiImage, CV_BGR2RGB);
     QPixmap pixmap;
 
-    cv::imwrite("file.jpg", guiImage);
     //pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
     pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, guiImage.step, QImage::Format_RGB888));
     //pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
@@ -307,7 +292,7 @@ void RobotDetectionMainWindow::on_pushButton_addAruco_clicked()
         defaultArucoDict.add(2);
         initArucoTab();
     } else {
-        this->ui->statusBar->showMessage("Maximum number of robots is reached. (" + QString::number(MAX_NR_OF_ROBOTS) + ")");
+        this->ui->statusBar->showMessage("Maximum number of robots is reached. (" + QString::number(programSettings.robotMaxNumber) + ")");
     }
     //sendSettingsUpdate();
 }
@@ -407,8 +392,8 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
             cv::VideoCapture capt;
             videoCapture.append(capt);
             videoCapture[i].open(programSettings.cams.at(i)->cameraID); //TÓDO: 0 -> i
-            videoCapture[i].set(CV_CAP_PROP_FRAME_WIDTH, programSettings.cameraImageWidth);
-            videoCapture[i].set(CV_CAP_PROP_FRAME_HEIGHT, programSettings.cameraImageHeight);
+            videoCapture[i].set(CV_CAP_PROP_FRAME_WIDTH, programSettings.cameraImage.width);
+            videoCapture[i].set(CV_CAP_PROP_FRAME_HEIGHT, programSettings.cameraImage.height);
             videoCapture[i].set(CV_CAP_PROP_BRIGHTNESS, brightnessValue[i]);
             videoCapture[i].set(CV_CAP_PROP_CONTRAST, contrastValue[i]);
             videoCapture[i].set(CV_CAP_PROP_EXPOSURE, exposureValue[i]);
@@ -428,6 +413,8 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         imgWorker->setArucoParameters(readArucoParameters());
         imgWorker->setArucoDict(defaultArucoDict.get());
         imgWorker->setRobotOffsets(robotOffsets);
+        imgWorker->setRobotMaxNumber(programSettings.robotMaxNumber);
+        imgWorker->setRobotStdThreshMax(programSettings.robotStdThreshMax);
         imgWorker->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
@@ -470,23 +457,17 @@ double RobotDetectionMainWindow::distanceBetweenPoints(cv::Point2f a, cv::Point2
 
 cv::Point2f RobotDetectionMainWindow::scaleToGui(cv::Point2f srcDot)
 {
-    int guiWidth = ui->labelImage->width();
-    float guiScale = 6.25;
-    return cv::Point2f( (srcDot.x / guiScale) , (srcDot.y / guiScale) );
+    return cv::Point2f( (srcDot.x / programSettings.getGuiScale()) , (srcDot.y / programSettings.getGuiScale()) );
 }
 
 cv::Point3f RobotDetectionMainWindow::scaleToGui(cv::Point3f srcDot)
 {
-    int guiWidth = ui->labelImage->width();
-    float guiScale = 6.25;
-    return cv::Point3f( (srcDot.x / guiScale) , (srcDot.y / guiScale) , (srcDot.z / guiScale));
+    return cv::Point3f( (srcDot.x / programSettings.getGuiScale()) , (srcDot.y / programSettings.getGuiScale()) , (srcDot.z / programSettings.getGuiScale()));
 }
 
 double RobotDetectionMainWindow::scaleToGui(double value)
 {
-    int guiWidth = ui->labelImage->width();
-    float guiScale = 6.25;
-    return (value / guiScale);
+    return (value / programSettings.getGuiScale());
 }
 //Point Section End
 //Aruco Section Start
@@ -601,8 +582,6 @@ void RobotDetectionMainWindow::readXmlCalibrationFile()
 {
     QString fileName = "CalibrationData.xml";
     QFile* file = new QFile(fileName);
-    int guiWidth = ui->labelImage->width();
-    float guiScale = 6.25;
 
     // If file can't be found, choose other file.
     if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
@@ -698,8 +677,8 @@ void RobotDetectionMainWindow::readXmlCalibrationFile()
 
         // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
         cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
-        scaleMatrix.at<double>(0, 0) = 1.0 / guiScale;
-        scaleMatrix.at<double>(1, 1) = 1.0 / guiScale;
+        scaleMatrix.at<double>(0, 0) = 1.0 / programSettings.getGuiScale();
+        scaleMatrix.at<double>(1, 1) = 1.0 / programSettings.getGuiScale();
         scaleMatrix.at<double>(2, 2) = 1.0;
         guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
 
@@ -762,13 +741,13 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> rob
 void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations)
 {
 
-    cv::Point2f offsetId = cv::Point2f(ROBOT_RADIUS, - ROBOT_RADIUS);
-    cv::Point2f offsetName = cv::Point2f(ROBOT_RADIUS, + ROBOT_RADIUS);
+    cv::Point2f offsetId = cv::Point2f(programSettings.robotRadius, -programSettings.robotRadius);
+    cv::Point2f offsetName = cv::Point2f(programSettings.robotRadius, + programSettings.robotRadius);
 
     for (int i = 0; i < robotLocations.size(); i++)
     {
-        cv::Point2f center = cv::Point2f(robotLocations.at(i).x, programSettings.cameraFieldHeight - robotLocations.at(i).y);
-        if (center.y != programSettings.cameraFieldHeight)
+        cv::Point2f center = cv::Point2f(robotLocations.at(i).x, programSettings.cameraField.height - robotLocations.at(i).y);
+        if (center.y != programSettings.cameraField.height)
         {
             cv::putText( guiImage, QString::number(i + 1).toStdString(), scaleToGui(center) + scaleToGui(offsetId),
                          CV_FONT_HERSHEY_PLAIN, 2, COLOR_RED, 2, CV_AA, false);
@@ -877,10 +856,10 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
 
     programSettings.arucoDictFileName = ui->lineEditArucoDictionaryFileName->text().toStdString();
     programSettings.arucoMarkerSizePixel = ui->lineEditArucoMakerSizeInPixel->text().toInt();
-    programSettings.cameraFieldHeight = ui->lineEditCameraFieldHeight->text().toInt();
-    programSettings.cameraFieldWidth = ui->lineEditCameraFieldWidth->text().toInt();
-    programSettings.cameraImageHeight = ui->lineEditCameraImageHeight->text().toInt();
-    programSettings.cameraImageWidth = ui->lineEditCameraImageWidth->text().toInt();
+    programSettings.cameraField.height = ui->lineEditCameraFieldHeight->text().toInt();
+    programSettings.cameraField.width = ui->lineEditCameraFieldWidth->text().toInt();
+    programSettings.cameraImage.height = ui->lineEditCameraImageHeight->text().toInt();
+    programSettings.cameraImage.width = ui->lineEditCameraImageWidth->text().toInt();
     programSettings.robotMaxNumber = ui->lineEditMaxNumberOfRobots->text().toInt();
     programSettings.nrOfCams = ui->lineEditNumberOfCams->text().toInt();
     programSettings.udpStruct.reciveIp_SyncService = ui->lineEditReceiveIpSyncService->text().toStdString();

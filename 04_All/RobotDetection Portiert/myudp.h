@@ -30,6 +30,7 @@ public:
     void setReciveConfig(QString ReciveFromIp,int ReciveFromPort);
     void setSendConfig_SyncService (QString SendToIp_SyncService, int SendToPort_SyncService);
     void setReciveConfig_SyncService(QString ReciveFromIp_SyncService,int ReciveFromPort_SyncService);
+    void setRobotMaxNumber(int Number);
     bool getconfiginformation();
     bool getsyncconfiginformation();
     void send_ID4 (double recived_Robot_no, double timeStamp_t4);
@@ -69,7 +70,6 @@ private:
     double timestamp_stop_log;
 
 
-
     QString sendIP;
     int sendPort;
     QString sendIP_SyncService;
@@ -80,14 +80,14 @@ private:
     QString reciveIP_SyncService;
     int recivePort_SyncService;
 
-
     //Sync-Handling
     QBitArray Robots_Sync_Status;
 
     //UDP-Variables
-    double send_data_time_sync [8];
+    double send_data_time_sync[8];
     double robotID[8];
-    double robots_t4_stamps [8];
+    double robots_t4_stamps[8];
+    int robotMaxNumber;
 
 
 };

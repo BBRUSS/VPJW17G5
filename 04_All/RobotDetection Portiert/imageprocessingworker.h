@@ -28,6 +28,8 @@ public:
     void setPerpTransfMatrix(const QList<cv::Mat> perspTransfMatrix);
     void setRobotCount(int robotCount);
     void setRobotOffsets(const QList<RobotOffset> robotOffsets);
+    void setRobotStdThreshMax(float robotStdThreshMax);
+    void setRobotMaxNumber(int robotMaxNumber);
     void setTaskRectMinSize(int minSize);
     void setTaskThreshold(int threshold);
     void setUdpSettings(const Settings::UDPSettings udpStruct);
@@ -66,6 +68,8 @@ private:
     QString sendToIp_SyncService;
     QThreadPool threadPool;
     QTime timeStamp;
+    float robotStdThreshMax;
+    int robotMaxNumber;
 
 signals:
     void finishedUDPData(QList<cv::Point3f> robotLocations, QTime timeStamp);

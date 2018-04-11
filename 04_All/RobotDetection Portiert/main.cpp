@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     setFusionDarkStyle();
     QApplication a(argc, argv);
-    RobotDetectionMainWindow w;
+    RobotDetectionMainWindow w;  
     w.show();
 
     return a.exec();

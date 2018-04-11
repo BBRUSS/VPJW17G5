@@ -70,7 +70,8 @@ cv::Ptr<cv::aruco::Dictionary> ArucoDictionary::get() {
 
 void ArucoDictionary::generateDict() {
     cv::Ptr<cv::aruco::Dictionary> tempDict = cv::aruco::getPredefinedDictionary(this->baseDict);
-    dictionary = cv::aruco::generateCustomDictionary(markerCount, markerBits, tempDict);
+    dictionary = tempDict;
+    //dictionary = cv::aruco::generateCustomDictionary(markerCount, markerBits, tempDict);
 }
 
 bool ArucoDictionary::save(QString Path) {

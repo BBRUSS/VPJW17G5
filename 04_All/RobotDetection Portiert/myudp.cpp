@@ -94,7 +94,9 @@ void MyUDP::setReciveConfig_SyncService (QString ReciveFromIp,int ReciveFromPort
 
 }
 
-
+void MyUDP::setRobotMaxNumber(int Number) {
+    this->robotMaxNumber = Number;
+}
 
 
 // This function builds the telegram which contains the robot positions and some more data.
@@ -129,7 +131,7 @@ void MyUDP::sendUdpData( QList<cv::Point3f> robotLocations, QTime timeStamp)
 
     /// fill message with more values ("robots 5-8") (to be consistent with the old Matlab solution)
     /// this is used as a special reserve to use more robots
-    for(int i = robotLocations.size(); i < MAX_NR_OF_ROBOTS; i++)
+    for(int i = robotLocations.size(); i < robotMaxNumber; i++)
     {
         x = 0;
         y = 0;

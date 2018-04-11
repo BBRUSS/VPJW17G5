@@ -47,7 +47,7 @@ public:
 
     // Global Settings
     Size boardSize;                 // The size of the board -> Number of items by width and height
-    Size camFieldSize;              // The size of camara field
+    Size camFieldSize = Size(1,1);              // The size of camara field
     Pattern calibrationPattern;     // One of the Chessboard, circles, or asymmetric circle pattern
     float squareSize = 0.0;         // The size of a square in your defined unit (point, millimeter,etc).
     int nrFrames = 10;              // The number of frames to use from the input for calibration
@@ -74,16 +74,15 @@ public:
 
     //from constants.h
     int nrOfCams = 6;
-    int cameraImageWidth = 640;
-    int cameraImageHeight = 480;
-    int cameraFieldWidth = 8000; //mm
-    int cameraFieldHeight = 4000; //mm
+    Size cameraImage = Size(640, 480);
+    Size cameraField = Size(8000, 4000); //mm
     int robotMaxNumber = 8;
     float robotRadius = 180.0;
     float robotStdThresh = 6;
     float robotStdThreshMax = 2;
     string arucoDictFileName = "arucodictionary.g5";
     int arucoMarkerSizePixel = 1000;
+    Size guiImageBase = Size(1280,640);
 
 
     vector<double> robotOffset {69.5669, 68.9789, 68.7194, 69.2366, 69.0, 69.0, 69.0, 69.0};
@@ -110,6 +109,7 @@ public:
 
     //
     void setCamFieldSize(Size camFieldSize);
+    float getGuiScale();
 };
 
 //These write and read functions must be defined for the serialization in FileStorage to work

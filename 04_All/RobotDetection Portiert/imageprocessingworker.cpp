@@ -12,8 +12,8 @@ ImageProcessingWorker::ImageProcessingWorker(Settings::UDPSettings udpStruct, QL
     qRegisterMetaType<cv::Ptr<cv::aruco::Dictionary>>("cv::Ptr<cv::aruco::Dictionary>");
     qRegisterMetaType<QList<RobotOffset>>("QList<RobotOffset>");
 
-    udpClient = new MyUDP(nullptr);
     // create UDP-Client and open socket
+    udpClient = new MyUDP(nullptr);
     udpClient->setSendConfig (QString::fromStdString(udpStruct.sendToIp), udpStruct.sendToPort);
     udpClient->setReciveConfig_SyncService(QString::fromStdString(udpStruct.reciveIp_SyncService),udpStruct.recivePort_SyncService);
     udpClient->setSendConfig_SyncService(QString::fromStdString(udpStruct.sendToIp_SyncService),udpStruct.sendToPort_SyncService);
@@ -83,6 +83,15 @@ void ImageProcessingWorker::setRobotCount(int robotCount) {
 
 void ImageProcessingWorker::setRobotOffsets(const QList<RobotOffset> robotOffsets) {
     this->robotOffsets = robotOffsets;
+}
+
+void ImageProcessingWorker::setRobotMaxNumber(int robotMaxNumber) {
+    this->robotMaxNumber = robotMaxNumber;
+    udpClient->setRobotMaxNumber(robotMaxNumber);
+}
+
+void ImageProcessingWorker::setRobotStdThreshMax(float robotStdThreshMax) {
+    this->robotStdThreshMax = robotStdThreshMax;
 }
 
 void ImageProcessingWorker::setTaskRectMinSize(int minSize) {
@@ -228,13 +237,6 @@ void ImageProcessingWorker::startProcessing() {
             }
         }
 
-        RobotPosition temp;
-        temp.coordinates = cv::Point3f(0, 0, 170);
-        temp.id = 0;
-        robotIDLocation[0].append(temp);
-        temp.coordinates = cv::Point3f(0, 0, -160);
-        robotIDLocation[0].append(temp);
-
         for (int a = 0;a<robotCount;a++) {
             cv::Point3f tempMeanVal = cv::Point3f(0, 0, 0);
             cv::Point2f tempAngle = cv::Point2f(0, 0);
@@ -267,7 +269,7 @@ void ImageProcessingWorker::startProcessing() {
 
                     tempStdVal1d = sqrt(tempVariance3f.x + tempVariance3f.y);
 
-                    if (tempStdVal1d > ROBOT_STD_THRESH_MAX)  {
+                    if (tempStdVal1d > robotStdThreshMax)  {
                         tempMeanVal = cv::Point3f(0, 0, 0);
                     }
                 }

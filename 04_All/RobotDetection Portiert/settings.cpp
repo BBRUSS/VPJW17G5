@@ -187,3 +187,7 @@ void Settings::setCamFieldSize(Size camFieldSize){
         cams.at(i)->cameraID = i;
     }
 }
+
+float Settings::getGuiScale() {
+    return (float)cameraField.width/(float)guiImageBase.width;
+}
