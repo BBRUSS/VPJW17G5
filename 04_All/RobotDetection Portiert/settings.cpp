@@ -79,12 +79,19 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     fs << "cameraImageThreshold" << cameraImageThreshold;
     fs << "MinSizeofRects" << MinSizeofRects;
 
-    for (int i = 0; i<robotOffset.size(); i++){
-        string actRobotOffset = "robotOffset" ;
-        actRobotOffset += to_string(i);
+    // from constant.h
+    fs << "cameraImageWidth" << cameraImageWidth;
+    fs << "cameraImageHeight" << cameraImageHeight;
+    fs << "cameraFieldWidth" << cameraFieldWidth;
+    fs << "cameraFieldHeight" << cameraFieldHeight;
+    fs << "robotMaxNumber" << robotMaxNumber;
+    fs << "robotRadius" << robotRadius;
+    fs << "robotStdThresh" << robotStdThresh;
+    fs << "robotStdThreshMax" << robotStdThreshMax;
+    fs << "arucoDictFileName" << arucoDictFileName;
+    fs << "arucoMarkerSizePixel" << arucoMarkerSizePixel;
 
-        fs << actRobotOffset << robotOffset.at(i);
-    }
+    fs << "robotOffset" << robotOffset;
 
     fs << "}";
 }
@@ -154,6 +161,19 @@ void Settings::read(const FileNode& node){              //Read serialization for
     node["perspectiveRemovePixelPerCell"] >> perspectiveRemovePixelPerCell;
     node["cameraImageThreshold"] >> cameraImageThreshold;
     node["MinSizeofRects"] >> MinSizeofRects;
+
+    node["cameraImageWidth"] >> cameraImageWidth;
+    node["cameraImageHeight"] >> cameraImageHeight;
+    node["cameraFieldWidth"] >> cameraFieldWidth;
+    node["cameraFieldHeight"] >> cameraFieldHeight;
+    node["robotMaxNumber"] >> robotMaxNumber;
+    node["robotRadius"] >> robotRadius;
+    node["robotStdThresh"] >> robotStdThresh;
+    node["robotStdThreshMax"] >> robotStdThreshMax;
+    node["arucoDictFileName"] >> arucoDictFileName;
+    node["arucoMarkerSizePixel"] >> arucoMarkerSizePixel;
+
+    node["robotOffset"] >> robotOffset;
 }
 
 void Settings::save(){                                  //save with write serialization for this class

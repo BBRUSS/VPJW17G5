@@ -393,8 +393,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>295</width>
-                       <height>631</height>
+                       <width>201</width>
+                       <height>700</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1522,7 +1522,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_10">
               <item>
-               <widget class="QSpinBox" name="spinBoxChange1">
+               <widget class="QSpinBox" name="spinBoxSwap1">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1532,7 +1532,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButtonChange">
+               <widget class="QPushButton" name="pushButtonSwap">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1540,12 +1540,12 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>change</string>
+                 <string>swap</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBoxChange2">
+               <widget class="QSpinBox" name="spinBoxSwap2">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1679,9 +1679,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-308</y>
-                 <width>381</width>
-                 <height>997</height>
+                 <y>0</y>
+                 <width>412</width>
+                 <height>1161</height>
                 </rect>
                </property>
                <property name="minimumSize">

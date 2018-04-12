@@ -73,18 +73,17 @@ public:
     int MinSizeofRects = 8000;
 
     //from constants.h
-    int nrOfCams = 6;
-    int cameraImageWidth = 640;
-    int cameraImageHeight = 480;
-    int cameraFieldWidth = 8000; //mm
-    int cameraFieldHeight = 4000; //mm
+//    int nrOfCams = 6; <-- get from settings.camFiledSize.area
+    int cameraImageWidth = 640;     // px
+    int cameraImageHeight = 480;    // px
+    int cameraFieldWidth = 8000;    // mm
+    int cameraFieldHeight = 4000;   // mm
     int robotMaxNumber = 8;
     float robotRadius = 180.0;
     float robotStdThresh = 6;
     float robotStdThreshMax = 2;
     string arucoDictFileName = "arucodictionary.g5";
     int arucoMarkerSizePixel = 1000;
-
 
     vector<double> robotOffset {69.5669, 68.9789, 68.7194, 69.2366, 69.0, 69.0, 69.0, 69.0};
 
