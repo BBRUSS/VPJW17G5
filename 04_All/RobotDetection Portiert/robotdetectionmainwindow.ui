@@ -55,7 +55,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabMain_Navigation">
        <property name="sizePolicy">
@@ -104,6 +104,12 @@
               <width>2</width>
               <height>2</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string notr="true"/>
+            </property>
+            <property name="toolTipDuration">
+             <number>0</number>
             </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -405,8 +411,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>201</width>
-                       <height>700</height>
+                       <width>295</width>
+                       <height>595</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1329,6 +1335,9 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximum">
+                 <number>255</number>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -1392,6 +1401,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="maximum">
+                 <number>255</number>
+                </property>
+                <property name="sliderPosition">
+                 <number>128</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -1552,7 +1567,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>swap</string>
+                 <string>Swap</string>
                 </property>
                </widget>
               </item>

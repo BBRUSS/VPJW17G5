@@ -15,11 +15,10 @@ Camera::Camera()
 }
 
 
-Camera::Camera(int nr, int id, Ui::MainWindow *ui, Settings *s)
+Camera::Camera(int nr, int id, Settings *s)
 {
     this->nr = nr;
     this->id = id;
-    this->ui = ui;
     this->s = s;
     this->cameraMatrix = s->cams.at(nr)->cameraMatrix;  //Mat::eye(3, 3, CV_64F);    // camera matrix 3x3
     this->distCoeffs = s->cams.at(nr)->distCoeffs;      //Mat::zeros(8, 1, CV_64F);    // distortion coefficients 8x1

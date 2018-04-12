@@ -35,7 +35,7 @@ class Camera : public QMainWindow
     Q_OBJECT
 public:
     Camera();
-    Camera(int nr, int id, Ui::MainWindow *ui, Settings *s);
+    Camera(int nr, int id, Settings *s);
 
 
     // According to George Lecaces Youtube video "OpenCV Basics"
@@ -59,7 +59,6 @@ public:
 public:
     int id;                     // Windows ID of the camera
     int nr;                     // Number of camera in the camera field
-    Ui::MainWindow *ui;
     Settings *s;
 
     Mat cameraMatrix;           // intrinsic parameters

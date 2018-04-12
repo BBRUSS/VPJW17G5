@@ -80,10 +80,8 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     fs << "MinSizeofRects" << MinSizeofRects;
 
     // from constant.h
-    fs << "cameraImageWidth" << cameraImageWidth;
-    fs << "cameraImageHeight" << cameraImageHeight;
-    fs << "cameraFieldWidth" << cameraFieldWidth;
-    fs << "cameraFieldHeight" << cameraFieldHeight;
+    fs << "cameraImageSize" << cameraImageSize;
+    fs << "cameraFieldSizeMilimeter" << cameraFieldSizeMilimeter;
     fs << "robotMaxNumber" << robotMaxNumber;
     fs << "robotRadius" << robotRadius;
     fs << "robotStdThresh" << robotStdThresh;
@@ -162,10 +160,8 @@ void Settings::read(const FileNode& node){              //Read serialization for
     node["cameraImageThreshold"] >> cameraImageThreshold;
     node["MinSizeofRects"] >> MinSizeofRects;
 
-    node["cameraImageWidth"] >> cameraImageWidth;
-    node["cameraImageHeight"] >> cameraImageHeight;
-    node["cameraFieldWidth"] >> cameraFieldWidth;
-    node["cameraFieldHeight"] >> cameraFieldHeight;
+    node["cameraImageSize"] >> cameraImageSize;
+    node["cameraFieldSizeMilimeter"] >> cameraFieldSizeMilimeter;
     node["robotMaxNumber"] >> robotMaxNumber;
     node["robotRadius"] >> robotRadius;
     node["robotStdThresh"] >> robotStdThresh;
@@ -209,5 +205,5 @@ void Settings::setCamFieldSize(Size camFieldSize){
 }
 
 float Settings::getGuiScale() {
-    return (float)cameraField.width/(float)guiImageBase.width;
+    return (float)cameraFieldSizeMilimeter.width/(float)guiImageBase.width;
 }

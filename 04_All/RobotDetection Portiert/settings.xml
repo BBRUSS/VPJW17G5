@@ -4,11 +4,11 @@
   <boardSize>
     0 0</boardSize>
   <camFieldSize>
-    2 3</camFieldSize>
+    1 2</camFieldSize>
   <patternToUse>NOT_EXISTING</patternToUse>
   <squareSize>0.</squareSize>
   <nrFrames>10</nrFrames>
-  <calibPatternWhiteOnBlack>1</calibPatternWhiteOnBlack>
+  <calibPatternWhiteOnBlack>0</calibPatternWhiteOnBlack>
   <cam_0>
     <calibFixAspectratio>0</calibFixAspectratio>
     <calibZeroTangentDist>0</calibZeroTangentDist>
@@ -67,122 +67,6 @@
       <data></data></tvecs>
     <blackWhiteThreshold>-1</blackWhiteThreshold>
     <maxValue>-1</maxValue></cam_1>
-  <cam_2>
-    <calibFixAspectratio>0</calibFixAspectratio>
-    <calibZeroTangentDist>0</calibZeroTangentDist>
-    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
-    <showUndistorsed>0</showUndistorsed>
-    <cameraID>2</cameraID>
-    <calibFlag>0</calibFlag>
-    <cameraMatrix type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></cameraMatrix>
-    <distCoeffs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></distCoeffs>
-    <rvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></rvecs>
-    <tvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></tvecs>
-    <blackWhiteThreshold>-1</blackWhiteThreshold>
-    <maxValue>-1</maxValue></cam_2>
-  <cam_3>
-    <calibFixAspectratio>0</calibFixAspectratio>
-    <calibZeroTangentDist>0</calibZeroTangentDist>
-    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
-    <showUndistorsed>0</showUndistorsed>
-    <cameraID>3</cameraID>
-    <calibFlag>0</calibFlag>
-    <cameraMatrix type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></cameraMatrix>
-    <distCoeffs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></distCoeffs>
-    <rvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></rvecs>
-    <tvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></tvecs>
-    <blackWhiteThreshold>-1</blackWhiteThreshold>
-    <maxValue>-1</maxValue></cam_3>
-  <cam_4>
-    <calibFixAspectratio>0</calibFixAspectratio>
-    <calibZeroTangentDist>0</calibZeroTangentDist>
-    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
-    <showUndistorsed>0</showUndistorsed>
-    <cameraID>4</cameraID>
-    <calibFlag>0</calibFlag>
-    <cameraMatrix type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></cameraMatrix>
-    <distCoeffs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></distCoeffs>
-    <rvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></rvecs>
-    <tvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></tvecs>
-    <blackWhiteThreshold>-1</blackWhiteThreshold>
-    <maxValue>-1</maxValue></cam_4>
-  <cam_5>
-    <calibFixAspectratio>0</calibFixAspectratio>
-    <calibZeroTangentDist>0</calibZeroTangentDist>
-    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
-    <showUndistorsed>0</showUndistorsed>
-    <cameraID>5</cameraID>
-    <calibFlag>0</calibFlag>
-    <cameraMatrix type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></cameraMatrix>
-    <distCoeffs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></distCoeffs>
-    <rvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></rvecs>
-    <tvecs type_id="opencv-matrix">
-      <rows>0</rows>
-      <cols>0</cols>
-      <dt>u</dt>
-      <data></data></tvecs>
-    <blackWhiteThreshold>-1</blackWhiteThreshold>
-    <maxValue>-1</maxValue></cam_5>
   <UDPSettings>
     <sendToIP>"192.168.0.255"</sendToIP>
     <sendToPort>25000</sendToPort>
@@ -201,14 +85,19 @@
   <maxMarkerPerimeterRate>300.</maxMarkerPerimeterRate>
   <polygonalApproxAccuracyRate>11.</polygonalApproxAccuracyRate>
   <perspectiveRemovePixelPerCell>1</perspectiveRemovePixelPerCell>
-  <cameraImageThreshold>190</cameraImageThreshold>
+  <cameraImageThreshold>160</cameraImageThreshold>
   <MinSizeofRects>8000</MinSizeofRects>
-  <robotOffset0>6.9566900000000004e+01</robotOffset0>
-  <robotOffset1>6.8978899999999996e+01</robotOffset1>
-  <robotOffset2>6.8719399999999993e+01</robotOffset2>
-  <robotOffset3>6.9236599999999996e+01</robotOffset3>
-  <robotOffset4>69.</robotOffset4>
-  <robotOffset5>69.</robotOffset5>
-  <robotOffset6>69.</robotOffset6>
-  <robotOffset7>69.</robotOffset7></Settings>
+  <cameraImageSize>
+    640 480</cameraImageSize>
+  <cameraFieldSizeMilimeter>
+    8000 4000</cameraFieldSizeMilimeter>
+  <robotMaxNumber>8</robotMaxNumber>
+  <robotRadius>180.</robotRadius>
+  <robotStdThresh>6.</robotStdThresh>
+  <robotStdThreshMax>2.</robotStdThreshMax>
+  <arucoDictFileName>arucodictionary.g5</arucoDictFileName>
+  <arucoMarkerSizePixel>1000</arucoMarkerSizePixel>
+  <robotOffset>
+    6.9566900000000004e+01 6.8978899999999996e+01 6.8719399999999993e+01
+    6.9236599999999996e+01 69. 69. 69. 69.</robotOffset></Settings>
 </opencv_storage>

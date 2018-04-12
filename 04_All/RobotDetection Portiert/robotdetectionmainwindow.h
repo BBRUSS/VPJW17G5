@@ -114,7 +114,7 @@ private slots:
     void on_tableWidget_Aruco_cellClicked(int row, int column);
     void on_tabMain_tabBarClicked(int index);
     void updateFrame();
-    void on_pushButtonChange_clicked();
+    void on_pushButtonSwap_clicked();
     void on_pushButtonResizeCamField_clicked();
     void on_pushButtonSaveSettings_clicked();
     void frameReady();

@@ -73,17 +73,8 @@ public:
     int MinSizeofRects = 8000;
 
     //from constants.h
-<<<<<<< HEAD
-    int nrOfCams = 6;
-    Size cameraImage = Size(640, 480);
-    Size cameraField = Size(8000, 4000); //mm
-=======
-//    int nrOfCams = 6; <-- get from settings.camFiledSize.area
-    int cameraImageWidth = 640;     // px
-    int cameraImageHeight = 480;    // px
-    int cameraFieldWidth = 8000;    // mm
-    int cameraFieldHeight = 4000;   // mm
->>>>>>> CalibImplementation
+    Size cameraImageSize = Size(640, 480);
+    Size cameraFieldSizeMilimeter = Size(8000, 4000); //mm
     int robotMaxNumber = 8;
     float robotRadius = 180.0;
     float robotStdThresh = 6;
