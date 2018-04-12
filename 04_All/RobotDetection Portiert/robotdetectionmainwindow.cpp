@@ -62,7 +62,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->lineEditCameraImageHeight->setText(QString::number(programSettings.cameraImage.height));
     ui->lineEditCameraImageWidth->setText(QString::number(programSettings.cameraImage.width));
     ui->lineEditMaxNumberOfRobots->setText(QString::number(programSettings.robotMaxNumber));
-    ui->lineEditNumberOfCams->setText(QString::number(programSettings.nrOfCams));
+    ui->lineEditNumberOfCams->setText(QString::number(programSettings.camFieldSize.area()));
     ui->lineEditReceiveIpSyncService->setText(QString::fromStdString(programSettings.udpStruct.reciveIp_SyncService));
     ui->lineEditReceivePortSyncService->setText(QString::number(programSettings.udpStruct.recivePort_SyncService));
     ui->lineEditRobotRadius->setText(QString::number(programSettings.robotRadius));
@@ -770,13 +770,13 @@ void RobotDetectionMainWindow::on_pushButtonResizeCamField_clicked()
     ui->spinBoxFieldHeight->setEnabled(false);
     ui->spinBoxFieldWidth->setEnabled(false);
     ui->pushButtonResizeCamField->setEnabled(false);
-    ui->spinBoxChange1->setEnabled(true);
-    ui->spinBoxChange1->setMinimum(0);
-    ui->spinBoxChange1->setMaximum(programSettings.camFieldSize.area()-1);
-    ui->spinBoxChange2->setEnabled(true);
-    ui->spinBoxChange2->setMinimum(0);
-    ui->spinBoxChange2->setMaximum(programSettings.camFieldSize.area()-1);
-    ui->pushButtonChange->setEnabled(true);
+    ui->spinBoxSwap1->setEnabled(true);
+    ui->spinBoxSwap1->setMinimum(0);
+    ui->spinBoxSwap1->setMaximum(programSettings.camFieldSize.area()-1);
+    ui->spinBoxSwap2->setEnabled(true);
+    ui->spinBoxSwap2->setMinimum(0);
+    ui->spinBoxSwap2->setMaximum(programSettings.camFieldSize.area()-1);
+    ui->pushButtonSwap->setEnabled(true);
     ui->pushButtonSaveSettings->setEnabled(true);
 
     this->initializeCams();
@@ -835,13 +835,13 @@ void RobotDetectionMainWindow::updateFrame() {
 }
 
 void RobotDetectionMainWindow::on_pushButtonChange_clicked() {
-    VideoCapture* temp = captures.at(ui->spinBoxChange1->text().toInt());
-    captures.at(ui->spinBoxChange1->text().toInt()) = captures.at(ui->spinBoxChange2->text().toInt());
-    captures.at(ui->spinBoxChange2->text().toInt()) = temp;
+    VideoCapture* temp = captures.at(ui->spinBoxSwap1->text().toInt());
+    captures.at(ui->spinBoxSwap1->text().toInt()) = captures.at(ui->spinBoxSwap2->text().toInt());
+    captures.at(ui->spinBoxSwap2->text().toInt()) = temp;
 
-    Settings::cam* temp2 = programSettings.cams.at(ui->spinBoxChange1->text().toInt());
-    programSettings.cams.at(ui->spinBoxChange1->text().toInt()) = programSettings.cams.at(ui->spinBoxChange2->text().toInt());
-    programSettings.cams.at(ui->spinBoxChange2->text().toInt()) = temp2;
+    Settings::cam* temp2 = programSettings.cams.at(ui->spinBoxSwap1->text().toInt());
+    programSettings.cams.at(ui->spinBoxSwap1->text().toInt()) = programSettings.cams.at(ui->spinBoxSwap2->text().toInt());
+    programSettings.cams.at(ui->spinBoxSwap2->text().toInt()) = temp2;
 }
 
 
@@ -849,9 +849,9 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
     ui->spinBoxFieldHeight->setEnabled(true);
     ui->spinBoxFieldWidth->setEnabled(true);
     ui->pushButtonResizeCamField->setEnabled(true);
-    ui->spinBoxChange1->setEnabled(false);
-    ui->spinBoxChange2->setEnabled(false);
-    ui->pushButtonChange->setEnabled(false);
+    ui->spinBoxSwap1->setEnabled(false);
+    ui->spinBoxSwap2->setEnabled(false);
+    ui->pushButtonSwap->setEnabled(false);
     ui->pushButtonSaveSettings->setEnabled(false);
 
     programSettings.arucoDictFileName = ui->lineEditArucoDictionaryFileName->text().toStdString();
@@ -861,7 +861,8 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
     programSettings.cameraImage.height = ui->lineEditCameraImageHeight->text().toInt();
     programSettings.cameraImage.width = ui->lineEditCameraImageWidth->text().toInt();
     programSettings.robotMaxNumber = ui->lineEditMaxNumberOfRobots->text().toInt();
-    programSettings.nrOfCams = ui->lineEditNumberOfCams->text().toInt();
+//    get from settings.camFieldSize.area, will be set with camFiledSize
+//    programSettings.nrOfCams = ui->lineEditNumberOfCams->text().toInt();
     programSettings.udpStruct.reciveIp_SyncService = ui->lineEditReceiveIpSyncService->text().toStdString();
     programSettings.udpStruct.recivePort_SyncService = ui->lineEditReceivePortSyncService->text().toInt();
     programSettings.robotRadius = ui->lineEditRobotRadius->text().toFloat();
