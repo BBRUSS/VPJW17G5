@@ -27,17 +27,27 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 {
 
     ui->setupUi(this);
-    // read settings from ini file
-    QSettings settings("settings.ini", QSettings::IniFormat);
-    settings.beginGroup("RobotDetectionSettings");
-    ui->centralWidget->adjustSize();
+
+
+
     if(programSettings.load())
     {
         ui->tabMain->setCurrentIndex(3);
         ui->tabMain_Navigation->setEnabled(false);
         ui->tabMain_Aruco->setEnabled(false);
         ui->tabMain_Calibration->setEnabled(false);
+    } else {
+        // Create camera objects for calibration purpose
+        for(int nr=0; nr < programSettings.camFieldSize.area(); nr++)
+        {
+            cams.push_back(new Camera(nr, programSettings.cams.at(nr)->cameraID, &programSettings));
+        }
     }
+
+    programSettings.boardSize = Size(4,5);
+    programSettings.calibrationPattern = Settings::Pattern::CIRCLES_GRID;
+    programSettings.squareSize = 200;
+    programSettings.calibPatternWhiteOnBlack = true;
 
     ui->spinBoxSwap1->setEnabled(false);
     ui->spinBoxSwap2->setEnabled(false);
@@ -103,12 +113,9 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     setMaximumSize(size());
 
     // Calibration Tab configuration
-    // Create camera objects for calibration purpose
-    for(int nr=0; nr < programSettings.camFieldSize.area(); nr++)
-    {
-        cams.push_back(new Camera(nr, programSettings.cams.at(nr)->cameraID, &programSettings));
-    }
-    ui->pushButtonStartStop->setEnabled(false);
+
+
+    ui->pushButtonStopCam->setEnabled(false);
     ui->horizontalSliderMaxValue->setEnabled(false);
     ui->horizontalSliderThreshold->setEnabled(false);
     ui->pushButtonGetIntrinsics->setEnabled(false);
@@ -907,6 +914,12 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
         {
             captures.at(i)->release();
         }
+    }
+
+    cams.clear();
+    for(int nr=0; nr < programSettings.camFieldSize.area(); nr++)
+    {
+        cams.push_back(new Camera(nr, programSettings.cams.at(nr)->cameraID, &programSettings));
     }
 
     this->ui->tabMain_Navigation->setEnabled(true);

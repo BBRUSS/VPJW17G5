@@ -7,6 +7,11 @@
   * https://www.youtube.com/watch?v=GYIQiV9Aw74&t=305s
   * http://aishack.in/tutorials/calibrating-undistorting-opencv-oh-yeah/
   *
+  * https://stackoverflow.com/questions/44382267/how-to-find-the-focal-length-from-camera-matrix
+  * http://ksimek.github.io/2013/08/13/intrinsic/
+  *
+  * focal length px --> mm: Fx = fx * W/w = fx * pxWidth | W: sensor width in mm; w: image width in px;
+  *
   * ####### Passwort Softwareinstallateur PC VPJ Raum: eckehaard #######
   */
 
@@ -47,6 +52,7 @@ public:
     int doCalibrationExtrinsics();              // Function to get extrinsics
     void saveCameraCalibrationParameters();     // Save parameters to XML file
     Mat showUndistorted(Mat distorted);         // get and show undistorted picture to compare to distorted one
+    Mat getUndistorted(Mat distorted, Mat cameraMatrix, Mat distCoeffs);
     // TODO: Reprojection-Error calculation
     int getID();
     void setContrast(int blackWhiteThreshold, int maxValue);
