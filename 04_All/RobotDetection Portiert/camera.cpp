@@ -75,8 +75,8 @@ void Camera::cameraCalibration(vector<Mat> calibrationImages, Size boardSize)
     calibrateCamera(worldSpaceCornerPoints, chessboardImageSpacePoints, boardSize, cameraMatrix,
                                    distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
     double error = computeReprojectionErrors(worldSpaceCornerPoints, chessboardImageSpacePoints, rvecs, tvecs, cameraMatrix, distCoeffs);
-    saveCameraCalibrationParameters();
     qInfo() << "calibration finished with error <" << error << ">" << endl;
+    saveCameraCalibrationParameters();
 }
 
 
@@ -90,11 +90,11 @@ void Camera::cameraCalibration(vector<vector<Point2f>> chessboardImageSpacePoint
 {
     worldSpaceCornerPoints.resize(chessboardImageSpacePoints.size(), worldSpaceCornerPoints[0]);
 
-    calibrateCamera(worldSpaceCornerPoints, chessboardImageSpacePoints, boardSize, cameraMatrix,
+    cv::calibrateCamera(worldSpaceCornerPoints, chessboardImageSpacePoints, boardSize, cameraMatrix,
                                    distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
     double error = computeReprojectionErrors(worldSpaceCornerPoints, chessboardImageSpacePoints, rvecs, tvecs, cameraMatrix, distCoeffs);
-    saveCameraCalibrationParameters();
     qInfo() << "calibration finished with error <" << error << ">" << endl;
+    saveCameraCalibrationParameters();
 }
 
 
@@ -187,7 +187,7 @@ int Camera::doCalibrationIntrinsics()
     int framesPerSecond = 20;
 
     namedWindow("Webcam", CV_WINDOW_AUTOSIZE);
-
+    qInfo() << "#################### INTRINSIC CALIBRATION ####################";
 
     while(true)
     {
@@ -200,7 +200,7 @@ int Camera::doCalibrationIntrinsics()
             threshold(viewGray, frame, blackWhiteThreshold, maxValue, THRESH_BINARY);
         }
         // TODO: calibPatternWhiteOnBlack in Settings einarbeiten
-        else if(s->calibPatternWhiteOnBlack)            // invert frame to black on white
+        if(s->calibPatternWhiteOnBlack)            // invert frame to black on white
         {
             Mat viewGray;
             cvtColor(raw, viewGray, COLOR_BGR2GRAY);
@@ -335,7 +335,7 @@ int Camera::doCalibrationExtrinsics()
     int framesPerSecond = 20;
 
     namedWindow("Webcam", CV_WINDOW_AUTOSIZE);
-
+    qInfo() << "#################### EXTRINSIC CALIBRATION ####################";
 
     while(true)
     {
@@ -469,37 +469,37 @@ int Camera::doCalibrationExtrinsics()
 
                     worldSpaceCornerPoints.resize(savedImagePoints.size(), worldSpaceCornerPoints[0]);
 
+                    // 4. Calibration process
+                    Mat origCameraMatrix, origDistCoeffs, newCameraMatrix;
+                    cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
+                    distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
+
                     // TESTING
                     qInfo() << "Camera Matrix (before extrinsic calib):";
                     QString buf;
-                    buf.sprintf( "%.2f %.2f %.2f", cameraMatrix.at<double>(0, 0), cameraMatrix.at<double>(0, 1), cameraMatrix.at<double>(0, 2) );
+                    buf.sprintf( "%.2f %.2f %.2f", origCameraMatrix.at<double>(0, 0), origCameraMatrix.at<double>(0, 1), origCameraMatrix.at<double>(0, 2) );
                     qInfo() << buf; buf.clear();
-                    buf.sprintf( "%.2f %.2f %.2f", cameraMatrix.at<double>(1, 0), cameraMatrix.at<double>(1, 1), cameraMatrix.at<double>(1, 2) );
+                    buf.sprintf( "%.2f %.2f %.2f", origCameraMatrix.at<double>(1, 0), origCameraMatrix.at<double>(1, 1), origCameraMatrix.at<double>(1, 2) );
                     qInfo() << buf; buf.clear();
-                    buf.sprintf( "%.2f %.2f %.2f", cameraMatrix.at<double>(2, 0), cameraMatrix.at<double>(2, 1), cameraMatrix.at<double>(2, 2) );
+                    buf.sprintf( "%.2f %.2f %.2f", origCameraMatrix.at<double>(2, 0), origCameraMatrix.at<double>(2, 1), origCameraMatrix.at<double>(2, 2) );
                     qInfo() << buf << endl;
 
-
-                    // 4. Calibration process
-                    Mat origCameraMatrix, origDistCoeffs;
-                    cameraMatrix.copyTo(origCameraMatrix);  // save original camera Matrix
-                    distCoeffs.copyTo(origDistCoeffs);      // save original distortion coefficients
                     qInfo() << "calibrating cam <" << nr << "> with id <" <<id << ">" << endl;
                     rvecs.clear(); tvecs.clear(); // TESTING
-                    double error = calibrateCamera(worldSpaceCornerPoints, savedImagePoints, calibSizeExtrinsic, cameraMatrix,
+                    double error = calibrateCamera(worldSpaceCornerPoints, savedImagePoints, calibSizeExtrinsic, newCameraMatrix,
                                                    distCoeffs, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
-
-                    qInfo() << "finished with error <" << error << ">";
+                    double origError = computeReprojectionErrors(worldSpaceCornerPoints, savedImagePoints, rvecs, tvecs, origCameraMatrix, origDistCoeffs);
+                    qInfo() << "finished with error <" << origError << ">";
                     // 5. calculate reprojection error with new camera matrix, compare to original one
                     //    and decide, which to use
-                    double origError = computeReprojectionErrors(worldSpaceCornerPoints, savedImagePoints, rvecs, tvecs, origCameraMatrix, origDistCoeffs);
+
                     double newError = computeReprojectionErrors(worldSpaceCornerPoints, savedImagePoints, rvecs, tvecs, cameraMatrix, distCoeffs);
                     qInfo() << "orig. Reprojection Error: " << origError << " - new one: " << newError << endl;
-                    if(origError < newError)
-                    {
-                        origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
-                        origDistCoeffs.copyTo(origDistCoeffs);  // restore original distortion coefficients
-                    }
+//                    if(origError < newError)
+//                    {
+//                        origCameraMatrix.copyTo(cameraMatrix);  // restore original camera Matrix
+//                        origDistCoeffs.copyTo(distCoeffs);      // restore original distortion coefficients
+//                    }
 
                     saveCameraCalibrationParameters();
                     found = false;

@@ -1075,7 +1075,6 @@ void RobotDetectionMainWindow::on_pushButtonGetExtrinsics_clicked()
     capture.release();
     int success = -1;
     Size s = cams.at(nr)->cameraMatrix.size();
-    qInfo() << "CameraMatrix.size="<< s.area();
     if(/*s->cams.at(nr)->*/s.area() > 0)
         success = cams.at(nr)->doCalibrationExtrinsics();
     else

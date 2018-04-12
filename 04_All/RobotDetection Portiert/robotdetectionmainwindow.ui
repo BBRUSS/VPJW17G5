@@ -55,7 +55,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tabMain_Navigation">
        <property name="sizePolicy">
@@ -411,7 +411,7 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>295</width>
+                       <width>194</width>
                        <height>595</height>
                       </rect>
                      </property>
@@ -1390,7 +1390,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Reset</string>
+                 <string>Reset Threshold</string>
                 </property>
                </widget>
               </item>
@@ -1493,7 +1493,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Save</string>
+                 <string>Use Treshold</string>
                 </property>
                </widget>
               </item>
