@@ -12,12 +12,11 @@ class ArucoDictionary
 {
 public:
     ArucoDictionary();
+
     ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict);
     ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict, int markerCount);
     ArucoDictionary(int markerBits);
     ArucoDictionary(int markerBits, int markerCount);
-
-
 
     bool save(QString Path);
     bool load(QString Path);
@@ -26,12 +25,13 @@ public:
     bool drawSingle(QString Path, QString NamePrefix, int ID, int Size = 1000);
 
     void setNameById(int ID, QString Name);
+    void setHeightById(int ID, float Height);
     QString getNameById(int ID);
+    float getHeightById(int ID);
 
     void setMarkerCount(int markerCount);
     int getMarkerCount();
     int getMarkerBits();
-
 
     void add(int count = 1);
     void remove(int count = 1);
@@ -41,10 +41,13 @@ private:
     bool saveDict(cv::aruco::Dictionary Dict, QString Path);
     cv::Ptr<cv::aruco::Dictionary> loadDict(QString Path);
 
-    QMap<int, QString> arucoIdNameMap;
-    int baseDict;
+    int defaultHeight = 300.0;
     cv::Ptr<cv::aruco::Dictionary> dictionary;
-    int markerBits = 10;
+
+    QMap<int, QString> arucoIdNameMap;
+    QMap<int, float> arucoIdHeightMap;
+    int baseDict;
+    int markerBits = 5;
     int markerCount = 2;
 
 };

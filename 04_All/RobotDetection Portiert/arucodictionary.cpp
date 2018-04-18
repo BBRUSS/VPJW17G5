@@ -35,6 +35,10 @@ void ArucoDictionary::setNameById(int ID, QString Name) {
     arucoIdNameMap.insert(ID, Name);
 }
 
+void ArucoDictionary::setHeightById(int ID, float Height){
+    arucoIdHeightMap.insert(ID, Height);
+}
+
 QString ArucoDictionary::getNameById(int ID) {
     if (arucoIdNameMap.contains(ID)) {
         return arucoIdNameMap.value(ID);
@@ -42,6 +46,15 @@ QString ArucoDictionary::getNameById(int ID) {
         return QString("");
     }
 }
+
+float ArucoDictionary::getHeightById(int ID) {
+    if (arucoIdHeightMap.contains(ID)) {
+        return arucoIdHeightMap.value(ID);
+    } else {
+        return defaultHeight;
+    }
+}
+
 int ArucoDictionary::getMarkerCount() {
     return this->markerCount;
 }
@@ -84,6 +97,7 @@ bool ArucoDictionary::save(QString Path) {
     QDataStream out(&mapFile);
     out.setVersion(QDataStream::Qt_5_9);
     out << arucoIdNameMap;
+    out << arucoIdHeightMap;
     out << baseDict;
     out << markerBits;
     out << markerCount;
@@ -99,7 +113,7 @@ bool ArucoDictionary::load(QString Path) {
     {
         return false;
     }
-    in >> arucoIdNameMap >> baseDict >> markerBits >> markerCount;
+    in >> arucoIdNameMap >> arucoIdHeightMap >> baseDict >> markerBits >> markerCount;
     generateDict();
     return true;
 }
@@ -148,6 +162,7 @@ cv::Ptr<cv::aruco::Dictionary> ArucoDictionary::loadDict(QString Path) {
     }
     return cv::makePtr<cv::aruco::Dictionary>(Dictionary);
 }
+
 bool ArucoDictionary::saveDict(cv::aruco::Dictionary Dict, QString Path) {
     try {
         cv::FileStorage Storage(Path.toUtf8().constData(), cv::FileStorage::WRITE);
@@ -160,3 +175,4 @@ bool ArucoDictionary::saveDict(cv::aruco::Dictionary Dict, QString Path) {
     }
     return true;
 }
+

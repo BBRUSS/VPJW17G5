@@ -55,7 +55,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabMain_Navigation">
        <property name="sizePolicy">
@@ -412,7 +412,7 @@
                        <x>0</x>
                        <y>0</y>
                        <width>194</width>
-                       <height>595</height>
+                       <height>631</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1229,6 +1229,11 @@
               </column>
               <column>
                <property name="text">
+                <string>Height (mm)</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
                 <string>Name</string>
                </property>
               </column>
@@ -1356,28 +1361,6 @@
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLineEdit" name="lineEditStatus">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="baseSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -1643,6 +1626,16 @@
              </layout>
             </item>
             <item>
+             <widget class="QPushButton" name="pushButtonSettingsCancel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Cancel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1719,9 +1712,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-361</y>
                  <width>381</width>
-                 <height>997</height>
+                 <height>1235</height>
                 </rect>
                </property>
                <property name="minimumSize">
@@ -1771,21 +1764,15 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="groupBoxUdpSettings">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
+                 <widget class="QGroupBox" name="groupBoxCalibrationSettings">
                   <property name="title">
-                   <string>UDP Settings</string>
+                   <string>Calibration Settings</string>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_13">
+                  <layout class="QVBoxLayout" name="verticalLayout_25">
                    <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_11">
+                    <layout class="QVBoxLayout" name="verticalLayout_24">
                      <item>
-                      <widget class="QLabel" name="labelSendToIp">
+                      <widget class="QLabel" name="labelCalibrationPattern">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -1793,70 +1780,37 @@
                         </sizepolicy>
                        </property>
                        <property name="text">
-                        <string>Send To IP</string>
+                        <string>Calibration Pattern</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEditSendToIp"/>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="labelSendToPort">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Send To Port</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEditSendToPort"/>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="labelSendToIpSyncService">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Send To IP Sync Service</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEditSendToIpSyncService"/>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="labelSendToPortSyncService">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Send To Port Sync Service</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEditSendToPortSyncService">
+                      <widget class="QComboBox" name="comboBoxCalibrationPattern">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <item>
+                        <property name="text">
+                         <string>Chessboard</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Circles Grid</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Asymmetric Circles Grid</string>
+                        </property>
+                       </item>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLabel" name="labelReceiveIpSyncService">
+                      <widget class="QLabel" name="labelCalibrationBoardWidth">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -1864,15 +1818,15 @@
                         </sizepolicy>
                        </property>
                        <property name="text">
-                        <string>Receive IP Sync Service</string>
+                        <string>Calibration Board Rows</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEditReceiveIpSyncService"/>
+                      <widget class="QLineEdit" name="lineEditCalibrationBoardWidth"/>
                      </item>
                      <item>
-                      <widget class="QLabel" name="labelReceivePortSyncService">
+                      <widget class="QLabel" name="labelCalibrationBoardHeight">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -1880,12 +1834,29 @@
                         </sizepolicy>
                        </property>
                        <property name="text">
-                        <string>Receive Port Sync Service</string>
+                        <string>Calibration Board Columns</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEditReceivePortSyncService"/>
+                      <widget class="QLineEdit" name="lineEditCalibrationBoardHeight"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelCalibrationSquareSize">
+                       <property name="text">
+                        <string>Square Size or Circle Distance (mm)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditCalibrationSquareSize"/>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkBoxCalibrationPatternWhiteOnBlack">
+                       <property name="text">
+                        <string>Inverted Pattern Colors: White on Black</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -2016,7 +1987,7 @@
                      <item>
                       <widget class="QLabel" name="labelRobotStdThresh">
                        <property name="text">
-                        <string>Robot Position Standard Deviation Threshold (Divider of Radius)</string>
+                        <string>Robot Position Standard Deviation Threshold (mm)</string>
                        </property>
                       </widget>
                      </item>
@@ -2026,7 +1997,7 @@
                      <item>
                       <widget class="QLabel" name="labelRobotStdThreshMax">
                        <property name="text">
-                        <string>Robot Position Standard Deviation Max (Factor of Deviation Thresh)</string>
+                        <string>Robot Position Standard Deviation Max (mm)</string>
                        </property>
                       </widget>
                      </item>
@@ -2065,6 +2036,128 @@
                      </item>
                      <item>
                       <widget class="QLineEdit" name="lineEditArucoMakerSizeInPixel"/>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBoxUdpSettings">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title">
+                   <string>UDP Settings</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_13">
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_11">
+                     <item>
+                      <widget class="QLabel" name="labelSendToIp">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Send To IP</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditSendToIp"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelSendToPort">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Send To Port</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditSendToPort"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelSendToIpSyncService">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Send To IP Sync Service</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditSendToIpSyncService"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelSendToPortSyncService">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Send To Port Sync Service</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditSendToPortSyncService">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelReceiveIpSyncService">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Receive IP Sync Service</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditReceiveIpSyncService"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelReceivePortSyncService">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Receive Port Sync Service</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditReceivePortSyncService"/>
                      </item>
                     </layout>
                    </item>

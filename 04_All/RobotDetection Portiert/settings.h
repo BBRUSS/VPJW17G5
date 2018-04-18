@@ -77,8 +77,8 @@ public:
     Size cameraFieldSizeMilimeter = Size(8000, 4000); //mm
     int robotMaxNumber = 8;
     float robotRadius = 180.0;
-    float robotStdThresh = 6;
-    float robotStdThreshMax = 2;
+    float robotStdThresh = 30.0;
+    float robotStdThreshMax = 50.0;
     string arucoDictFileName = "arucodictionary.g5";
     int arucoMarkerSizePixel = 1000;
     Size guiImageBase = Size(1280,640);

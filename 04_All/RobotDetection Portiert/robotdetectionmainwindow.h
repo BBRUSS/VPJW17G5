@@ -90,7 +90,7 @@ protected:
     void initArucoTab();
     cv::Ptr<cv::aruco::DetectorParameters> readArucoParameters();
     void updateArucoTab(int SelectedRow);
-    void updateIDNameMap();
+    void updateIDNameHeightMap();
 
     //settings
     QMap<QString, QXmlStreamAttributes> parseCamera(QXmlStreamReader& xmlReader);
@@ -124,6 +124,8 @@ private slots:
     void on_pushButtonGetIntrinsics_clicked();
     void on_pushButtonGetExtrinsics_clicked();
     void on_pushButtonResetThr_clicked();
+
+    void on_pushButtonSettingsCancel_clicked();
 
 public slots:
     void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);

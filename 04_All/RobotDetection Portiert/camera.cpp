@@ -192,7 +192,6 @@ int Camera::doCalibrationIntrinsics()
     while(true)
     {
         if(!vid.read(raw)) break;
-
         if(blackWhiteThreshold >= 0 && maxValue >= 0)   // if values are given, use them to set threshold in frame
         {
             Mat viewGray;
