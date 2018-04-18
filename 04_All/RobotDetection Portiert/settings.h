@@ -25,8 +25,8 @@ public:
         bool showUndistorsed = 0;           // Show undistorted images after calibration (Do we really need that in Settings?)
         int cameraID = -1;
         int calibFlag = 0;                  // Flag(s) for calibration
-        Mat cameraMatrix;               // intrinsic parameters
-        Mat distCoeffs;                 // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
+        Mat cameraMatrix = Mat::eye(3, 3, CV_64F);               // intrinsic parameters
+        Mat distCoeffs = Mat::zeros(8, 1, CV_64F);                 // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view
         Mat rvecs;                      // rotation vectors estimated for each pattern view
         Mat tvecs;                      // translation vectors estimated for each pattern view
         int blackWhiteThreshold = -1;        // Threshold gained by slider in "Contrast Window"
