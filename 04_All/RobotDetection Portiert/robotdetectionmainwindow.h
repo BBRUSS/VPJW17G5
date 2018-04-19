@@ -81,6 +81,7 @@ private:
     vector< vector<Point2f> > allSnapshotAreas;
     vector<bool> allFounds;
     int successes, numSeq;
+    Mat ImageExtr;
 
 private:
     void initializeCams();

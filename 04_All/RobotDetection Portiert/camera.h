@@ -49,7 +49,7 @@ public:
     void cameraCalibration(vector<vector<Point2f>> chessboardImageSpacePoints, vector<vector<Point3f>> worldSpaceCornerPoints, Size boardSize);
     double cameraCalibration(Size &imageSize);
     int doCalibrationIntrinsics();              // Function to get intrinsics
-    int doCalibrationExtrinsics();              // Function to get extrinsics
+    int doCalibrationExtrinsics(Mat &image);    // Function to get extrinsics
     void saveCameraCalibrationParameters();     // Save parameters to XML file
     Mat showUndistorted(Mat distorted);         // get and show undistorted picture to compare to distorted one
     Mat getUndistorted(Mat distorted, Mat cameraMatrix, Mat distCoeffs);

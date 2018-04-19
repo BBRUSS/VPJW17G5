@@ -35,7 +35,7 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     //    Camera Settings
     for (int i = 0; i<cams.size(); i++){
         string cam_ID = "cam_" ;
-        cam_ID += to_string(cams.at(i)->cameraID);
+        cam_ID += to_string(i);
 
         fs << cam_ID << "{";
 
@@ -192,6 +192,7 @@ int Settings::load(){                                   //laode with read serial
     fs.release();
     return 0;
 }
+
 
 void Settings::setCamFieldSize(Size camFieldSize){
 

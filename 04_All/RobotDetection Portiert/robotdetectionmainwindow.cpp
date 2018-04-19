@@ -29,7 +29,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-	    //F5 Shortcut for Start/Stop Camera
+    //F5 Shortcut for Start/Stop Camera
     QShortcut *shortcutF5 = new QShortcut(QKeySequence(Qt::Key_F5), this);
     connect(shortcutF5, SIGNAL(activated()), ui->pushButtonStartCam, SLOT(click()));
 
@@ -41,7 +41,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
     QShortcut *shortcutBackSpace = new QShortcut(QKeySequence(Qt::Key_Backspace), this);
     connect(shortcutBackSpace, SIGNAL(activated()), ui->pushButtonResetThr, SLOT(click()));
-	
+
     if(programSettings.load())
     {
         ui->tabMain->setCurrentIndex(3);
@@ -97,6 +97,8 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->comboBoxCalibrationPattern->setCurrentIndex(programSettings.calibrationPattern-1);
     ui->checkBoxCalibrationPatternWhiteOnBlack->setChecked(programSettings.calibPatternWhiteOnBlack);
 
+    ui->spinBoxCameraNr->setMaximum(programSettings.camFieldSize.area()-1);
+
     //load aruco dict
     this->defaultArucoDict = ArucoDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
     this->defaultArucoDict.load(QString::fromStdString(programSettings.arucoDictFileName));
@@ -127,7 +129,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->pushButtonGetExtrinsics->setEnabled(false);
     ui->pushButtonResetThr->setEnabled(false);
     ui->pushButtonSaveContrast->setEnabled(false);
-	ui->pushButtonSaveToXML->setEnabled(false);
+    ui->pushButtonSaveToXML->setEnabled(false);
 }
 
 RobotDetectionMainWindow::~RobotDetectionMainWindow()
@@ -158,8 +160,6 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
     programSettings.perspectiveRemovePixelPerCell = ui->slider_perspectiveRemovePixelPerCell->value();
     programSettings.cameraImageThreshold = ui->slider_threshold->value();
     programSettings.MinSizeofRects = ui->slider_MinSizeofRects->value();
-
-    programSettings.save();
 
     defaultArucoDict.save(QString::fromStdString(programSettings.arucoDictFileName));
 
@@ -446,6 +446,39 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         Sleep(3000);
         //timer.start(timerMilSecs);#
 
+        QList<cv::Mat> tempCameraMatrix;
+        QList<cv::Mat> tempDistCoeffs;
+        QList<cv::Mat> tempGuiTransfMatrix;
+        QList<cv::Mat> tempPerspTransfMatrix;
+
+        for (int i = 0; i<programSettings.camFieldSize.area(); i++) {
+
+                // build cameraMatrix
+        tempCameraMatrix.insert(i, programSettings.cams.at(i)->cameraMatrix);
+        tempDistCoeffs.insert(i, programSettings.cams.at(i)->distCoeffs);
+
+
+        cout << programSettings.cams.at(i)->rvecs;
+
+        cv::Mat R;
+        cv::Rodrigues(programSettings.cams.at(i)->rvecs, R);
+        cv::Mat P;
+        cv::Mat Res;
+        cv::hconcat(R, programSettings.cams.at(i)->tvecs, Res);
+        P = programSettings.cams.at(i)->cameraMatrix*Res;
+
+        cout << P;
+
+       // perspTransfMatrix.insert(i, R);
+
+
+        // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
+        cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
+        scaleMatrix.at<double>(0, 0) = 1.0 / programSettings.getGuiScale();
+        scaleMatrix.at<double>(1, 1) = 1.0 / programSettings.getGuiScale();
+        scaleMatrix.at<double>(2, 2) = 1.0;
+        guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
+        }
         imgWorker = new ImageProcessingWorker(programSettings.udpStruct, videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
@@ -829,6 +862,7 @@ void RobotDetectionMainWindow::on_pushButtonResizeCamField_clicked()
     ui->spinBoxSwap2->setMaximum(programSettings.camFieldSize.area()-1);
     ui->pushButtonSwap->setEnabled(true);
     ui->pushButtonSaveSettings->setEnabled(true);
+    ui->spinBoxCameraNr->setMaximum(programSettings.camFieldSize.area()-1);
 
     this->initializeCams();
 }
@@ -1001,7 +1035,7 @@ void RobotDetectionMainWindow::on_pushButtonStartCam_clicked()
     {
         cams.push_back(new Camera(nr, programSettings.cams.at(nr)->cameraID, &programSettings));
     }
-	
+
     nr = ui->spinBoxCameraNr->value();
     id = programSettings.cams.at(nr)->cameraID;  // s->cams.at(nr)->cameraID
     qInfo() << "Opening Cam Nr <" << nr << "> with id <" << id << ">";
@@ -1020,12 +1054,12 @@ void RobotDetectionMainWindow::on_pushButtonStartCam_clicked()
         ui->pushButtonResetThr->setEnabled(true);
         ui->horizontalSliderMaxValue->setEnabled(true);
         ui->horizontalSliderThreshold->setEnabled(true);
-		isCameraRunning = true;
+        isCameraRunning = true;
     }
     else
     {
         ui->statusBar->showMessage("Not found!", 3000);
-		isCameraRunning = false;
+        isCameraRunning = false;
     }
 }
 
@@ -1062,6 +1096,7 @@ void RobotDetectionMainWindow::on_pushButtonStopCam_clicked()
     if(numSeq > 0){
         ui->pushButtonSaveToXML->setEnabled(true);
     }
+    on_pushButtonResetThr_clicked();
 }
 
 /** Writes sample image to calibration window GUI after timeout (30fps),
@@ -1072,127 +1107,128 @@ void RobotDetectionMainWindow::on_pushButtonStopCam_clicked()
 void RobotDetectionMainWindow::frameReady()
 {
     //    // Old version: config camera threshold operation
-//    if(capture.isOpened())
-//    {
-//        // store the frame to show in a Qt window
-//        QImage originalFrame, thresholdFrame;
+    //    if(capture.isOpened())
+    //    {
+    //        // store the frame to show in a Qt window
+    //        QImage originalFrame, thresholdFrame;
 
-//        // get the current frame from the video stream
-//        // Mat image wird beschrieben mit Hilfe des überladenen Operators >>
-//        // Aus VideoCapture wird hier also ein 2D Mat
-//        capture.read(image);
-//        image.copyTo(imageOrig);
+    //        // get the current frame from the video stream
+    //        // Mat image wird beschrieben mit Hilfe des überladenen Operators >>
+    //        // Aus VideoCapture wird hier also ein 2D Mat
+    //        capture.read(image);
+    //        image.copyTo(imageOrig);
 
-//        // prepare the image for the Qt format...
-//        // ... change color channel ordering (from BGR in our Mat to RGB in QImage)
-//        cvtColor(imageOrig, imageOrig, CV_BGR2RGB);
+    //        // prepare the image for the Qt format...
+    //        // ... change color channel ordering (from BGR in our Mat to RGB in QImage)
+    //        cvtColor(imageOrig, imageOrig, CV_BGR2RGB);
 
-//        Mat threshold;
-//        cv::threshold(imageOrig, threshold, ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value(), THRESH_BINARY);
+    //        Mat threshold;
+    //        cv::threshold(imageOrig, threshold, ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value(), THRESH_BINARY);
 
 
-//        // 3. Bild resizen und altes imageForGui mit neuem ersetzen
-//        // Resizes an image in order to adapt to the GUI size
+    //        // 3. Bild resizen und altes imageForGui mit neuem ersetzen
+    //        // Resizes an image in order to adapt to the GUI size
 
-//        cv::resize(imageOrig, imageOrig, Size(ui->labelImageOrig->width(), ui->labelImageOrig->height()));
-//        cv::resize(threshold, threshold, Size(ui->labelImageContrast->width(), ui->labelImageContrast->height()));
+    //        cv::resize(imageOrig, imageOrig, Size(ui->labelImageOrig->width(), ui->labelImageOrig->height()));
+    //        cv::resize(threshold, threshold, Size(ui->labelImageContrast->width(), ui->labelImageContrast->height()));
 
-//        // QImage
-//        originalFrame  = QImage((const unsigned char*)(imageOrig.data), imageOrig.cols, imageOrig.rows, imageOrig.step, QImage::Format_RGB888);
-//        thresholdFrame = QImage((const unsigned char*)(threshold.data), threshold.cols, threshold.rows, threshold.step, QImage::Format_RGB888);
+    //        // QImage
+    //        originalFrame  = QImage((const unsigned char*)(imageOrig.data), imageOrig.cols, imageOrig.rows, imageOrig.step, QImage::Format_RGB888);
+    //        thresholdFrame = QImage((const unsigned char*)(threshold.data), threshold.cols, threshold.rows, threshold.step, QImage::Format_RGB888);
 
-//        ui->labelImageOrig->setScaledContents(true);
-//        ui->labelImageContrast->setScaledContents(true);
-//        // display on labels
-//        ui->labelImageOrig->setPixmap(QPixmap::fromImage(originalFrame));
-//        ui->labelImageContrast->setPixmap(QPixmap::fromImage(thresholdFrame));
+    //        ui->labelImageOrig->setScaledContents(true);
+    //        ui->labelImageContrast->setScaledContents(true);
+    //        // display on labels
+    //        ui->labelImageOrig->setPixmap(QPixmap::fromImage(originalFrame));
+    //        ui->labelImageContrast->setPixmap(QPixmap::fromImage(thresholdFrame));
 
-//    }
+    //    }
 
     if(isCameraRunning && capture.isOpened())
-        {
-            // store the frame to show in a Qt window
-            QImage frameToShow, frameUndistorted;
+    {
+        // store the frame to show in a Qt window
+        QImage frameToShow, frameUndistorted;
 
-            // get the current frame from the video stream
-            // Mat image wird beschrieben mit Hilfe des überladenen Operators >>
-            //Aus VideoCapture wird hier also ein 2D Mat
-            capture >> imageC;
+        // get the current frame from the video stream
+        // Mat image wird beschrieben mit Hilfe des überladenen Operators >>
+        //Aus VideoCapture wird hier also ein 2D Mat
+        capture >> imageC;
+        imageC.copyTo(ImageExtr);
 
-            // show the circle_grid_board pattern
-            //Man hat jetzt also ein Bild auf dem man versucht ein Circle GRID Muster zu erkennen und hervorzuheben
-            //Dieses Bild wird dann in einer anderen Variable gespeichert(imageSaved), wenn ein Kreismuster erkannt wurde.
-            //siehe Kommentar an der Funktion
-            findAndDrawPoints();
+        // show the circle_grid_board pattern
+        //Man hat jetzt also ein Bild auf dem man versucht ein Circle GRID Muster zu erkennen und hervorzuheben
+        //Dieses Bild wird dann in einer anderen Variable gespeichert(imageSaved), wenn ein Kreismuster erkannt wurde.
+        //siehe Kommentar an der Funktion
+        findAndDrawPoints();
 
-            // prepare the image for the Qt format...
-            // ... change color channel ordering (from BGR in our Mat to RGB in QImage)
-            cvtColor(imageC, imageC, CV_BGR2RGB);
-
-
-            //1. Bild für GUI kopieren - image variable muss unangetastet bleiben
-            imageC.copyTo(imageForGuiC);
+        // prepare the image for the Qt format...
+        // ... change color channel ordering (from BGR in our Mat to RGB in QImage)
+        cvtColor(imageC, imageC, CV_BGR2RGB);
 
 
-            // NEW////
-            //2. Aufs neue Bild Kreise malen, aber nur wenn Grid gefunden wurde
-            if(allSnapshotAreas.size() != 0){
+        //1. Bild für GUI kopieren - image variable muss unangetastet bleiben
+        imageC.copyTo(imageForGuiC);
 
-                vector<Point2f> currentArea;
 
-                if(allSnapshotAreas.size() != allFounds.size()){
-                    QMessageBox::information(this, tr("ERROR"), tr("allSnapshotAreas.size() != allFounds.size()"));
-                    return;
-                }
+        // NEW////
+        //2. Aufs neue Bild Kreise malen, aber nur wenn Grid gefunden wurde
+        if(allSnapshotAreas.size() != 0){
 
-                //Iterate to get each vector
-                //Everytime we get all vectors
-                for(int i=0; i<allSnapshotAreas.size(); i++){
+            vector<Point2f> currentArea;
 
-                    //For the current considered snapshot area check again whether a circles grid was really found
-                    currentArea = allSnapshotAreas[i];
-                    if(allFounds[i]){
+            if(allSnapshotAreas.size() != allFounds.size()){
+                QMessageBox::information(this, tr("ERROR"), tr("allSnapshotAreas.size() != allFounds.size()"));
+                return;
+            }
 
-                        //If the grid was foud paint the Points2D to GUI
-                        for(int j=0; j<currentArea.size(); j++){
-                            circle(imageForGuiC,cvPoint(currentArea[j].x,currentArea[j].y), 5,CV_RGB(255,0,253),3,8,0);
-                        }
+            //Iterate to get each vector
+            //Everytime we get all vectors
+            for(int i=0; i<allSnapshotAreas.size(); i++){
+
+                //For the current considered snapshot area check again whether a circles grid was really found
+                currentArea = allSnapshotAreas[i];
+                if(allFounds[i]){
+
+                    //If the grid was foud paint the Points2D to GUI
+                    for(int j=0; j<currentArea.size(); j++){
+                        circle(imageForGuiC,cvPoint(currentArea[j].x,currentArea[j].y), 5,CV_RGB(255,0,253),3,8,0);
                     }
-
                 }
 
             }
 
-
-            //3. Bild resizen und altes imageForGui mit neuem ersetzen
-            //Resizes an image in order to adapt to the GUI size
-            //cv::resize(imageForGuiC, imageForGuiC, Size(ui->labelImageBefore->width(), ui->labelImageBefore->height()));
-
-            //QImage
-            frameToShow = QImage((const unsigned char*)(imageForGuiC.data), imageForGuiC.cols, imageForGuiC.rows, imageForGuiC.step, QImage::Format_RGB888);
-
-
-            ui->labelImageBefore->setScaledContents(true);
-            // display on label (left label)
-            ui->labelImageBefore->setPixmap(QPixmap::fromImage(frameToShow));
-
-            // show undistorted (after calibration) frames
-            if (isCalibrate) {
-                // Wird nur nach der Kalibrierung aufgerufen und schreibt ins rechte Label.
-                // remap of undistorted frame and conversion in the Qt format
-
-                //VERSION 2 - NEU
-                Mat undistorted = cams.at(nr)->remap(imageC);
-                //cv::resize(undistorted, undistortedForGuiC, Size(ui->labelImageAfter->width(), ui->labelImageAfter->height()));
-                undistorted.copyTo(undistortedForGuiC);
-                frameUndistorted = QImage((uchar*)undistortedForGuiC.data, undistortedForGuiC.cols, undistortedForGuiC.rows, undistortedForGuiC.step, QImage::Format_RGB888);
-                ui->labelImageAfter->setScaledContents(true);
-                ui->labelImageAfter->setPixmap(QPixmap::fromImage(frameUndistorted));
-
-
-
-            }
         }
+
+
+        //3. Bild resizen und altes imageForGui mit neuem ersetzen
+        //Resizes an image in order to adapt to the GUI size
+        //cv::resize(imageForGuiC, imageForGuiC, Size(ui->labelImageBefore->width(), ui->labelImageBefore->height()));
+
+        //QImage
+        frameToShow = QImage((const unsigned char*)(imageForGuiC.data), imageForGuiC.cols, imageForGuiC.rows, imageForGuiC.step, QImage::Format_RGB888);
+
+
+        ui->labelImageBefore->setScaledContents(true);
+        // display on label (left label)
+        ui->labelImageBefore->setPixmap(QPixmap::fromImage(frameToShow));
+
+        // show undistorted (after calibration) frames
+        if (isCalibrate) {
+            // Wird nur nach der Kalibrierung aufgerufen und schreibt ins rechte Label.
+            // remap of undistorted frame and conversion in the Qt format
+
+            //VERSION 2 - NEU
+            Mat undistorted = cams.at(nr)->remap(imageC);
+            //cv::resize(undistorted, undistortedForGuiC, Size(ui->labelImageAfter->width(), ui->labelImageAfter->height()));
+            undistorted.copyTo(undistortedForGuiC);
+            frameUndistorted = QImage((uchar*)undistortedForGuiC.data, undistortedForGuiC.cols, undistortedForGuiC.rows, undistortedForGuiC.step, QImage::Format_RGB888);
+            ui->labelImageAfter->setScaledContents(true);
+            ui->labelImageAfter->setPixmap(QPixmap::fromImage(frameUndistorted));
+
+
+
+        }
+    }
 
 }
 
@@ -1217,8 +1253,8 @@ void RobotDetectionMainWindow::on_pushButtonGetIntrinsics_clicked()
     //int success = cams.at(nr)->doCalibrationIntrinsics();
     //capture.open(id);
     //qInfo() << "intrinsic success: " << success;
-	
-	    // New Test version 16.04.2018
+
+    // New Test version 16.04.2018
     vector<vector<Point2f>> imagePoints;
     vector<vector<Point3f>> objectPoints;
 }
@@ -1230,15 +1266,16 @@ void RobotDetectionMainWindow::on_pushButtonGetIntrinsics_clicked()
  */
 void RobotDetectionMainWindow::on_pushButtonGetExtrinsics_clicked()
 {
-    capture.release();
     int success = -1;
-    Size s = cams.at(nr)->cameraMatrix.size();
-    if(/*s->cams.at(nr)->*/s.area() > 0)
-        success = cams.at(nr)->doCalibrationExtrinsics();
+    if(imageSavedC.data)
+        success = cams.at(nr)->doCalibrationExtrinsics(ImageExtr);
     else
         ui->statusBar->showMessage("No Camera Matrix found, do intrinsic calibration first!", 3000);
-    capture.open(id);
     qInfo() << "extrinsic success: " << success;
+    if(success)
+    {
+        ui->pushButtonSaveToXML->setEnabled(true);
+    }
 }
 
 /** Reset the horizontal slider values for black/white threshold and max value
@@ -1252,22 +1289,23 @@ void RobotDetectionMainWindow::on_pushButtonResetThr_clicked()
     programSettings.cams.at(nr)->blackWhiteThreshold = -1;
     programSettings.cams.at(nr)->maxValue = -1;*/
     //MainWindow
-        imageC.release();
-        imageSavedC.release();
-        imageForGuiC.release();
-        greyImageC.release();
-        isCalibrate = false;
-        numSeq = 0;
-        successes = 0;
-        imageList.clear();
-        ui->pushButtonSaveToXML->setEnabled(false);
-        allSnapshotAreas.clear();
-        allFounds.clear();
+    imageC.release();
+    imageSavedC.release();
+    imageForGuiC.release();
+    greyImageC.release();
+    isCalibrate = false;
+    numSeq = 0;
+    successes = 0;
+    imageList.clear();
+    ui->pushButtonSaveToXML->setEnabled(false);
+    allSnapshotAreas.clear();
+    allFounds.clear();
 
-        //CameraCalibrator
-        //cameraCalib.resetVals();
+    //CameraCalibrator
+    //cameraCalib.resetVals();
 
-        QMessageBox::information(this, tr("Information"), tr("Program has been reset."));
+    //QMessageBox::information(this, tr("Information"), tr("Program has been reset."));
+    ui->statusBar->showMessage("Program has been reset.", 3000);
 }
 
 void RobotDetectionMainWindow::setCams(vector<Camera*> cams)
@@ -1300,7 +1338,7 @@ void RobotDetectionMainWindow::findAndDrawPoints()
     with different parameters if returned coordinates are not accurate enough.
     */
 
-   //Für besseren Kontrast wird das Bild zunächst in Graustufen umgerechnet und dann beim Funktionsaufruf invertiert
+    //Für besseren Kontrast wird das Bild zunächst in Graustufen umgerechnet und dann beim Funktionsaufruf invertiert
     cvtColor(imageC, greyImageC, cv::COLOR_RGB2GRAY);
 
     bool found = findCirclesGrid(cv::Scalar::all(255) - greyImageC, programSettings.boardSize, pointBuf);
@@ -1352,7 +1390,8 @@ void RobotDetectionMainWindow::on_pushButtonTakeSnapshot_clicked()
             sprintf(snapCountAsChar, "%d", snapCount);
             char message[64] = "Snapshot No. ";
 
-            QMessageBox::information(this, tr(strcat(message, snapCountAsChar)), tr("Invalid Snapshot.\nLast valid image is used for calibration."));
+            //QMessageBox::information(this, tr(strcat(message, snapCountAsChar)), tr("Invalid Snapshot.\nLast valid image is used for calibration."));
+            ui->statusBar->showMessage("Invalid Snapshot. Last valid image is used for calibration.", 3000);
         }
         std::cout << "Korrespondierender Wert in allFounds: " << circlesGridFound << endl;
         allSnapshotAreas.push_back(currentSnapshotArea);
@@ -1381,18 +1420,18 @@ void RobotDetectionMainWindow::startCalibration()
 //Die macht jetzt jedesmal was, wenn der Take Snapshot Button betätigt wurde
 {
 
-        // open circle_grid_board images and extract corner points
-        successes = cams.at(nr)->addCirclePoints(imageList);
+    // open circle_grid_board images and extract corner points
+    successes = cams.at(nr)->addCirclePoints(imageList);
 
-        cout << "Anzahl der successes: " << successes << endl;
+    cout << "Anzahl der successes: " << successes << endl;
 
-        // calibrate the camera frames
-        Size calibSize = Size(ui->labelImageAfter->size().width(), ui->labelImageAfter->size().height());
-        //Size calibSize = Size(640, 480);
-        cams.at(nr)->cameraCalibration(calibSize);
+    // calibrate the camera frames
+    Size calibSize = Size(ui->labelImageAfter->size().width(), ui->labelImageAfter->size().height());
+    //Size calibSize = Size(640, 480);
+    cams.at(nr)->cameraCalibration(calibSize);
 
-        isCalibrate = true;
-        ui->statusBar->showMessage("Successful images used: " + QString::number(successes), 3000);
+    isCalibrate = true;
+    ui->statusBar->showMessage("Successful images used: " + QString::number(successes), 3000);
 
 }
 
