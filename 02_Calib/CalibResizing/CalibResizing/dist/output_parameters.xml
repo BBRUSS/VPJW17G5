@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CameraCalibrationData>
-    <Camera name="" pos="" id="0">
-        <Matrix fx="687.948" cx="326.776" fy="684.962" cy="225.226"/>
-        <LensDistortion k1="-5.5657483569e-1" k2="5.9109342640e-1" p1="8.5008175831e-3" p2="1.6232368736e-2" k3="-4.6943689662e-1"/>
-        <Settings exp="-6" cnt="99" brg="250"/>
-    </Camera>
-</CameraCalibrationData>
