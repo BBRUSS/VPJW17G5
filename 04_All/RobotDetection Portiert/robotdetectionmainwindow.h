@@ -74,7 +74,13 @@ private:
     Mat image,  imageOrig;
     VideoCapture capture;
     QTimer cameraTimer;
-
+	bool isCameraRunning;
+    bool isCalibrate;
+    Mat imageC, imageSavedC, imageForGuiC, greyImageC, undistortedForGuiC;  // Calibration images
+    vector<Mat> imageList;
+    vector< vector<Point2f> > allSnapshotAreas;
+    vector<bool> allFounds;
+    int successes, numSeq;
 
 private:
     void initializeCams();
@@ -124,7 +130,9 @@ private slots:
     void on_pushButtonGetIntrinsics_clicked();
     void on_pushButtonGetExtrinsics_clicked();
     void on_pushButtonResetThr_clicked();
-
+    void findAndDrawPoints();
+    void on_pushButtonTakeSnapshot_clicked();
+    void startCalibration();
     void on_pushButtonSettingsCancel_clicked();
 
 public slots:

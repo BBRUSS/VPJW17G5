@@ -55,7 +55,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tabMain_Navigation">
        <property name="sizePolicy">
@@ -1298,7 +1298,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QLabel" name="labelImageContrast">
+             <widget class="QLabel" name="labelImageBefore">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -1307,11 +1307,14 @@
               </property>
               <property name="text">
                <string/>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="labelImageOrig">
+             <widget class="QLabel" name="labelImageAfter">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -1320,6 +1323,9 @@
               </property>
               <property name="text">
                <string/>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -1333,51 +1339,6 @@
             <item>
              <layout class="QGridLayout" name="gridLayout">
               <item row="3" column="5">
-               <widget class="QSlider" name="horizontalSliderMaxValue">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximum">
-                 <number>255</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="4">
-               <widget class="QLabel" name="labelBWThreshold">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Black/White Threshold</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2">
-               <widget class="QPushButton" name="pushButtonResetThr">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Reset Threshold</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="4">
                <widget class="QSlider" name="horizontalSliderThreshold">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -1396,6 +1357,22 @@
                 </property>
                </widget>
               </item>
+              <item row="1" column="1">
+               <widget class="QSpinBox" name="spinBoxCameraNr"/>
+              </item>
+              <item row="2" column="2">
+               <widget class="QPushButton" name="pushButtonSaveContrast">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Use Treshold</string>
+                </property>
+               </widget>
+              </item>
               <item row="2" column="0">
                <widget class="QPushButton" name="pushButtonStartCam">
                 <property name="sizePolicy">
@@ -1409,8 +1386,37 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
-               <widget class="QPushButton" name="pushButtonGetExtrinsics">
+              <item row="3" column="2">
+               <widget class="QPushButton" name="pushButtonResetThr">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Reset</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="6">
+               <widget class="QLabel" name="labelMaxValue">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Max-Value</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="pushButtonStopCam">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -1418,7 +1424,36 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>get Extrinsics</string>
+                 <string>Stop Camera</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QPushButton" name="pushButtonTakeSnapshot">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Take Snapshot</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="5">
+               <widget class="QLabel" name="labelBWThreshold">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Black/White Threshold</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -1435,27 +1470,8 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="5">
-               <widget class="QLabel" name="labelMaxValue">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Max-Value</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QSpinBox" name="spinBoxCameraNr"/>
-              </item>
-              <item row="2" column="1">
-               <widget class="QPushButton" name="pushButtonStopCam">
+              <item row="3" column="1">
+               <widget class="QPushButton" name="pushButtonGetExtrinsics">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -1463,37 +1479,27 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Stop Camera</string>
+                 <string>get Extrinsics</string>
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
-               <widget class="QPushButton" name="pushButtonSaveContrast">
+              <item row="3" column="6">
+               <widget class="QSlider" name="horizontalSliderMaxValue">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="text">
-                 <string>Use Treshold</string>
+                <property name="maximum">
+                 <number>255</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
-               <widget class="QPushButton" name="pushButtonGetIntrinsics">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>get Intrinsics</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3">
+              <item row="2" column="4">
                <spacer name="horizontalSpacer_3">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -1508,6 +1514,13 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="pushButtonSaveToXML">
+                <property name="text">
+                 <string>Save to XML</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -1818,7 +1831,7 @@
                         </sizepolicy>
                        </property>
                        <property name="text">
-                        <string>Calibration Board Rows</string>
+                        <string>Calibration Board Columns</string>
                        </property>
                       </widget>
                      </item>
@@ -1834,7 +1847,7 @@
                         </sizepolicy>
                        </property>
                        <property name="text">
-                        <string>Calibration Board Columns</string>
+                        <string>Calibration Board Rows</string>
                        </property>
                       </widget>
                      </item>
