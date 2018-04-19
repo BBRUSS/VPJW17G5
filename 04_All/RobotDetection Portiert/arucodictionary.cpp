@@ -93,7 +93,6 @@ bool ArucoDictionary::save(QString Path) {
     {
         false;
     }
-
     QDataStream out(&mapFile);
     out.setVersion(QDataStream::Qt_5_9);
     out << arucoIdNameMap;

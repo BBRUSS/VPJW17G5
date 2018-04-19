@@ -55,7 +55,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabMain_Navigation">
        <property name="sizePolicy">
@@ -411,8 +411,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>194</width>
-                       <height>631</height>
+                       <width>295</width>
+                       <height>595</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1712,7 +1712,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-361</y>
+                 <y>0</y>
                  <width>381</width>
                  <height>1235</height>
                 </rect>
@@ -1885,7 +1885,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEditNumberOfCams"/>
+                      <widget class="QLineEdit" name="lineEditNumberOfCams">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
                      </item>
                      <item>
                       <widget class="QLabel" name="labelCameraImageWidth">

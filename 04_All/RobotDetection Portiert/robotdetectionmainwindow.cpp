@@ -85,7 +85,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
 
     //load aruco dict
     this->defaultArucoDict = ArucoDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
-    //this->defaultArucoDict.load(QString::fromStdString(programSettings.arucoDictFileName));
+    this->defaultArucoDict.load(QString::fromStdString(programSettings.arucoDictFileName));
     this->initArucoTab();
 
     mainloopIsActive = false;
@@ -226,7 +226,6 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     // invert y-axis
     cv::flip(guiImage, guiImage, 0);
 
-    float robotStdThresh = programSettings.robotRadius/programSettings.robotStdThresh;
     //Draw Line and Circle for Robots in GUI
     for(int i = 0; i < robotLocations.size();i++)
     {
@@ -242,10 +241,12 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
 
             //Draw circles and lines for center and orientation circles
 
-            if (robotLocationsStd1d[i] > robotStdThresh) {
+            if (robotLocationsStd1d[i] >= programSettings.robotStdThresh) {
+
                 cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_RED, 2, CV_AA);
             } else {
-                cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_YELLOW, 2, CV_AA);
+                float stdPercent = robotLocationsStd1d[i]/programSettings.robotStdThresh;
+                cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), cv::Scalar(0, 255*(1-stdPercent), 255*stdPercent), 2, CV_AA);
             }
 
             cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius), COLOR_GREEN, 2, CV_AA);
@@ -923,26 +924,27 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
     programSettings.cameraFieldSizeMilimeter.width = ui->lineEditCameraFieldWidth->text().toInt();
     programSettings.cameraImageSize.height = ui->lineEditCameraImageHeight->text().toInt();
     programSettings.cameraImageSize.width = ui->lineEditCameraImageWidth->text().toInt();
-    programSettings.robotMaxNumber = ui->lineEditMaxNumberOfRobots->text().toInt();
     programSettings.udpStruct.reciveIp_SyncService = ui->lineEditReceiveIpSyncService->text().toStdString();
     programSettings.udpStruct.recivePort_SyncService = ui->lineEditReceivePortSyncService->text().toInt();
-    programSettings.robotRadius = ui->lineEditRobotRadius->text().toFloat();
     programSettings.udpStruct.sendToIp = ui->lineEditSendToIp->text().toStdString();
     programSettings.udpStruct.sendToIp_SyncService = ui->lineEditSendToIpSyncService->text().toStdString();
     programSettings.udpStruct.sendToPort = ui->lineEditSendToPort->text().toInt();
     programSettings.udpStruct.sendToPort_SyncService = ui->lineEditSendToPortSyncService->text().toInt();
+
+    programSettings.robotRadius = ui->lineEditRobotRadius->text().toFloat();
+    programSettings.robotMaxNumber = ui->lineEditMaxNumberOfRobots->text().toInt();
+    programSettings.robotStdThresh = ui->lineEditRobotStdThresh->text().toFloat();
+    programSettings.robotStdThreshMax = ui->lineEditRobotStdThreshMax->text().toFloat();
+
     programSettings.boardSize.width = ui->lineEditCalibrationBoardWidth->text().toInt();
     programSettings.boardSize.height = ui->lineEditCalibrationBoardHeight->text().toInt();
     programSettings.squareSize = ui->lineEditCalibrationSquareSize->text().toInt();
     programSettings.calibrationPattern = Settings::Pattern(ui->comboBoxCalibrationPattern->currentIndex()+1);
     programSettings.calibPatternWhiteOnBlack = ui->checkBoxCalibrationPatternWhiteOnBlack->isChecked();
 
-    qDebug() << 1;
-
     programSettings.save();
     frames.stop();
 
-    qDebug() << 2;
 
     for(int i=0; i<captures.size(); i++)
     {
@@ -951,13 +953,6 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
             captures.at(i)->release();
         }
     }
-    qDebug() << 3;
-
-//    cams.clear();
-//    for(int nr=0; nr < programSettings.camFieldSize.area(); nr++)
-//    {
-//        cams.push_back(new Camera(nr, programSettings.cams.at(nr)->cameraID, &programSettings));
-//    }
 
     this->ui->tabMain_Navigation->setEnabled(true);
     this->ui->tabMain_Aruco->setEnabled(true);
