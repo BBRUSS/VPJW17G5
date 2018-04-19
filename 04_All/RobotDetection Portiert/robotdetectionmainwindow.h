@@ -135,6 +135,8 @@ private slots:
     void startCalibration();
     void on_pushButtonSettingsCancel_clicked();
 
+    void on_pushButtonSaveToXML_clicked();
+
 public slots:
     void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);
 

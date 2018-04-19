@@ -1001,10 +1001,6 @@ void RobotDetectionMainWindow::on_pushButtonStartCam_clicked()
     {
         cams.push_back(new Camera(nr, programSettings.cams.at(nr)->cameraID, &programSettings));
     }
-
-	if(numSeq > 0){
-		ui->pushButtonSaveToXML->setEnabled(true);
-	}
 	
     nr = ui->spinBoxCameraNr->value();
     id = programSettings.cams.at(nr)->cameraID;  // s->cams.at(nr)->cameraID
@@ -1024,7 +1020,6 @@ void RobotDetectionMainWindow::on_pushButtonStartCam_clicked()
         ui->pushButtonResetThr->setEnabled(true);
         ui->horizontalSliderMaxValue->setEnabled(true);
         ui->horizontalSliderThreshold->setEnabled(true);
-        on_pushButtonResetThr_clicked();    // reset b/w threshold and max values
 		isCameraRunning = true;
     }
     else
@@ -1063,6 +1058,10 @@ void RobotDetectionMainWindow::on_pushButtonStopCam_clicked()
     ui->tabMain_Navigation->setEnabled(true);
     ui->tabMain_Aruco->setEnabled(true);
     ui->tabMain_Settings->setEnabled(true);
+
+    if(numSeq > 0){
+        ui->pushButtonSaveToXML->setEnabled(true);
+    }
 }
 
 /** Writes sample image to calibration window GUI after timeout (30fps),
@@ -1371,7 +1370,7 @@ void RobotDetectionMainWindow::on_pushButtonTakeSnapshot_clicked()
     {
         // store the image, if valid
         imageList.push_back(imageSavedC);
-        //cout << "In numSeq " << numSeq << " enthaelt imageList " << imageList.size() << " gute Bilder" << endl;
+        cout << "In numSeq " << numSeq << " enthaelt imageList " << imageList.size() << " gute Bilder" << endl;
         numSeq++;
         startCalibration();
     }
@@ -1395,4 +1394,9 @@ void RobotDetectionMainWindow::startCalibration()
         isCalibrate = true;
         ui->statusBar->showMessage("Successful images used: " + QString::number(successes), 3000);
 
+}
+
+void RobotDetectionMainWindow::on_pushButtonSaveToXML_clicked()
+{
+    cams.at(nr)->saveCameraCalibrationParameters();
 }

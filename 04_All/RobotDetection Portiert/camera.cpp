@@ -631,6 +631,7 @@ Mat Camera::remap(const Mat &distorted)
  */
 void Camera::saveCameraCalibrationParameters()
 {
+    qInfo() << "Writing Camera parameters of Cam <" << nr <<"> to XML File...";
     s->cams.at(nr)->cameraMatrix = cameraMatrix;
     s->cams.at(nr)->distCoeffs = distCoeffs;
     s->cams.at(nr)->rvecs = rvec;
@@ -640,7 +641,8 @@ void Camera::saveCameraCalibrationParameters()
     // Testoutput in matrix form
     // (remember: fx, fy are focal length in pixels, so fx = f/px with f = focal length in mm and px = pixel width
     //                                     analog:      fy = f/py with f = focal length in mm and py = pixel height)
-    qInfo() << "Camera Matrix (qInfo):";
+    qInfo() << "Test Output for XML";
+    qInfo() << "Camera Matrix:";
     QString buf;
     buf.sprintf( "%.2f %.2f %.2f", cameraMatrix.at<double>(0, 0), cameraMatrix.at<double>(0, 1), cameraMatrix.at<double>(0, 2) );
     qInfo() << buf; buf.clear();
