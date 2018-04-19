@@ -2,13 +2,13 @@
 <opencv_storage>
 <Settings>
   <boardSize>
-    4 11</boardSize>
+    5 4</boardSize>
   <camFieldSize>
-    1 1</camFieldSize>
-  <patternToUse>ASYMMETRIC_CIRCLES_GRID</patternToUse>
-  <squareSize>35.</squareSize>
+    1 2</camFieldSize>
+  <patternToUse>CIRCLES_GRID</patternToUse>
+  <squareSize>200.</squareSize>
   <nrFrames>10</nrFrames>
-  <calibPatternWhiteOnBlack>0</calibPatternWhiteOnBlack>
+  <calibPatternWhiteOnBlack>1</calibPatternWhiteOnBlack>
   <cam_0>
     <calibFixAspectratio>0</calibFixAspectratio>
     <calibZeroTangentDist>0</calibZeroTangentDist>
@@ -21,16 +21,13 @@
       <cols>3</cols>
       <dt>d</dt>
       <data>
-        1.0560967641208124e+03 0. -3.6686624732007842e+00 0.
-        1.0560967641208124e+03 -1.8350818533534180e-01 0. 0. 1.</data></cameraMatrix>
+        1. 0. 0. 0. 1. 0. 0. 0. 1.</data></cameraMatrix>
     <distCoeffs type_id="opencv-matrix">
-      <rows>5</rows>
+      <rows>8</rows>
       <cols>1</cols>
       <dt>d</dt>
       <data>
-        -1.6271296092972690e-01 -1.6158671854397821e+00
-        -2.5136292851845387e-02 7.7481585936599290e-02
-        2.8751202718744846e+00</data></distCoeffs>
+        0. 0. 0. 0. 0. 0. 0. 0.</data></distCoeffs>
     <rvecs type_id="opencv-matrix">
       <rows>0</rows>
       <cols>0</cols>
@@ -43,6 +40,40 @@
       <data></data></tvecs>
     <blackWhiteThreshold>-1</blackWhiteThreshold>
     <maxValue>-1</maxValue></cam_0>
+  <cam_1>
+    <calibFixAspectratio>0</calibFixAspectratio>
+    <calibZeroTangentDist>0</calibZeroTangentDist>
+    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
+    <showUndistorsed>0</showUndistorsed>
+    <cameraID>1</cameraID>
+    <calibFlag>0</calibFlag>
+    <cameraMatrix type_id="opencv-matrix">
+      <rows>3</rows>
+      <cols>3</cols>
+      <dt>d</dt>
+      <data>
+        3.2204936932688861e+03 0. 3.6598238581398743e+02 0.
+        3.1002696385748263e+03 6.1773057158193524e+01 0. 0. 1.</data></cameraMatrix>
+    <distCoeffs type_id="opencv-matrix">
+      <rows>5</rows>
+      <cols>1</cols>
+      <dt>d</dt>
+      <data>
+        -1.3280238770871602e+01 9.1457963374434570e+01
+        4.8652652176590289e-01 -1.8260661385758509e-02
+        2.8877390744503746e+03</data></distCoeffs>
+    <rvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></rvecs>
+    <tvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></tvecs>
+    <blackWhiteThreshold>-1</blackWhiteThreshold>
+    <maxValue>-1</maxValue></cam_1>
   <UDPSettings>
     <sendToIP>"192.168.0.255"</sendToIP>
     <sendToPort>25000</sendToPort>
@@ -61,7 +92,7 @@
   <maxMarkerPerimeterRate>300.</maxMarkerPerimeterRate>
   <polygonalApproxAccuracyRate>11.</polygonalApproxAccuracyRate>
   <perspectiveRemovePixelPerCell>1</perspectiveRemovePixelPerCell>
-  <cameraImageThreshold>160</cameraImageThreshold>
+  <cameraImageThreshold>202</cameraImageThreshold>
   <MinSizeofRects>8000</MinSizeofRects>
   <cameraImageSize>
     640 480</cameraImageSize>
@@ -69,8 +100,8 @@
     8000 4000</cameraFieldSizeMilimeter>
   <robotMaxNumber>8</robotMaxNumber>
   <robotRadius>180.</robotRadius>
-  <robotStdThresh>6.</robotStdThresh>
-  <robotStdThreshMax>2.</robotStdThreshMax>
+  <robotStdThresh>50.</robotStdThresh>
+  <robotStdThreshMax>200.</robotStdThreshMax>
   <arucoDictFileName>arucodictionary.g5</arucoDictFileName>
   <arucoMarkerSizePixel>1000</arucoMarkerSizePixel>
   <robotOffset>
