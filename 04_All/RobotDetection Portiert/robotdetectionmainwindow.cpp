@@ -33,10 +33,10 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     QShortcut *shortcutF5 = new QShortcut(QKeySequence(Qt::Key_F5), this);
     connect(shortcutF5, SIGNAL(activated()), ui->pushButtonStartCam, SLOT(click()));
 
-    QShortcut *shortcutF6 = new QShortcut(QKeySequence(Qt::Key_F6), this);
+    QShortcut *shortcutF6 = new QShortcut(QKeySequence(Qt::Key_Period), this);
     connect(shortcutF6, SIGNAL(activated()), ui->pushButtonStopCam, SLOT(click()));
 
-    QShortcut *shortcutF9 = new QShortcut(QKeySequence(Qt::Key_Space), this);
+    QShortcut *shortcutF9 = new QShortcut(QKeySequence(Qt::Key_PageDown), this);
     connect(shortcutF9, SIGNAL(activated()), ui->pushButtonTakeSnapshot, SLOT(click()));
 
     QShortcut *shortcutBackSpace = new QShortcut(QKeySequence(Qt::Key_Backspace), this);
@@ -160,6 +160,7 @@ RobotDetectionMainWindow::~RobotDetectionMainWindow()
     programSettings.perspectiveRemovePixelPerCell = ui->slider_perspectiveRemovePixelPerCell->value();
     programSettings.cameraImageThreshold = ui->slider_threshold->value();
     programSettings.MinSizeofRects = ui->slider_MinSizeofRects->value();
+    programSettings.save();
 
     defaultArucoDict.save(QString::fromStdString(programSettings.arucoDictFileName));
 
@@ -453,31 +454,31 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
 
         for (int i = 0; i<programSettings.camFieldSize.area(); i++) {
 
-                // build cameraMatrix
-        tempCameraMatrix.insert(i, programSettings.cams.at(i)->cameraMatrix);
-        tempDistCoeffs.insert(i, programSettings.cams.at(i)->distCoeffs);
+            // build cameraMatrix
+            tempCameraMatrix.insert(i, programSettings.cams.at(i)->cameraMatrix);
+            tempDistCoeffs.insert(i, programSettings.cams.at(i)->distCoeffs);
 
 
-        cout << programSettings.cams.at(i)->rvecs;
+            cout << programSettings.cams.at(i)->rvecs;
 
-        cv::Mat R;
-        cv::Rodrigues(programSettings.cams.at(i)->rvecs, R);
-        cv::Mat P;
-        cv::Mat Res;
-        cv::hconcat(R, programSettings.cams.at(i)->tvecs, Res);
-        P = programSettings.cams.at(i)->cameraMatrix*Res;
+            cv::Mat R;
+            cv::Rodrigues(programSettings.cams.at(i)->rvecs, R);
+            cv::Mat P;
+            cv::Mat Res;
+            cv::hconcat(R, programSettings.cams.at(i)->tvecs, Res);
+            P = programSettings.cams.at(i)->cameraMatrix*Res;
 
-        cout << P;
+            cout << P;
 
-       // perspTransfMatrix.insert(i, R);
+            // perspTransfMatrix.insert(i, R);
 
 
-        // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
-        cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
-        scaleMatrix.at<double>(0, 0) = 1.0 / programSettings.getGuiScale();
-        scaleMatrix.at<double>(1, 1) = 1.0 / programSettings.getGuiScale();
-        scaleMatrix.at<double>(2, 2) = 1.0;
-        guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
+            // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
+            cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
+            scaleMatrix.at<double>(0, 0) = 1.0 / programSettings.getGuiScale();
+            scaleMatrix.at<double>(1, 1) = 1.0 / programSettings.getGuiScale();
+            scaleMatrix.at<double>(2, 2) = 1.0;
+            guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
         }
         imgWorker = new ImageProcessingWorker(programSettings.udpStruct, videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
@@ -967,6 +968,7 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
     ui->spinBoxSwap1->setEnabled(false);
     ui->spinBoxSwap2->setEnabled(false);
     ui->pushButtonSwap->setEnabled(false);
+    ui->pushButtonSettingsCancel->setEnabled(false);
 
     programSettings.arucoDictFileName = ui->lineEditArucoDictionaryFileName->text().toStdString();
     programSettings.arucoMarkerSizePixel = ui->lineEditArucoMakerSizeInPixel->text().toInt();
@@ -1341,8 +1343,23 @@ void RobotDetectionMainWindow::findAndDrawPoints()
     //Für besseren Kontrast wird das Bild zunächst in Graustufen umgerechnet und dann beim Funktionsaufruf invertiert
     cvtColor(imageC, greyImageC, cv::COLOR_RGB2GRAY);
 
-    bool found = findCirclesGrid(cv::Scalar::all(255) - greyImageC, programSettings.boardSize, pointBuf);
+    bool found = false;
 
+    if (programSettings.calibPatternWhiteOnBlack) {
+          greyImageC = cv::Scalar::all(255) - greyImageC;
+    }
+
+    switch (programSettings.calibrationPattern) {
+        case Settings::Pattern::CHESSBOARD:
+            found = findChessboardCorners(greyImageC, programSettings.boardSize, pointBuf);
+            break;
+        case Settings::Pattern::CIRCLES_GRID:
+            found = findCirclesGrid(greyImageC, programSettings.boardSize, pointBuf, CALIB_CB_SYMMETRIC_GRID);
+            break;
+        case Settings::Pattern::ASYMMETRIC_CIRCLES_GRID:
+            found = findCirclesGrid(greyImageC, programSettings.boardSize, pointBuf, CALIB_CB_ASYMMETRIC_GRID);
+            break;
+    }
     // store the image to be used for the calibration process
     // imageSaved hält ein Bild für den Kalibrierungsprozess vor
     if(found)
@@ -1376,13 +1393,22 @@ void RobotDetectionMainWindow::on_pushButtonTakeSnapshot_clicked()
         ui->pushButtonTakeSnapshot->setEnabled(true);
     }
 
-
     if(imageSavedC.data){
-
         bool circlesGridFound;
         vector<Point2f> currentSnapshotArea;
 
-        circlesGridFound = findCirclesGrid(cv::Scalar::all(255) - greyImageC, programSettings.boardSize, currentSnapshotArea);
+
+        switch (programSettings.calibrationPattern) {
+            case Settings::Pattern::CHESSBOARD:
+                circlesGridFound = findChessboardCorners(greyImageC, programSettings.boardSize, currentSnapshotArea);
+                break;
+            case Settings::Pattern::CIRCLES_GRID:
+                circlesGridFound = findCirclesGrid(greyImageC, programSettings.boardSize, currentSnapshotArea, CALIB_CB_SYMMETRIC_GRID);
+                break;
+            case Settings::Pattern::ASYMMETRIC_CIRCLES_GRID:
+                circlesGridFound = findCirclesGrid(greyImageC, programSettings.boardSize, currentSnapshotArea, CALIB_CB_ASYMMETRIC_GRID);
+                break;
+        }
 
         if(!circlesGridFound){
             int snapCount = numSeq + 1;
@@ -1398,7 +1424,6 @@ void RobotDetectionMainWindow::on_pushButtonTakeSnapshot_clicked()
         allFounds.push_back(circlesGridFound);
 
     }
-
 
     //Aus image wurde ja bereits imageSaved, wenn Kreismuster erkannt wurden
     //bool found = findChessboardCorners(image, boardSize, pointBuf);

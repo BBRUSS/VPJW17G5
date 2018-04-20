@@ -86,6 +86,7 @@ void MainWindow::processImage()
 
     bool success = cv::solvePnP (objectPoints, imagePoints, cameraMatrix, distCoeff, rvec, tvec);
 
+
     std::vector<cv::Point3d> framePoints;
     framePoints.push_back(cv::Point3d(  0,   0,   0));
     framePoints.push_back(cv::Point3d(400,   0,   0));

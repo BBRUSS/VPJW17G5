@@ -2,11 +2,11 @@
 <opencv_storage>
 <Settings>
   <boardSize>
-    4 11</boardSize>
+    7 6</boardSize>
   <camFieldSize>
     1 1</camFieldSize>
-  <patternToUse>ASYMMETRIC_CIRCLES_GRID</patternToUse>
-  <squareSize>48.</squareSize>
+  <patternToUse>CIRCLES_GRID</patternToUse>
+  <squareSize>28.</squareSize>
   <nrFrames>10</nrFrames>
   <calibPatternWhiteOnBlack>0</calibPatternWhiteOnBlack>
   <cam_0>
