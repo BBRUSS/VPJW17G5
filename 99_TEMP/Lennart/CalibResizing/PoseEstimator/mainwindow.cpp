@@ -20,7 +20,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButtonOpenCamera_clicked()
 {
     videoCapture.open(0);
-    cameraTimer.start(1000);
+    cameraTimer.start(10);
 }
 
 void MainWindow::on_cameraTimerEvent()
@@ -90,17 +90,17 @@ void MainWindow::processImage()
 
     cv::Mat rvec, tvec;
 
-    bool success = cv::solvePnP (objectPoints, imagePoints, set.cams.at(0)->cameraMatrix, set.cams.at(0)->distCoeffs, rvec, tvec);
+    bool success = cv::solvePnP (objectPoints, imagePoints, set.cams.at(0)->cameraMatrix, cv::Mat(), rvec, tvec);
 
     std::vector<cv::Point3d> framePoints;
     framePoints.push_back(cv::Point3d(  0,   0,   0));
-    framePoints.push_back(cv::Point3d(140,   0,   0));
+    framePoints.push_back(cv::Point3d(70,   0,   0));
     framePoints.push_back(cv::Point3d(  0, 140,   0));
     framePoints.push_back(cv::Point3d(  0,   0, 140));
 
     std::vector<cv::Point2d> frameDataPoints;
 
-    cv::projectPoints(framePoints, rvec, tvec, set.cams.at(0)->cameraMatrix, set.cams.at(0)->distCoeffs, frameDataPoints);
+    cv::projectPoints(framePoints, rvec, tvec, set.cams.at(0)->cameraMatrix, cv::Mat(), frameDataPoints);
 
     cv::Mat R;
 
@@ -149,16 +149,18 @@ void MainWindow::processImage()
         double s;
 
         tempMat = R.inv() * (set.cams.at(0)->cameraMatrix).inv() * uvPoint;
-
         tempMat2 = R.inv() * tvec;
 
-        int z = 0;
+        float z = ui->lineEdit_Z->text().toDouble();
 
         s = z + tempMat2.at<double>(2,0); //285 represents the height Zconst
         s /= tempMat.at<double>(2,0);
 
         cv::Mat P = R.inv() * (s * set.cams.at(0)->cameraMatrix.inv() * uvPoint - tvec);
 
+        ui->label_PX->setText(QString::number(round(P.at<double>(0,0)*1000.0)/1000.0));
+        ui->label_PY->setText(QString::number(round(P.at<double>(1,0)*1000.0)/1000.0));
+        ui->label_PZ->setText(QString::number(round(P.at<double>(2,0)*1000.0)/1000.0));
         printCV2dMat(P, "P");
     }
 }

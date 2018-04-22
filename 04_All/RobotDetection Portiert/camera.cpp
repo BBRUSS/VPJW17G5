@@ -398,7 +398,8 @@ int Camera::doCalibrationExtrinsics(Mat &image)
     }
 
     bool success = 0;
-    success = cv::solvePnP(objectPointsExtrinsic, imagePointsExtrinsic, cameraMatrix, distCoeffs, rvec, tvec);
+    //success = cv::solvePnP(objectPointsExtrinsic, imagePointsExtrinsic, cameraMatrix, distCoeffs, rvec, tvec);
+    success = cv::solvePnP(objectPointsExtrinsic, imagePointsExtrinsic, cameraMatrix, cv::Mat(), rvec, tvec);
     qInfo() << success;
     return success;
 }
