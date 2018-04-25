@@ -37,6 +37,23 @@ void MainWindow::on_cameraTimerEvent()
 
 void MainWindow::processImage()
 {
+    cv::Mat rvec2, tvec2;
+    std::vector<cv::Point2f> pc1;
+    std::vector<cv::Point3f> pc2;
+
+    pc1.push_back(cv::Point2d(6.5, 6.5));
+    pc1.push_back(cv::Point2d(3.5, 55));
+    pc2.push_back(cv::Point2d(83.0, 7.5, 1));
+    pc2.push_back(cv::Point2d(84.5, 52.0, 1));
+
+    cv::findEssentialMat()
+
+//    cv::solvePnP(pc2, pc1, cv::Mat(), cv::Mat(), rvec2, tvec2);
+
+//    printCV2dMat(rvec2, "RVEC");
+//    printCV2dMat(tvec2, "TVEC");
+//    return;
+
     cv::Mat image;
     videoCapture.read(image);
 
@@ -96,44 +113,27 @@ void MainWindow::processImage()
     framePoints.push_back(cv::Point3d(  0,   0,   0));
     framePoints.push_back(cv::Point3d(70,   0,   0));
     framePoints.push_back(cv::Point3d(  0, 140,   0));
-    framePoints.push_back(cv::Point3d(  0,   0, 140));
+    framePoints.push_back(cv::Point3d(  0,   0, 35));
 
     std::vector<cv::Point2d> frameDataPoints;
 
     cv::projectPoints(framePoints, rvec, tvec, set.cams.at(0)->cameraMatrix, cv::Mat(), frameDataPoints);
-
-    cv::Mat R;
-
-    cv::Rodrigues(rvec, R);
-
-    qDebug() << "R =";
-    qDebug() << R.at<double>(0,0) << R.at<double>(0,1) << R.at<double>(0,2);
-    qDebug() << R.at<double>(1,0) << R.at<double>(1,1) << R.at<double>(1,2);
-    qDebug() << R.at<double>(2,0) << R.at<double>(2,1) << R.at<double>(2,2);
-
-
-    qDebug() << "C =";
-    qDebug() << set.cams.at(0)->cameraMatrix.at<double>(0,0) << set.cams.at(0)->cameraMatrix.at<double>(0,1) << set.cams.at(0)->cameraMatrix.at<double>(0,2);
-    qDebug() << set.cams.at(0)->cameraMatrix.at<double>(1,0) << set.cams.at(0)->cameraMatrix.at<double>(1,1) << set.cams.at(0)->cameraMatrix.at<double>(1,2);
-    qDebug() << set.cams.at(0)->cameraMatrix.at<double>(2,0) << set.cams.at(0)->cameraMatrix.at<double>(2,1) << set.cams.at(0)->cameraMatrix.at<double>(2,2);
-
-
-    qDebug() << "t =";
-    qDebug() << tvec.at<double>(0);
-    qDebug() << tvec.at<double>(1);
-    qDebug() << tvec.at<double>(2);
-
-    std::vector<std::vector<cv::Point2f>> tempmarkerCorners;      //Vector contains the Cornerposition of detected Marker in Order by Vector Marker Corners
-    std::vector<int> tempmarkerIds;     //Contains the Position of rejectedCandidates
-
-    cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
-    cv::aruco::detectMarkers(undistImage, dict, tempmarkerCorners, tempmarkerIds);
 
     cv::line(undistImage, frameDataPoints[0], frameDataPoints[1], cv::Scalar(255,0,0),3);
     cv::line(undistImage, frameDataPoints[0], frameDataPoints[2], cv::Scalar(0,255,0),3);
     cv::line(undistImage, frameDataPoints[0], frameDataPoints[3], cv::Scalar(0,0,255),3);
 
     cv::imshow("Undist", undistImage);
+
+    cv::Mat R;
+
+    cv::Rodrigues(rvec, R);
+
+    std::vector<std::vector<cv::Point2f>> tempmarkerCorners;      //Vector contains the Cornerposition of detected Marker in Order by Vector Marker Corners
+    std::vector<int> tempmarkerIds;     //Contains the Position of rejectedCandidates
+
+    cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
+    cv::aruco::detectMarkers(undistImage, dict, tempmarkerCorners, tempmarkerIds);
 
     if (tempmarkerCorners.size() > 0) {
         cv::aruco::drawDetectedMarkers(undistImage, tempmarkerCorners, tempmarkerIds);
@@ -156,12 +156,14 @@ void MainWindow::processImage()
         s = z + tempMat2.at<double>(2,0); //285 represents the height Zconst
         s /= tempMat.at<double>(2,0);
 
+        qDebug() << s;
+
         cv::Mat P = R.inv() * (s * set.cams.at(0)->cameraMatrix.inv() * uvPoint - tvec);
 
         ui->label_PX->setText(QString::number(round(P.at<double>(0,0)*1000.0)/1000.0));
         ui->label_PY->setText(QString::number(round(P.at<double>(1,0)*1000.0)/1000.0));
         ui->label_PZ->setText(QString::number(round(P.at<double>(2,0)*1000.0)/1000.0));
-        printCV2dMat(P, "P");
+        //printCV2dMat(P, "P");
     }
 }
 
@@ -178,3 +180,5 @@ void MainWindow::printCV2dMat(cv::Mat Mat, QString Name) {
         Row.clear();
     }
 }
+
+
