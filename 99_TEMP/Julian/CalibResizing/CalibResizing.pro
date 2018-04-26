@@ -12,38 +12,23 @@ TARGET = CalibResizing
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+SOURCES += \
+    main.cpp\
+    mainwindow.cpp \
+    cameracalibrator.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += \
+    mainwindow.h \
+    cameracalibrator.h
 
 FORMS    += mainwindow.ui
 
-## SET THE CORRECT PATH HEREAFTER ##
-
-
 
 INCLUDEPATH += \
-    "C:/OpenCV/build/include" \
- #   "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"
+    "C:/OpenCv30/build/include"
 
 LIBS += \
- #   "-LC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/lib/amd64" \
-    "-LC:/OpenCV/build/x86/vc10/lib" \
-    #if library name is lib[name].lib, you should write -l[name]
-    -lopencv_core247 \
-    -lopencv_highgui247 \
-    -lopencv_imgproc247 \
-    -lopencv_calib3d247 \
-    -lopencv_features2d247 \
-    -lopencv_contrib247 \
-    -lopencv_flann247 \
-    -lopencv_gpu247 \
-    -lopencv_legacy247 \
-    -lopencv_ml247 \
-    -lopencv_objdetect247 \
-    -lopencv_ts247 \
-    -lopencv_video247
+    "-LC:/OpenCv30/build/x64/vc14/lib" -lopencv_world341
 
 DESTDIR = ./dist
 CONFIG += c++11
