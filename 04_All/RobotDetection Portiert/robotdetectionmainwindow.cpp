@@ -447,39 +447,6 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         Sleep(3000);
         //timer.start(timerMilSecs);#
 
-        QList<cv::Mat> tempCameraMatrix;
-        QList<cv::Mat> tempDistCoeffs;
-        QList<cv::Mat> tempGuiTransfMatrix;
-        QList<cv::Mat> tempPerspTransfMatrix;
-
-        for (int i = 0; i<programSettings.camFieldSize.area(); i++) {
-
-            // build cameraMatrix
-            tempCameraMatrix.insert(i, programSettings.cams.at(i)->cameraMatrix);
-            tempDistCoeffs.insert(i, programSettings.cams.at(i)->distCoeffs);
-
-
-            cout << programSettings.cams.at(i)->rvecs;
-
-            cv::Mat R;
-            cv::Rodrigues(programSettings.cams.at(i)->rvecs, R);
-            cv::Mat P;
-            cv::Mat Res;
-            cv::hconcat(R, programSettings.cams.at(i)->tvecs, Res);
-            P = programSettings.cams.at(i)->cameraMatrix*Res;
-
-            cout << P;
-
-            // perspTransfMatrix.insert(i, R);
-
-
-            // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
-            cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
-            scaleMatrix.at<double>(0, 0) = 1.0 / programSettings.getGuiScale();
-            scaleMatrix.at<double>(1, 1) = 1.0 / programSettings.getGuiScale();
-            scaleMatrix.at<double>(2, 2) = 1.0;
-            guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
-        }
         imgWorker = new ImageProcessingWorker(programSettings.udpStruct, videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
