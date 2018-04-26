@@ -234,14 +234,6 @@ void MyUDP::readReady_SyncService()
     recived_data_2 = var_in_4;
     recived_data_3 = var_in_5;
 
-
-    //    qDebug () <<  reverse_data.size() << "Empfangene Bytes <-> " << reverse_data.size()/8 <<"-Double-Werte";
-    //    qDebug () << "1.Variable: "  << var_in_1;  // Enthält die ID
-    //    qDebug () << "2.Variable: "  << var_in_2;  // Enthält die Roboter Nummer
-    //    qDebug () << "3.Variable: "  << var_in_3;  // Enthält die mitgesendeten Daten i.d.R. Zeit
-    //    qDebug () << "4.Variable: "  << var_in_4;
-    //    qDebug () << "5.Variable: "  << var_in_5;
-
     if (start_log==0)
     {
         timestamp_start_log = this->get_MSsMN();
@@ -267,8 +259,6 @@ void MyUDP::readReady_SyncService()
     //Robi aked for latenz check, if ID 333X is recived
     if (recived_ID >= 3330 && recived_ID <=3339)
     {
-        //     qDebug () << "recive ID333X, save t4 and send answer to: " << recived_robot_no << "<<-";
-
         //Send answer telegram to the robot which has asked for latenz check.
         this->send_ID4(recived_robot_no,timeStamp_t4);
 
@@ -311,8 +301,6 @@ void MyUDP::send_ID4 (double recived_Robot_no,double timeStamp_t4)
     /// send message
     udpsocked_send_SyncService.writeDatagram(message, QHostAddress(sendIP_SyncService), sendPort_SyncService);
 
-
-    //qDebug () << "ID4 send / TimeStamp t4 send" << message.size();
 
     msg_4++;
     // clean up
