@@ -55,7 +55,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabMain_Navigation">
        <property name="sizePolicy">
@@ -411,8 +411,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>295</width>
-                       <height>595</height>
+                       <width>194</width>
+                       <height>545</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1725,9 +1725,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>381</width>
-                 <height>1235</height>
+                 <y>-156</y>
+                 <width>384</width>
+                 <height>1442</height>
                 </rect>
                </property>
                <property name="minimumSize">
@@ -1870,6 +1870,33 @@
                         <string>Inverted Pattern Colors: White on Black</string>
                        </property>
                       </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelExtrCalibOrigin">
+                       <property name="text">
+                        <string>Extrinsic calibration pattern 3D world origin</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelExtrCalibOriginX">
+                       <property name="text">
+                        <string> - X Coordinate (mm)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditExtrCalibOriginX"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="labelExtrCalibOriginY">
+                       <property name="text">
+                        <string> - Y Coordinate (mm)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEditExtrCalibOriginY"/>
                      </item>
                     </layout>
                    </item>

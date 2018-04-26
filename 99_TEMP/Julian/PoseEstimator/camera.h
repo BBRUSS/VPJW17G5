@@ -43,29 +43,32 @@ public:
 
 
     // According to George Lecaces Youtube video "OpenCV Basics"
-    void createKnownBoardPositions(vector<Point3f>& corners, Size size, float squareSize, Settings::Pattern pattern, float xOrigin, float yOrigin);
+    void createKnownBoardPositions(vector<Point3f>& corners, Size size, float squareSize, Settings::Pattern pattern);
     bool getCalibPatternCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showFoundCorners=false);
     void cameraCalibration(vector<Mat> calibrationImages, Size boardSize);
     void cameraCalibration(vector<vector<Point2f>> chessboardImageSpacePoints, vector<vector<Point3f>> worldSpaceCornerPoints, Size boardSize);
     double cameraCalibration(Size &imageSize);
+    int doCalibrationIntrinsics();              // Function to get intrinsics
     int doCalibrationExtrinsics(Mat &image);    // Function to get extrinsics
     void saveCameraCalibrationParameters();     // Save parameters to XML file
+    Mat showUndistorted(Mat distorted);         // get and show undistorted picture to compare to distorted one
     Mat getUndistorted(Mat distorted, Mat cameraMatrix, Mat distCoeffs);
     Mat getUndistorted(Mat distorted);
     Mat remap(const Mat &distorted);
     int getID();
     void setContrast(int blackWhiteThreshold, int maxValue);
     double computeReprojectionErrors(vector<vector<Point3f>> &objectPoints,
-                                     vector<vector<Point2f> > &imagePoints,
-                                     vector<Mat> &rvecs, vector<Mat> &tvecs,
-                                     Mat &cameraMatrix, Mat &distCoeffs);
+                              vector<vector<Point2f> > &imagePoints,
+                              vector<Mat> &rvecs, vector<Mat> &tvecs,
+                              Mat &cameraMatrix, Mat &distCoeffs);
     int addCirclePoints(const std::vector<Mat>& imageList); // Source: Maaß
     void addPoints(const vector<Point2f>& pointBuf, const vector<Point3f>& circlePoints3d); // Source: Maaß
 
 public:
     int id;                     // Windows ID of the camera
     int nr;                     // Number of camera in the camera field
-    Settings *s;                // Reference to Settings-class
+    Settings *s;
+//    RobotDetectionMainWindow *ui;
 
     Mat cameraMatrix;           // intrinsic parameters
     Mat distCoeffs;             // (k1, k2, p1, p2 [,k3[, k4, k5, k6]]), not depending on resolution or view

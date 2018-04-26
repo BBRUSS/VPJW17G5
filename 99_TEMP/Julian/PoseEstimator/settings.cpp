@@ -31,7 +31,7 @@ void Settings::write(FileStorage& fs) const{            //Write serialization fo
     fs << "squareSize" << squareSize;
     fs << "nrFrames" << nrFrames;
     fs << "calibPatternWhiteOnBlack" << calibPatternWhiteOnBlack;
-    fs << "extrinsicOrigin" << extrinsicOrigin;
+
     //    Camera Settings
     for (int i = 0; i<cams.size(); i++){
         string cam_ID = "cam_" ;
@@ -106,7 +106,7 @@ void Settings::read(const FileNode& node){              //Read serialization for
     node["squareSize"] >> squareSize;
     node["nrFrames"] >> nrFrames;
     node["calibPatternWhiteOnBlack"] >> calibPatternWhiteOnBlack;
-    node["extrinsicOrigin"] >> extrinsicOrigin;
+
 
     //    Camera Settings
     for (int i = 0; i<cams.size(); i++){

@@ -46,13 +46,12 @@ public:
     const string filename = "settings.xml"; // The name of the file where to write
 
     // Global Settings
-    Size boardSize;                     // The size of the board -> Number of items by width and height
-    Size camFieldSize = Size(1,1);      // The size of camara field
-    Pattern calibrationPattern;         // One of the Chessboard, circles, or asymmetric circle pattern
-    float squareSize = 0.0;             // The size of a square in your defined unit (point, millimeter,etc).
-    int nrFrames = 10;                  // The number of frames to use from the input for calibration
-    bool calibPatternWhiteOnBlack;      // pattern color white on black = 1
-    Point3f extrinsicOrigin = (0,0,0);  // Origin (X,Y,Z) of extrinsic calibration point
+    Size boardSize;                 // The size of the board -> Number of items by width and height
+    Size camFieldSize = Size(1,1);              // The size of camara field
+    Pattern calibrationPattern;     // One of the Chessboard, circles, or asymmetric circle pattern
+    float squareSize = 0.0;         // The size of a square in your defined unit (point, millimeter,etc).
+    int nrFrames = 10;              // The number of frames to use from the input for calibration
+    bool calibPatternWhiteOnBlack;  // pattern color white on black = 1
 
     // Camera Settings
     vector<cam*> cams;

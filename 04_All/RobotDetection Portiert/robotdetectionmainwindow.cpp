@@ -96,6 +96,8 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->lineEditCalibrationSquareSize->setText(QString::number(programSettings.squareSize));
     ui->comboBoxCalibrationPattern->setCurrentIndex(programSettings.calibrationPattern-1);
     ui->checkBoxCalibrationPatternWhiteOnBlack->setChecked(programSettings.calibPatternWhiteOnBlack);
+    ui->lineEditExtrCalibOriginX->setText(QString::number(programSettings.extrinsicOrigin.x));
+    ui->lineEditExtrCalibOriginY->setText(QString::number(programSettings.extrinsicOrigin.y));
 
     ui->spinBoxCameraNr->setMaximum(programSettings.camFieldSize.area()-1);
 
@@ -131,6 +133,7 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     ui->pushButtonSaveContrast->setEnabled(false);
     ui->pushButtonSaveToXML->setEnabled(false);
 }
+
 
 RobotDetectionMainWindow::~RobotDetectionMainWindow()
 {
@@ -185,11 +188,14 @@ void RobotDetectionMainWindow::incrementFPSCounter()
     udpCount = 0;
 }
 
-void RobotDetectionMainWindow::incrementUDPCounter() {
+void RobotDetectionMainWindow::incrementUDPCounter()
+{
     udpCount++;
 }
 
-void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots){
+
+void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots)
+{
     disconnect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);
 
     fpsCount++;
@@ -243,39 +249,39 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     // invert y-axis
     cv::flip(guiImage, guiImage, 0);
 
-    //Draw Line and Circle for Robots in GUI
-    for(int i = 0; i < robotLocations.size();i++)
+    // Draw Line and Circle for Robots in GUI
+    for(int i = 0; i < robotLocations.size(); i++)
     {
 
-        //If a Robot are detected
+        // If a Robot are detected
         if(robotLocations[i].x != 0)
         {
-
             cv::Point2f centerPoint = cv::Point2f(robotLocations[i].x, programSettings.cameraFieldSizeMilimeter.height - robotLocations[i].y);
             double centerRadius = programSettings.robotRadius;
             double angledegree = 2*3.14159265359-(robotLocations[i].z*3.14159265359/180);
             cv::Point2f directionPoint = cv::Point2f(scaleToGui(centerPoint).x + scaleToGui(centerRadius)*cos(angledegree ), scaleToGui(centerPoint).y + scaleToGui(centerRadius)*sin(angledegree));
 
-            //Draw circles and lines for center and orientation circles
+            // Draw circles and lines for center and orientation circles
 
-            if (robotLocationsStd1d[i] >= programSettings.robotStdThresh) {
-
+            if (robotLocationsStd1d[i] >= programSettings.robotStdThresh)
+            {
                 cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), COLOR_RED, 2, CV_AA);
-            } else {
+            }
+            else
+            {
                 float stdPercent = robotLocationsStd1d[i]/programSettings.robotStdThresh;
                 cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius+robotLocationsStd1d[i]), cv::Scalar(0, 255*(1-stdPercent), 255*stdPercent), 2, CV_AA);
             }
-
             cv::circle(guiImage, scaleToGui(centerPoint), scaleToGui(centerRadius), COLOR_GREEN, 2, CV_AA);
             cv::line(guiImage, scaleToGui(centerPoint), directionPoint, COLOR_BLUE, 2, CV_AA);
-
         }
     }
 
     // show error message in image if camera is missing
     for (int j = 0; j < programSettings.camFieldSize.width; j++)
     {
-        for (int i = 0; i < programSettings.camFieldSize.height; i++) {
+        for (int i = 0; i < programSettings.camFieldSize.height; i++)
+        {
             int ID = i*programSettings.camFieldSize.width+j;
 
             if( ! videoCapture[ID].isOpened())
@@ -296,23 +302,27 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
     //convert colors and show image in GUI
     cv::cvtColor(guiImage, guiImage, CV_BGR2RGB);
     QPixmap pixmap;
-
-    //pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
     pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, guiImage.step, QImage::Format_RGB888));
-    //pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
     ui->labelImage->setPixmap(pixmap);
 
     sendSettingsUpdate();
-    if (workerThread.isRunning()) {
+    if (workerThread.isRunning())
+    {
         connect(imgWorker, &ImageProcessingWorker::updateGui, this, &RobotDetectionMainWindow::updateGuiImage);;
     }
 }
 
-void RobotDetectionMainWindow::updateRobotOffsets(QList<RobotOffset> foundOffsets) {
-    if (foundOffsets.size() < defaultArucoDict.getMarkerCount()/2) {
+
+void RobotDetectionMainWindow::updateRobotOffsets(QList<RobotOffset> foundOffsets)
+{
+    if (foundOffsets.size() < defaultArucoDict.getMarkerCount()/2)
+    {
         ui->statusBar->showMessage("Not all robots found in camera images. Trying again ...", 2000);
-    } else {
-        for (int i = 0; foundOffsets.size(); i++) {
+    }
+    else
+    {
+        for (int i = 0; foundOffsets.size(); i++)
+        {
             int ID = foundOffsets.at(i).id;
             programSettings.robotOffset.at(ID) = foundOffsets.at(i).offsetMarkerEven;
         }
@@ -327,6 +337,7 @@ void RobotDetectionMainWindow::updateRobotOffsets(QList<RobotOffset> foundOffset
     }
 }
 
+
 // Aruco Section Start
 void RobotDetectionMainWindow::on_pushButton_addAruco_clicked()
 {
@@ -334,11 +345,13 @@ void RobotDetectionMainWindow::on_pushButton_addAruco_clicked()
     {
         defaultArucoDict.add(2);
         initArucoTab();
-    } else {
+    }
+    else
+    {
         this->ui->statusBar->showMessage("Maximum number of robots is reached. (" + QString::number(programSettings.robotMaxNumber) + ")");
     }
-    //sendSettingsUpdate();
 }
+
 
 void RobotDetectionMainWindow::on_pushButton_deleteAruco_clicked()
 {
@@ -349,27 +362,35 @@ void RobotDetectionMainWindow::on_pushButton_deleteAruco_clicked()
     }
 }
 
+
 void RobotDetectionMainWindow::on_tableWidget_Aruco_cellChanged(int row, int column)
 {
-    if (row%2) { // odd number
+    if (row%2) // odd number
+    {
         this->ui->tableWidget_Aruco->item(row-1, column)->setText(this->ui->tableWidget_Aruco->item(row, column)->text());
-    } else {
+    }
+    else
+    {
         this->ui->tableWidget_Aruco->item(row+1, column)->setText(this->ui->tableWidget_Aruco->item(row, column)->text());
     }
     updateIDNameHeightMap();
 }
+
 
 void RobotDetectionMainWindow::on_tableWidget_Aruco_cellClicked(int row, int column)
 {
     updateArucoTab(row);
 }
 
+
 void RobotDetectionMainWindow::on_tabMain_tabBarClicked(int index)
 {
-    if (index == 2) {
+    if (index == 2)
+    {
         this->initArucoTab();
     }
 }
+
 
 void RobotDetectionMainWindow::on_pushButton_SaveToImage_clicked()
 {
@@ -387,9 +408,12 @@ void RobotDetectionMainWindow::on_pushButton_SaveToImage_clicked()
             name = defaultArucoDict.getNameById(row);
             QString namePrefix = QString::number(QDateTime::currentMSecsSinceEpoch()) + "_Name_"+ name + "_ID_";
             bool ret = defaultArucoDict.drawSingle(fileName + "/", namePrefix, ID);
-            if (ret) {
+            if (ret)
+            {
                 this->ui->statusBar->showMessage("File saved to " + fileName, 3000);
-            } else {
+            }
+            else
+            {
                 this->ui->statusBar->showMessage("Could not write to file:" + fileName, 3000);
             }
         }
@@ -397,9 +421,9 @@ void RobotDetectionMainWindow::on_pushButton_SaveToImage_clicked()
 }
 // Aruco Section End
 
+
 void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
 {
-
     if(mainloopIsActive)
     {
         this->ui->tabMain_Calibration->setEnabled(true);
@@ -441,6 +465,7 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
             videoCapture[i].set(CV_CAP_PROP_CONTRAST, contrastValue[i]);
             videoCapture[i].set(CV_CAP_PROP_EXPOSURE, exposureValue[i]);
         }
+
         ui->statusBar->showMessage("Connecting to cameras...", 3000);
         // give cameras some time to get connected,
         // otherwise program might crash (depends on camera driver)
@@ -458,7 +483,6 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
             tempCameraMatrix.insert(i, programSettings.cams.at(i)->cameraMatrix);
             tempDistCoeffs.insert(i, programSettings.cams.at(i)->distCoeffs);
 
-
             cout << programSettings.cams.at(i)->rvecs;
 
             cv::Mat R;
@@ -470,15 +494,13 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
 
             cout << P;
 
-            // perspTransfMatrix.insert(i, R);
-
-
             // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
             cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
             scaleMatrix.at<double>(0, 0) = 1.0 / programSettings.getGuiScale();
             scaleMatrix.at<double>(1, 1) = 1.0 / programSettings.getGuiScale();
             scaleMatrix.at<double>(2, 2) = 1.0;
             guiTransfMatrix.append(scaleMatrix * perspTransfMatrix.at(i));
+
         }
         imgWorker = new ImageProcessingWorker(programSettings.udpStruct, videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
@@ -510,12 +532,16 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
     }
 }
 
+
 void RobotDetectionMainWindow::on_pushButtonCalibrateOffset_clicked()
 {
-    if (calibrateOffset_ON_OFF) {
+    if (calibrateOffset_ON_OFF)
+    {
         calibrateOffset_ON_OFF = false;
         this->ui->pushButtonCalibrateOffset->setText("Start Robot Offset Calibration");
-    } else {
+    }
+    else
+    {
         calibrateOffset_ON_OFF = true;
         this->ui->pushButtonCalibrateOffset->setText("Stop Robot Offset Calibration");
     }
@@ -525,27 +551,33 @@ void RobotDetectionMainWindow::on_pushButtonCalibrateOffset_clicked()
  * Helper Functions Section
  */
 
+
 //Point Section Start
 double RobotDetectionMainWindow::distanceBetweenPoints(cv::Point2f a, cv::Point2f b)
 {
     return sqrt( (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) );
 }
 
+
 cv::Point2f RobotDetectionMainWindow::scaleToGui(cv::Point2f srcDot)
 {
     return cv::Point2f( (srcDot.x / programSettings.getGuiScale()) , (srcDot.y / programSettings.getGuiScale()) );
 }
+
 
 cv::Point3f RobotDetectionMainWindow::scaleToGui(cv::Point3f srcDot)
 {
     return cv::Point3f( (srcDot.x / programSettings.getGuiScale()) , (srcDot.y / programSettings.getGuiScale()) , (srcDot.z / programSettings.getGuiScale()));
 }
 
+
 double RobotDetectionMainWindow::scaleToGui(double value)
 {
     return (value / programSettings.getGuiScale());
 }
 //Point Section End
+
+
 //Aruco Section Start
 void RobotDetectionMainWindow::initArucoTab()
 {
@@ -582,6 +614,7 @@ void RobotDetectionMainWindow::initArucoTab()
     this->ui->tableWidget_Aruco->blockSignals(false);
 }
 
+
 cv::Ptr<cv::aruco::DetectorParameters> RobotDetectionMainWindow::readArucoParameters(){
     //Read Settings
     cv::Ptr<cv::aruco::DetectorParameters> arucoParameters = cv::aruco::DetectorParameters::create();
@@ -609,6 +642,7 @@ cv::Ptr<cv::aruco::DetectorParameters> RobotDetectionMainWindow::readArucoParame
     return arucoParameters;
 }
 
+
 void RobotDetectionMainWindow::updateArucoTab(int SelectedRow)
 {
     int MarkerCount = this->defaultArucoDict.getMarkerCount();
@@ -622,6 +656,7 @@ void RobotDetectionMainWindow::updateArucoTab(int SelectedRow)
     }
 }
 
+
 void RobotDetectionMainWindow::updateIDNameHeightMap() {
     int tableRows = this->ui->tableWidget_Aruco->rowCount();
     for (int i = 0; i < tableRows; i++) {
@@ -630,6 +665,8 @@ void RobotDetectionMainWindow::updateIDNameHeightMap() {
     }
 }
 // Aruco Section End
+
+
 // Settings Section Start
 QMap<QString, QXmlStreamAttributes> RobotDetectionMainWindow::parseCamera(QXmlStreamReader& xmlReader)
 {
@@ -660,6 +697,7 @@ QMap<QString, QXmlStreamAttributes> RobotDetectionMainWindow::parseCamera(QXmlSt
     }
     return camera;
 }
+
 
 void RobotDetectionMainWindow::readXmlCalibrationFile()
 {
@@ -775,6 +813,7 @@ void RobotDetectionMainWindow::readXmlCalibrationFile()
     ui->statusBar->showMessage("XML-File was read successfully...", 2000);
 }
 
+
 void RobotDetectionMainWindow::sendSettingsUpdate(){
 
     emit workerUpdateSettings(ui->slider_threshold->value(),
@@ -788,6 +827,7 @@ void RobotDetectionMainWindow::sendSettingsUpdate(){
                               calibrateOffset_ON_OFF);
 }
 // Section Settings End
+
 // Section Gui Start
 void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> robotLocations)
 {
@@ -820,6 +860,7 @@ void RobotDetectionMainWindow::writeRobotLocationsToTable(QList<cv::Point3f> rob
         ui->tableWidget->item(row, 2)->setText(QString::number(robotLocations.at(row).z, 'f', 1));
     }
 }
+
 
 void RobotDetectionMainWindow::writeRobotIDsToGui(cv::Mat guiImage, QList<cv::Point3f> robotLocations)
 {
@@ -887,7 +928,6 @@ void RobotDetectionMainWindow::on_pushButtonSettingsCancel_clicked()
         }
     }
 
-
     ui->spinBoxFieldHeight->setEnabled(true);
     ui->spinBoxFieldWidth->setEnabled(true);
     ui->pushButtonResizeCamField->setEnabled(true);
@@ -918,10 +958,10 @@ void RobotDetectionMainWindow::initializeCams()
             break;
         }
     }
-
     frames.start(33);
     connect(&frames, &QTimer::timeout, this, &RobotDetectionMainWindow::updateFrame);
 }
+
 
 void RobotDetectionMainWindow::updateFrame() {
     for(int i=0; i<programSettings.cams.size(); i++)
@@ -949,6 +989,7 @@ void RobotDetectionMainWindow::updateFrame() {
     pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, QImage::Format_RGB888));
     ui->labelCamFieldSettings->setPixmap(pixmap);
 }
+
 
 void RobotDetectionMainWindow::on_pushButtonSwap_clicked() {
     VideoCapture* temp = captures.at(ui->spinBoxSwap1->text().toInt());
@@ -993,6 +1034,8 @@ void RobotDetectionMainWindow::on_pushButtonSaveSettings_clicked() {
     programSettings.squareSize = ui->lineEditCalibrationSquareSize->text().toInt();
     programSettings.calibrationPattern = Settings::Pattern(ui->comboBoxCalibrationPattern->currentIndex()+1);
     programSettings.calibPatternWhiteOnBlack = ui->checkBoxCalibrationPatternWhiteOnBlack->isChecked();
+    programSettings.extrinsicOrigin.x = ui->lineEditExtrCalibOriginX->text().toInt();
+    programSettings.extrinsicOrigin.y = ui->lineEditExtrCalibOriginY->text().toInt();
 
     programSettings.save();
     frames.stop();
@@ -1039,7 +1082,7 @@ void RobotDetectionMainWindow::on_pushButtonStartCam_clicked()
     }
 
     nr = ui->spinBoxCameraNr->value();
-    id = programSettings.cams.at(nr)->cameraID;  // s->cams.at(nr)->cameraID
+    id = programSettings.cams.at(nr)->cameraID;
     qInfo() << "Opening Cam Nr <" << nr << "> with id <" << id << ">";
 
     capture.open(id);
@@ -1064,6 +1107,7 @@ void RobotDetectionMainWindow::on_pushButtonStartCam_clicked()
         isCameraRunning = false;
     }
 }
+
 
 /** Stops camera capture and enables/disables corresponding pushbuttons
  * @brief RobotDetectionMainWindow::on_pushButtonStopCam_clicked
@@ -1101,51 +1145,14 @@ void RobotDetectionMainWindow::on_pushButtonStopCam_clicked()
     on_pushButtonResetThr_clicked();
 }
 
-/** Writes sample image to calibration window GUI after timeout (30fps),
- *  convert image according to horizontal sliders values for black/white threshold
- *  and max value respectively.
+
+/** After timer timeout, write original camera frame into the left label. When a snapshot has been taken
+ * and the calibration patter has been found, the found points will be drawn into the left image.
+ * On the right image, the undistorted frame will be shown according to the actual calibration process.
  * @brief RobotDetectionMainWindow::frameReady
  */
 void RobotDetectionMainWindow::frameReady()
 {
-    //    // Old version: config camera threshold operation
-    //    if(capture.isOpened())
-    //    {
-    //        // store the frame to show in a Qt window
-    //        QImage originalFrame, thresholdFrame;
-
-    //        // get the current frame from the video stream
-    //        // Mat image wird beschrieben mit Hilfe des überladenen Operators >>
-    //        // Aus VideoCapture wird hier also ein 2D Mat
-    //        capture.read(image);
-    //        image.copyTo(imageOrig);
-
-    //        // prepare the image for the Qt format...
-    //        // ... change color channel ordering (from BGR in our Mat to RGB in QImage)
-    //        cvtColor(imageOrig, imageOrig, CV_BGR2RGB);
-
-    //        Mat threshold;
-    //        cv::threshold(imageOrig, threshold, ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value(), THRESH_BINARY);
-
-
-    //        // 3. Bild resizen und altes imageForGui mit neuem ersetzen
-    //        // Resizes an image in order to adapt to the GUI size
-
-    //        cv::resize(imageOrig, imageOrig, Size(ui->labelImageOrig->width(), ui->labelImageOrig->height()));
-    //        cv::resize(threshold, threshold, Size(ui->labelImageContrast->width(), ui->labelImageContrast->height()));
-
-    //        // QImage
-    //        originalFrame  = QImage((const unsigned char*)(imageOrig.data), imageOrig.cols, imageOrig.rows, imageOrig.step, QImage::Format_RGB888);
-    //        thresholdFrame = QImage((const unsigned char*)(threshold.data), threshold.cols, threshold.rows, threshold.step, QImage::Format_RGB888);
-
-    //        ui->labelImageOrig->setScaledContents(true);
-    //        ui->labelImageContrast->setScaledContents(true);
-    //        // display on labels
-    //        ui->labelImageOrig->setPixmap(QPixmap::fromImage(originalFrame));
-    //        ui->labelImageContrast->setPixmap(QPixmap::fromImage(thresholdFrame));
-
-    //    }
-
     if(isCameraRunning && capture.isOpened())
     {
         // store the frame to show in a Qt window
@@ -1167,12 +1174,10 @@ void RobotDetectionMainWindow::frameReady()
         // ... change color channel ordering (from BGR in our Mat to RGB in QImage)
         cvtColor(imageC, imageC, CV_BGR2RGB);
 
-
         //1. Bild für GUI kopieren - image variable muss unangetastet bleiben
         imageC.copyTo(imageForGuiC);
 
 
-        // NEW////
         //2. Aufs neue Bild Kreise malen, aber nur wenn Grid gefunden wurde
         if(allSnapshotAreas.size() != 0){
 
@@ -1196,19 +1201,12 @@ void RobotDetectionMainWindow::frameReady()
                         circle(imageForGuiC,cvPoint(currentArea[j].x,currentArea[j].y), 5,CV_RGB(255,0,253),3,8,0);
                     }
                 }
-
             }
-
         }
 
-
         //3. Bild resizen und altes imageForGui mit neuem ersetzen
-        //Resizes an image in order to adapt to the GUI size
-        //cv::resize(imageForGuiC, imageForGuiC, Size(ui->labelImageBefore->width(), ui->labelImageBefore->height()));
-
         //QImage
         frameToShow = QImage((const unsigned char*)(imageForGuiC.data), imageForGuiC.cols, imageForGuiC.rows, imageForGuiC.step, QImage::Format_RGB888);
-
 
         ui->labelImageBefore->setScaledContents(true);
         // display on label (left label)
@@ -1218,21 +1216,16 @@ void RobotDetectionMainWindow::frameReady()
         if (isCalibrate) {
             // Wird nur nach der Kalibrierung aufgerufen und schreibt ins rechte Label.
             // remap of undistorted frame and conversion in the Qt format
-
-            //VERSION 2 - NEU
             Mat undistorted = cams.at(nr)->remap(imageC);
-            //cv::resize(undistorted, undistortedForGuiC, Size(ui->labelImageAfter->width(), ui->labelImageAfter->height()));
             undistorted.copyTo(undistortedForGuiC);
             frameUndistorted = QImage((uchar*)undistortedForGuiC.data, undistortedForGuiC.cols, undistortedForGuiC.rows, undistortedForGuiC.step, QImage::Format_RGB888);
             ui->labelImageAfter->setScaledContents(true);
             ui->labelImageAfter->setPixmap(QPixmap::fromImage(frameUndistorted));
 
-
-
         }
     }
-
 }
+
 
 /** Save the horizontal slider values for black/white threshold and max value
  *  to active camera object, in order to use these values while calibration process
@@ -1244,22 +1237,6 @@ void RobotDetectionMainWindow::on_pushButtonSaveContrast_clicked()
     cams.at(nr)->setContrast(ui->horizontalSliderThreshold->value(), ui->horizontalSliderMaxValue->value());
 }
 
-/** Start the calibration process to get intrinsic parameters.
- *  Therefor, the capture from parent window needs to be released, else the "frameReady()" method
- *  will have size-errors and the application will crash.
- * @brief RobotDetectionMainWindow::on_pushButtonGetIntrinsics_clicked
- */
-void RobotDetectionMainWindow::on_pushButtonGetIntrinsics_clicked()
-{
-    //capture.release();
-    //int success = cams.at(nr)->doCalibrationIntrinsics();
-    //capture.open(id);
-    //qInfo() << "intrinsic success: " << success;
-
-    // New Test version 16.04.2018
-    vector<vector<Point2f>> imagePoints;
-    vector<vector<Point3f>> objectPoints;
-}
 
 /** Start the calibration process to get extrinsic parameters.
  *  Therefor, the capture from parent window needs to be released, else the "frameReady()" method
@@ -1279,6 +1256,7 @@ void RobotDetectionMainWindow::on_pushButtonGetExtrinsics_clicked()
         ui->pushButtonSaveToXML->setEnabled(true);
     }
 }
+
 
 /** Reset the horizontal slider values for black/white threshold and max value
  *  and the corresponding values in active camera object.
@@ -1303,17 +1281,15 @@ void RobotDetectionMainWindow::on_pushButtonResetThr_clicked()
     allSnapshotAreas.clear();
     allFounds.clear();
 
-    //CameraCalibrator
-    //cameraCalib.resetVals();
-
-    //QMessageBox::information(this, tr("Information"), tr("Program has been reset."));
     ui->statusBar->showMessage("Program has been reset.", 3000);
 }
+
 
 void RobotDetectionMainWindow::setCams(vector<Camera*> cams)
 {
     this->cams = cams;
 }
+
 
 void RobotDetectionMainWindow::findAndDrawPoints()
 {
@@ -1381,7 +1357,6 @@ void RobotDetectionMainWindow::findAndDrawPoints()
                       The return value of findChessboardCorners() should be passed here.
     */
     drawChessboardCorners(imageC, programSettings.boardSize, pointBuf, found);
-
 
 }
 

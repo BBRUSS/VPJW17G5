@@ -128,7 +128,6 @@ private slots:
     void on_pushButtonStartCam_clicked();
     void on_pushButtonStopCam_clicked();
     void on_pushButtonSaveContrast_clicked();
-    void on_pushButtonGetIntrinsics_clicked();
     void on_pushButtonGetExtrinsics_clicked();
     void on_pushButtonResetThr_clicked();
     void findAndDrawPoints();
