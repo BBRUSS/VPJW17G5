@@ -138,6 +138,31 @@ void MainWindow::processImage() {
         cv::line(guiImage, frameDataPoints[0], frameDataPoints[2], cv::Scalar(0,255,0),3);
         cv::line(guiImage, frameDataPoints[0], frameDataPoints[3], cv::Scalar(0,0,255),3);
 
+        if (allCamerasFixed) {
+            std::vector<cv::Mat> warpedImage;
+            cv::Size destSize(640, 960);
+            for (int i = 0; i < cameraImages.size(); i++) {
+                    cv::Mat tmp;
+                    cv::Mat Temp;
+                    cv::Mat MMat;
+                    tmp = fixedCameraRelationMat.at(i)(Rect(0, 0, 3, 2));
+                    tmp.copyTo(MMat);
+                    cv::warpAffine(cameraImages.at(i), Temp, MMat, destSize);
+                    warpedImage.push_back(Temp);
+                    cv::imshow("Pipifax", Temp);
+            }
+            cv::Mat tmpGuiImage(destSize, CV_8UC3);
+            tmpGuiImage.setTo(cv::Scalar(  0,  0,  0));
+
+            cv::imshow("tmp12", warpedImage.at(0));
+            cv::imshow("tmp23", warpedImage.at(1));
+
+            for (int i = 0; i < warpedImage.size(); i++) {
+                cv::addWeighted(tmpGuiImage, 1, warpedImage.at(i), 1, 0, tmpGuiImage, -1);
+            }
+            cv::imshow("Pi", tmpGuiImage);
+        }
+
         cv::aruco::drawDetectedMarkers(guiImage, finalMarkerCorners);
 
         QPixmap pixmap = QPixmap::fromImage(QImage((unsigned char*) guiImage.data, guiImage.cols, guiImage.rows, guiImage.step, QImage::Format_RGB888));
