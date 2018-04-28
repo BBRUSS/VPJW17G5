@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'robotdetectionmainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.10.0
+** Created by: Qt User Interface Compiler version 5.9.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -244,7 +244,7 @@ public:
     {
         if (RobotDetectionMainWindow->objectName().isEmpty())
             RobotDetectionMainWindow->setObjectName(QStringLiteral("RobotDetectionMainWindow"));
-        RobotDetectionMainWindow->resize(1280, 720);
+        RobotDetectionMainWindow->resize(1084, 720);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -453,7 +453,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 194, 545));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 295, 631));
         verticalLayout_8 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_8->setSpacing(6);
         verticalLayout_8->setContentsMargins(11, 11, 11, 11);
@@ -1257,7 +1257,7 @@ public:
         scrollAreaSettings->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QStringLiteral("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, -156, 384, 1442));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 381, 1344));
         scrollAreaWidgetContents_2->setMinimumSize(QSize(250, 0));
         verticalLayout_12 = new QVBoxLayout(scrollAreaWidgetContents_2);
         verticalLayout_12->setSpacing(6);
@@ -1313,9 +1313,6 @@ public:
         verticalLayout_24->addWidget(labelCalibrationPattern);
 
         comboBoxCalibrationPattern = new QComboBox(groupBoxCalibrationSettings);
-        comboBoxCalibrationPattern->addItem(QString());
-        comboBoxCalibrationPattern->addItem(QString());
-        comboBoxCalibrationPattern->addItem(QString());
         comboBoxCalibrationPattern->setObjectName(QStringLiteral("comboBoxCalibrationPattern"));
         sizePolicy11.setHeightForWidth(comboBoxCalibrationPattern->sizePolicy().hasHeightForWidth());
         comboBoxCalibrationPattern->setSizePolicy(sizePolicy11);
@@ -1682,7 +1679,7 @@ public:
         QObject::connect(slider_maxMarkerPerimeterRate, SIGNAL(valueChanged(int)), value_maxMarkerPerimeterRate, SLOT(setNum(int)));
         QObject::connect(slider_polygonalApproxAccuracyRate, SIGNAL(valueChanged(int)), value_polygonalApproxAccuracyRate, SLOT(setNum(int)));
 
-        tabMain->setCurrentIndex(3);
+        tabMain->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
 
 
@@ -1691,140 +1688,142 @@ public:
 
     void retranslateUi(QMainWindow *RobotDetectionMainWindow)
     {
-        RobotDetectionMainWindow->setWindowTitle(QApplication::translate("RobotDetectionMainWindow", "Robot Detection", nullptr));
+        RobotDetectionMainWindow->setWindowTitle(QApplication::translate("RobotDetectionMainWindow", "Robot Detection", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        tabMain->setToolTip(QApplication::translate("RobotDetectionMainWindow", "<html><head/><body><p><br/></p></body></html>", nullptr));
+        tabMain->setToolTip(QApplication::translate("RobotDetectionMainWindow", "<html><head/><body><p><br/></p></body></html>", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         labelImage->setText(QString());
 #ifndef QT_NO_TOOLTIP
         pushButtonStartStop->setToolTip(QString());
 #endif // QT_NO_TOOLTIP
-        pushButtonStartStop->setText(QApplication::translate("RobotDetectionMainWindow", "Start Detection", nullptr));
+        pushButtonStartStop->setText(QApplication::translate("RobotDetectionMainWindow", "Start Detection", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        checkBoxLiveView->setToolTip(QApplication::translate("RobotDetectionMainWindow", "activates live view mode with lower framerate", nullptr));
+        checkBoxLiveView->setToolTip(QApplication::translate("RobotDetectionMainWindow", "activates live view mode with lower framerate", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-        checkBoxLiveView->setText(QApplication::translate("RobotDetectionMainWindow", "Live View", nullptr));
-        checkBox_Measurement->setText(QApplication::translate("RobotDetectionMainWindow", "Measurement", nullptr));
-        labelUDPFPS->setText(QApplication::translate("RobotDetectionMainWindow", "UDP Frames per second: ", nullptr));
-        labelFPS->setText(QApplication::translate("RobotDetectionMainWindow", "GUI Frames per second: ", nullptr));
+        checkBoxLiveView->setText(QApplication::translate("RobotDetectionMainWindow", "Live View", Q_NULLPTR));
+        checkBox_Measurement->setText(QApplication::translate("RobotDetectionMainWindow", "Measurement", Q_NULLPTR));
+        labelUDPFPS->setText(QApplication::translate("RobotDetectionMainWindow", "UDP Frames per second: ", Q_NULLPTR));
+        labelFPS->setText(QApplication::translate("RobotDetectionMainWindow", "GUI Frames per second: ", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
-        ___qtablewidgetitem->setText(QApplication::translate("RobotDetectionMainWindow", "x", nullptr));
+        ___qtablewidgetitem->setText(QApplication::translate("RobotDetectionMainWindow", "x", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
-        ___qtablewidgetitem1->setText(QApplication::translate("RobotDetectionMainWindow", "y", nullptr));
+        ___qtablewidgetitem1->setText(QApplication::translate("RobotDetectionMainWindow", "y", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
-        ___qtablewidgetitem2->setText(QApplication::translate("RobotDetectionMainWindow", "phi", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("RobotDetectionMainWindow", "Localization", nullptr));
-        pushButtonCalibrateOffset->setText(QApplication::translate("RobotDetectionMainWindow", "Start Robot Offset Calibration", nullptr));
-        labelBigNone_5->setText(QApplication::translate("RobotDetectionMainWindow", "Threshold ", nullptr));
+        ___qtablewidgetitem2->setText(QApplication::translate("RobotDetectionMainWindow", "phi", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("RobotDetectionMainWindow", "Localization", Q_NULLPTR));
+        pushButtonCalibrateOffset->setText(QApplication::translate("RobotDetectionMainWindow", "Start Robot Offset Calibration", Q_NULLPTR));
+        labelBigNone_5->setText(QApplication::translate("RobotDetectionMainWindow", "Threshold ", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        value_threshold->setToolTip(QApplication::translate("RobotDetectionMainWindow", "millimeters", nullptr));
+        value_threshold->setToolTip(QApplication::translate("RobotDetectionMainWindow", "millimeters", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-        value_threshold->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelBigNone_6->setText(QApplication::translate("RobotDetectionMainWindow", "Corner Refinement min. Acc.0.x", nullptr));
+        value_threshold->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelBigNone_6->setText(QApplication::translate("RobotDetectionMainWindow", "Corner Refinement min. Acc.0.x", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        value_cornerRefinementMinAccuracy->setToolTip(QApplication::translate("RobotDetectionMainWindow", "millimeters", nullptr));
+        value_cornerRefinementMinAccuracy->setToolTip(QApplication::translate("RobotDetectionMainWindow", "millimeters", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-        value_cornerRefinementMinAccuracy->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
+        value_cornerRefinementMinAccuracy->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        slider_cornerRefinementMinAccuracy->setToolTip(QApplication::translate("RobotDetectionMainWindow", "maximum radius for largest circles", nullptr));
+        slider_cornerRefinementMinAccuracy->setToolTip(QApplication::translate("RobotDetectionMainWindow", "maximum radius for largest circles", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-        labelMaxMiddle_5->setText(QApplication::translate("RobotDetectionMainWindow", "CornerRefinment Max. Iteration", nullptr));
-        labelMaxMiddleValue_5->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
+        labelMaxMiddle_5->setText(QApplication::translate("RobotDetectionMainWindow", "CornerRefinment Max. Iteration", Q_NULLPTR));
+        labelMaxMiddleValue_5->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        slider_cornerRefinementMaxIterations->setToolTip(QApplication::translate("RobotDetectionMainWindow", "a circle closer to another circle than this value is ignored", nullptr));
+        slider_cornerRefinementMaxIterations->setToolTip(QApplication::translate("RobotDetectionMainWindow", "a circle closer to another circle than this value is ignored", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-        labelMaxMiddle_9->setText(QApplication::translate("RobotDetectionMainWindow", "Error Correction Rate 0.x", nullptr));
-        value_errorCorrectionRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_8->setText(QApplication::translate("RobotDetectionMainWindow", "Min. Marker Perimet. Rate 0.0x", nullptr));
-        value_minMarkerPerimeterRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_14->setText(QApplication::translate("RobotDetectionMainWindow", "Max. Marker Perimet. Rate 0.0", nullptr));
-        value_maxMarkerPerimeterRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_10->setText(QApplication::translate("RobotDetectionMainWindow", "polygonal App. Acc. Rate 0.0x", nullptr));
-        value_polygonalApproxAccuracyRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_20->setText(QApplication::translate("RobotDetectionMainWindow", "Adaptive Thresh Win. Size min.", nullptr));
-        value_adaptiveThreshWinSizeStepMin->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_12->setText(QApplication::translate("RobotDetectionMainWindow", "Adaptive Thresh Win. Size Step", nullptr));
-        value_adaptiveThreshWinSizeStep->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_13->setText(QApplication::translate("RobotDetectionMainWindow", "Adaptive Thresh Constant", nullptr));
-        value_adaptiveThreshConstant->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_15->setText(QApplication::translate("RobotDetectionMainWindow", "Perspective Remove Pixel", nullptr));
-        value_perspectiveRemovePixelPerCell->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        labelMaxMiddle_16->setText(QApplication::translate("RobotDetectionMainWindow", "Max Size of detected  Rect\302\264s", nullptr));
-        value_MinSizeofRects->setText(QApplication::translate("RobotDetectionMainWindow", "0", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("RobotDetectionMainWindow", "Settings", nullptr));
+        labelMaxMiddle_9->setText(QApplication::translate("RobotDetectionMainWindow", "Error Correction Rate 0.x", Q_NULLPTR));
+        value_errorCorrectionRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_8->setText(QApplication::translate("RobotDetectionMainWindow", "Min. Marker Perimet. Rate 0.0x", Q_NULLPTR));
+        value_minMarkerPerimeterRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_14->setText(QApplication::translate("RobotDetectionMainWindow", "Max. Marker Perimet. Rate 0.0", Q_NULLPTR));
+        value_maxMarkerPerimeterRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_10->setText(QApplication::translate("RobotDetectionMainWindow", "polygonal App. Acc. Rate 0.0x", Q_NULLPTR));
+        value_polygonalApproxAccuracyRate->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_20->setText(QApplication::translate("RobotDetectionMainWindow", "Adaptive Thresh Win. Size min.", Q_NULLPTR));
+        value_adaptiveThreshWinSizeStepMin->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_12->setText(QApplication::translate("RobotDetectionMainWindow", "Adaptive Thresh Win. Size Step", Q_NULLPTR));
+        value_adaptiveThreshWinSizeStep->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_13->setText(QApplication::translate("RobotDetectionMainWindow", "Adaptive Thresh Constant", Q_NULLPTR));
+        value_adaptiveThreshConstant->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_15->setText(QApplication::translate("RobotDetectionMainWindow", "Perspective Remove Pixel", Q_NULLPTR));
+        value_perspectiveRemovePixelPerCell->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        labelMaxMiddle_16->setText(QApplication::translate("RobotDetectionMainWindow", "Max Size of detected  Rect\302\264s", Q_NULLPTR));
+        value_MinSizeofRects->setText(QApplication::translate("RobotDetectionMainWindow", "0", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("RobotDetectionMainWindow", "Settings", Q_NULLPTR));
         labelVersion->setText(QString());
 #ifndef QT_NO_TOOLTIP
-        labelLogo->setToolTip(QApplication::translate("RobotDetectionMainWindow", "Gewerk 5 FTW !!!", nullptr));
+        labelLogo->setToolTip(QApplication::translate("RobotDetectionMainWindow", "Gewerk 5 FTW !!!", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         labelLogo->setText(QString());
-        tabMain->setTabText(tabMain->indexOf(tabMain_Navigation), QApplication::translate("RobotDetectionMainWindow", "Navigation", nullptr));
+        tabMain->setTabText(tabMain->indexOf(tabMain_Navigation), QApplication::translate("RobotDetectionMainWindow", "Navigation", Q_NULLPTR));
         label_arucomarker->setText(QString());
         QTableWidgetItem *___qtablewidgetitem3 = tableWidget_Aruco->horizontalHeaderItem(0);
-        ___qtablewidgetitem3->setText(QApplication::translate("RobotDetectionMainWindow", "ID", nullptr));
+        ___qtablewidgetitem3->setText(QApplication::translate("RobotDetectionMainWindow", "ID", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem4 = tableWidget_Aruco->horizontalHeaderItem(1);
-        ___qtablewidgetitem4->setText(QApplication::translate("RobotDetectionMainWindow", "Height (mm)", nullptr));
+        ___qtablewidgetitem4->setText(QApplication::translate("RobotDetectionMainWindow", "Height (mm)", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem5 = tableWidget_Aruco->horizontalHeaderItem(2);
-        ___qtablewidgetitem5->setText(QApplication::translate("RobotDetectionMainWindow", "Name", nullptr));
-        pushButton_addAruco->setText(QApplication::translate("RobotDetectionMainWindow", "+", nullptr));
-        pushButton_deleteAruco->setText(QApplication::translate("RobotDetectionMainWindow", "-", nullptr));
-        pushButton_SaveToImage->setText(QApplication::translate("RobotDetectionMainWindow", "Save To Image", nullptr));
-        tabMain->setTabText(tabMain->indexOf(tabMain_Aruco), QApplication::translate("RobotDetectionMainWindow", "Aruco Dictionary", nullptr));
+        ___qtablewidgetitem5->setText(QApplication::translate("RobotDetectionMainWindow", "Name", Q_NULLPTR));
+        pushButton_addAruco->setText(QApplication::translate("RobotDetectionMainWindow", "+", Q_NULLPTR));
+        pushButton_deleteAruco->setText(QApplication::translate("RobotDetectionMainWindow", "-", Q_NULLPTR));
+        pushButton_SaveToImage->setText(QApplication::translate("RobotDetectionMainWindow", "Save To Image", Q_NULLPTR));
+        tabMain->setTabText(tabMain->indexOf(tabMain_Aruco), QApplication::translate("RobotDetectionMainWindow", "Aruco Dictionary", Q_NULLPTR));
         labelImageBefore->setText(QString());
         labelImageAfter->setText(QString());
-        pushButtonSaveContrast->setText(QApplication::translate("RobotDetectionMainWindow", "Use Treshold", nullptr));
-        pushButtonStartCam->setText(QApplication::translate("RobotDetectionMainWindow", "Start Camera", nullptr));
-        pushButtonResetThr->setText(QApplication::translate("RobotDetectionMainWindow", "Reset", nullptr));
-        labelMaxValue->setText(QApplication::translate("RobotDetectionMainWindow", "Max-Value", nullptr));
-        pushButtonStopCam->setText(QApplication::translate("RobotDetectionMainWindow", "Stop Camera", nullptr));
-        pushButtonTakeSnapshot->setText(QApplication::translate("RobotDetectionMainWindow", "Take Snapshot", nullptr));
-        labelBWThreshold->setText(QApplication::translate("RobotDetectionMainWindow", "Black/White Threshold", nullptr));
-        labelCamID->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Nr:", nullptr));
-        pushButtonGetExtrinsics->setText(QApplication::translate("RobotDetectionMainWindow", "get Extrinsics", nullptr));
-        pushButtonSaveToXML->setText(QApplication::translate("RobotDetectionMainWindow", "Save to XML", nullptr));
-        tabMain->setTabText(tabMain->indexOf(tabMain_Calibration), QApplication::translate("RobotDetectionMainWindow", "Calibration", nullptr));
-        pushButtonSwap->setText(QApplication::translate("RobotDetectionMainWindow", "Swap", nullptr));
-        labelFieldX->setText(QApplication::translate("RobotDetectionMainWindow", "X", nullptr));
-        pushButtonResizeCamField->setText(QApplication::translate("RobotDetectionMainWindow", "Resize Camera Field", nullptr));
-        pushButtonSettingsCancel->setText(QApplication::translate("RobotDetectionMainWindow", "Cancel", nullptr));
-        pushButtonSaveSettings->setText(QApplication::translate("RobotDetectionMainWindow", "Save Settings", nullptr));
+        pushButtonSaveContrast->setText(QApplication::translate("RobotDetectionMainWindow", "Use Treshold", Q_NULLPTR));
+        pushButtonStartCam->setText(QApplication::translate("RobotDetectionMainWindow", "Start Camera", Q_NULLPTR));
+        pushButtonResetThr->setText(QApplication::translate("RobotDetectionMainWindow", "Reset", Q_NULLPTR));
+        labelMaxValue->setText(QApplication::translate("RobotDetectionMainWindow", "Max-Value", Q_NULLPTR));
+        pushButtonStopCam->setText(QApplication::translate("RobotDetectionMainWindow", "Stop Camera", Q_NULLPTR));
+        pushButtonTakeSnapshot->setText(QApplication::translate("RobotDetectionMainWindow", "Take Snapshot", Q_NULLPTR));
+        labelBWThreshold->setText(QApplication::translate("RobotDetectionMainWindow", "Black/White Threshold", Q_NULLPTR));
+        labelCamID->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Nr:", Q_NULLPTR));
+        pushButtonGetExtrinsics->setText(QApplication::translate("RobotDetectionMainWindow", "get Extrinsics", Q_NULLPTR));
+        pushButtonSaveToXML->setText(QApplication::translate("RobotDetectionMainWindow", "Save to XML", Q_NULLPTR));
+        tabMain->setTabText(tabMain->indexOf(tabMain_Calibration), QApplication::translate("RobotDetectionMainWindow", "Calibration", Q_NULLPTR));
+        pushButtonSwap->setText(QApplication::translate("RobotDetectionMainWindow", "Swap", Q_NULLPTR));
+        labelFieldX->setText(QApplication::translate("RobotDetectionMainWindow", "X", Q_NULLPTR));
+        pushButtonResizeCamField->setText(QApplication::translate("RobotDetectionMainWindow", "Resize Camera Field", Q_NULLPTR));
+        pushButtonSettingsCancel->setText(QApplication::translate("RobotDetectionMainWindow", "Cancel", Q_NULLPTR));
+        pushButtonSaveSettings->setText(QApplication::translate("RobotDetectionMainWindow", "Save Settings", Q_NULLPTR));
         labelCamFieldSettings->setText(QString());
-        groupBoxFileSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "File Settings", nullptr));
-        labelSettingsFileName->setText(QApplication::translate("RobotDetectionMainWindow", "Settings File Name", nullptr));
-        groupBoxCalibrationSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Calibration Settings", nullptr));
-        labelCalibrationPattern->setText(QApplication::translate("RobotDetectionMainWindow", "Calibration Pattern", nullptr));
-        comboBoxCalibrationPattern->setItemText(0, QApplication::translate("RobotDetectionMainWindow", "Chessboard", nullptr));
-        comboBoxCalibrationPattern->setItemText(1, QApplication::translate("RobotDetectionMainWindow", "Circles Grid", nullptr));
-        comboBoxCalibrationPattern->setItemText(2, QApplication::translate("RobotDetectionMainWindow", "Asymmetric Circles Grid", nullptr));
-
-        labelCalibrationBoardWidth->setText(QApplication::translate("RobotDetectionMainWindow", "Calibration Board Columns", nullptr));
-        labelCalibrationBoardHeight->setText(QApplication::translate("RobotDetectionMainWindow", "Calibration Board Rows", nullptr));
-        labelCalibrationSquareSize->setText(QApplication::translate("RobotDetectionMainWindow", "Square Size or Circle Distance (mm)", nullptr));
-        checkBoxCalibrationPatternWhiteOnBlack->setText(QApplication::translate("RobotDetectionMainWindow", "Inverted Pattern Colors: White on Black", nullptr));
-        labelExtrCalibOrigin->setText(QApplication::translate("RobotDetectionMainWindow", "Extrinsic calibration pattern 3D world origin", nullptr));
-        labelExtrCalibOriginX->setText(QApplication::translate("RobotDetectionMainWindow", " - X Coordinate (mm)", nullptr));
-        labelExtrCalibOriginY->setText(QApplication::translate("RobotDetectionMainWindow", " - Y Coordinate (mm)", nullptr));
-        groupBoxCameraSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Camera Settings", nullptr));
-        labelNumberOfCams->setText(QApplication::translate("RobotDetectionMainWindow", "Number Of Cams", nullptr));
-        labelCameraImageWidth->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Image Width", nullptr));
-        labelCameraImageHeight->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Image Height", nullptr));
-        labelCameraFieldWidth->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Field Width", nullptr));
-        labelCameraFieldHeight->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Field Height", nullptr));
-        groupBoxRobotSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Robot Settings", nullptr));
-        labelMaxNumberOfRobots->setText(QApplication::translate("RobotDetectionMainWindow", "Max Number Of Robots", nullptr));
-        labelRobotRadius->setText(QApplication::translate("RobotDetectionMainWindow", "Robot Radius", nullptr));
-        labelRobotStdThresh->setText(QApplication::translate("RobotDetectionMainWindow", "Robot Position Standard Deviation Threshold (mm)", nullptr));
-        labelRobotStdThreshMax->setText(QApplication::translate("RobotDetectionMainWindow", "Robot Position Standard Deviation Max (mm)", nullptr));
-        groupBoxArucoSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Aurco Settings", nullptr));
-        labelArucoDictionaryFileName->setText(QApplication::translate("RobotDetectionMainWindow", "Aruco Dictionary File Name", nullptr));
-        labelArucoMakerSizeInPixel->setText(QApplication::translate("RobotDetectionMainWindow", "Aruco Marker Size in Pixel", nullptr));
-        groupBoxUdpSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "UDP Settings", nullptr));
-        labelSendToIp->setText(QApplication::translate("RobotDetectionMainWindow", "Send To IP", nullptr));
-        labelSendToPort->setText(QApplication::translate("RobotDetectionMainWindow", "Send To Port", nullptr));
-        labelSendToIpSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Send To IP Sync Service", nullptr));
-        labelSendToPortSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Send To Port Sync Service", nullptr));
-        labelReceiveIpSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Receive IP Sync Service", nullptr));
-        labelReceivePortSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Receive Port Sync Service", nullptr));
-        tabMain->setTabText(tabMain->indexOf(tabMain_Settings), QApplication::translate("RobotDetectionMainWindow", "Settings", nullptr));
+        groupBoxFileSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "File Settings", Q_NULLPTR));
+        labelSettingsFileName->setText(QApplication::translate("RobotDetectionMainWindow", "Settings File Name", Q_NULLPTR));
+        groupBoxCalibrationSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Calibration Settings", Q_NULLPTR));
+        labelCalibrationPattern->setText(QApplication::translate("RobotDetectionMainWindow", "Calibration Pattern", Q_NULLPTR));
+        comboBoxCalibrationPattern->clear();
+        comboBoxCalibrationPattern->insertItems(0, QStringList()
+         << QApplication::translate("RobotDetectionMainWindow", "Chessboard", Q_NULLPTR)
+         << QApplication::translate("RobotDetectionMainWindow", "Circles Grid", Q_NULLPTR)
+         << QApplication::translate("RobotDetectionMainWindow", "Asymmetric Circles Grid", Q_NULLPTR)
+        );
+        labelCalibrationBoardWidth->setText(QApplication::translate("RobotDetectionMainWindow", "Calibration Board Columns", Q_NULLPTR));
+        labelCalibrationBoardHeight->setText(QApplication::translate("RobotDetectionMainWindow", "Calibration Board Rows", Q_NULLPTR));
+        labelCalibrationSquareSize->setText(QApplication::translate("RobotDetectionMainWindow", "Square Size or Circle Distance (mm)", Q_NULLPTR));
+        checkBoxCalibrationPatternWhiteOnBlack->setText(QApplication::translate("RobotDetectionMainWindow", "Inverted Pattern Colors: White on Black", Q_NULLPTR));
+        labelExtrCalibOrigin->setText(QApplication::translate("RobotDetectionMainWindow", "Extrinsic calibration pattern 3D world origin", Q_NULLPTR));
+        labelExtrCalibOriginX->setText(QApplication::translate("RobotDetectionMainWindow", " - X Coordinate (mm)", Q_NULLPTR));
+        labelExtrCalibOriginY->setText(QApplication::translate("RobotDetectionMainWindow", " - Y Coordinate (mm)", Q_NULLPTR));
+        groupBoxCameraSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Camera Settings", Q_NULLPTR));
+        labelNumberOfCams->setText(QApplication::translate("RobotDetectionMainWindow", "Number Of Cams", Q_NULLPTR));
+        labelCameraImageWidth->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Image Width", Q_NULLPTR));
+        labelCameraImageHeight->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Image Height", Q_NULLPTR));
+        labelCameraFieldWidth->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Field Width", Q_NULLPTR));
+        labelCameraFieldHeight->setText(QApplication::translate("RobotDetectionMainWindow", "Camera Field Height", Q_NULLPTR));
+        groupBoxRobotSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Robot Settings", Q_NULLPTR));
+        labelMaxNumberOfRobots->setText(QApplication::translate("RobotDetectionMainWindow", "Max Number Of Robots", Q_NULLPTR));
+        labelRobotRadius->setText(QApplication::translate("RobotDetectionMainWindow", "Robot Radius", Q_NULLPTR));
+        labelRobotStdThresh->setText(QApplication::translate("RobotDetectionMainWindow", "Robot Position Standard Deviation Threshold (mm)", Q_NULLPTR));
+        labelRobotStdThreshMax->setText(QApplication::translate("RobotDetectionMainWindow", "Robot Position Standard Deviation Max (mm)", Q_NULLPTR));
+        groupBoxArucoSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "Aurco Settings", Q_NULLPTR));
+        labelArucoDictionaryFileName->setText(QApplication::translate("RobotDetectionMainWindow", "Aruco Dictionary File Name", Q_NULLPTR));
+        labelArucoMakerSizeInPixel->setText(QApplication::translate("RobotDetectionMainWindow", "Aruco Marker Size in Pixel", Q_NULLPTR));
+        groupBoxUdpSettings->setTitle(QApplication::translate("RobotDetectionMainWindow", "UDP Settings", Q_NULLPTR));
+        labelSendToIp->setText(QApplication::translate("RobotDetectionMainWindow", "Send To IP", Q_NULLPTR));
+        labelSendToPort->setText(QApplication::translate("RobotDetectionMainWindow", "Send To Port", Q_NULLPTR));
+        labelSendToIpSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Send To IP Sync Service", Q_NULLPTR));
+        labelSendToPortSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Send To Port Sync Service", Q_NULLPTR));
+        labelReceiveIpSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Receive IP Sync Service", Q_NULLPTR));
+        labelReceivePortSyncService->setText(QApplication::translate("RobotDetectionMainWindow", "Receive Port Sync Service", Q_NULLPTR));
+        tabMain->setTabText(tabMain->indexOf(tabMain_Settings), QApplication::translate("RobotDetectionMainWindow", "Settings", Q_NULLPTR));
     } // retranslateUi
 
 };

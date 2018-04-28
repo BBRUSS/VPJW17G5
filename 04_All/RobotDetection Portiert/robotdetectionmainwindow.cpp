@@ -33,13 +33,13 @@ RobotDetectionMainWindow::RobotDetectionMainWindow(QWidget *parent) :
     QShortcut *shortcutF5 = new QShortcut(QKeySequence(Qt::Key_F5), this);
     connect(shortcutF5, SIGNAL(activated()), ui->pushButtonStartCam, SLOT(click()));
 
-    QShortcut *shortcutF6 = new QShortcut(QKeySequence(Qt::Key_Period), this);
+    QShortcut *shortcutF6 = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(shortcutF6, SIGNAL(activated()), ui->pushButtonStopCam, SLOT(click()));
 
     QShortcut *shortcutF9 = new QShortcut(QKeySequence(Qt::Key_PageDown), this);
     connect(shortcutF9, SIGNAL(activated()), ui->pushButtonTakeSnapshot, SLOT(click()));
 
-    QShortcut *shortcutBackSpace = new QShortcut(QKeySequence(Qt::Key_Backspace), this);
+    QShortcut *shortcutBackSpace = new QShortcut(QKeySequence(Qt::Key_PageUp), this);
     connect(shortcutBackSpace, SIGNAL(activated()), ui->pushButtonResetThr, SLOT(click()));
 
     if(programSettings.load())

@@ -59,12 +59,12 @@
   <timerMilSecs>20</timerMilSecs>
   <cornerRefinementMaxIterations>1</cornerRefinementMaxIterations>
   <cornerRefinementMinAccuracy>10.</cornerRefinementMinAccuracy>
-  <errorCorrectionRate>511.</errorCorrectionRate>
-  <adaptiveThreshWinSizeMin>10</adaptiveThreshWinSizeMin>
+  <errorCorrectionRate>514.</errorCorrectionRate>
+  <adaptiveThreshWinSizeMin>4</adaptiveThreshWinSizeMin>
   <adaptiveThreshWinSizeStep>99</adaptiveThreshWinSizeStep>
   <adaptiveThreshConstant>10</adaptiveThreshConstant>
-  <minMarkerPerimeterRate>91.</minMarkerPerimeterRate>
-  <maxMarkerPerimeterRate>300.</maxMarkerPerimeterRate>
+  <minMarkerPerimeterRate>88.</minMarkerPerimeterRate>
+  <maxMarkerPerimeterRate>309.</maxMarkerPerimeterRate>
   <polygonalApproxAccuracyRate>11.</polygonalApproxAccuracyRate>
   <perspectiveRemovePixelPerCell>1</perspectiveRemovePixelPerCell>
   <cameraImageThreshold>160</cameraImageThreshold>

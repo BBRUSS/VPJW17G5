@@ -11,15 +11,15 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += qt thread
 
 INCLUDEPATH += \
-    "E:/Programme/opencv/build/include" \
+    "D:/opencv/build/include" \
 
 release:LIBS += \
-    "-LE:/Programme/opencv/build/x64/vc14/lib" \
+    "-LD:/opencv/build/x64/vc14/lib" \
     -lopencv_world340
 
-#debug:LIBS += \
- #   "-LE:/Programme/opencv/build/x64/vc14/lib" \
-  #  -lopencv_world340d
+debug:LIBS += \
+    "-LD:/opencv/build/x64/vc14/lib" \
+    -lopencv_world340d
 
 
 #debug:LIBS +=    -lopencv_core300d \
