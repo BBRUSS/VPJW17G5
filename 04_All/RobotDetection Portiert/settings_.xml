@@ -2,7 +2,7 @@
 <opencv_storage>
 <Settings>
   <boardSize>
-    5 4</boardSize>
+    4 5</boardSize>
   <camFieldSize>
     1 2</camFieldSize>
   <patternToUse>CIRCLES_GRID</patternToUse>
@@ -21,16 +21,14 @@
       <cols>3</cols>
       <dt>d</dt>
       <data>
-        8.1672324769607962e+02 0. 3.1730143075222168e+02 0.
-        7.0408011352312508e+02 2.6792735590370143e+02 0. 0. 1.</data></cameraMatrix>
+        1.6030338991956737e+03 0. 4.2578430945958581e+02 0.
+        8.0036682660777421e+02 3.1078111603590139e+02 0. 0. 1.</data></cameraMatrix>
     <distCoeffs type_id="opencv-matrix">
-      <rows>5</rows>
+      <rows>8</rows>
       <cols>1</cols>
       <dt>d</dt>
       <data>
-        -5.7954294755572611e-01 1.6083765141964117e+00
-        1.3204576041717189e-03 1.3619584966902049e-03
-        -4.3539774043770372e+00</data></distCoeffs>
+        0. 0. 0. 0. 0. 0. 0. 0.</data></distCoeffs>
     <rvecs type_id="opencv-matrix">
       <rows>0</rows>
       <cols>0</cols>
@@ -55,16 +53,14 @@
       <cols>3</cols>
       <dt>d</dt>
       <data>
-        8.1672324769607962e+02 0. 3.1730143075222168e+02 0.
-        7.0408011352312508e+02 2.6792735590370143e+02 0. 0. 1.</data></cameraMatrix>
+        6.1921692389692635e+02 0. 3.7932371065766660e+02 0.
+        6.1999288474362061e+02 2.6044181719205125e+02 0. 0. 1.</data></cameraMatrix>
     <distCoeffs type_id="opencv-matrix">
-      <rows>5</rows>
+      <rows>8</rows>
       <cols>1</cols>
       <dt>d</dt>
       <data>
-        -5.7954294755572611e-01 1.6083765141964117e+00
-        1.3204576041717189e-03 1.3619584966902049e-03
-        -4.3539774043770372e+00</data></distCoeffs>
+        0. 0. 0. 0. 0. 0. 0. 0.</data></distCoeffs>
     <rvecs type_id="opencv-matrix">
       <rows>0</rows>
       <cols>0</cols>

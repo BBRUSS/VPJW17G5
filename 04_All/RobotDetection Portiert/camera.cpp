@@ -110,7 +110,7 @@ double Camera::cameraCalibration(Size &imageSize)
         objectPoints.clear();
     }
 
-    //saveCameraCalibrationParameters();  // ACTUALLY ONLY FOR OUTPUT ON CONSOLE, SAVING LATER IN GUI
+    saveCameraCalibrationParameters();  // ACTUALLY ONLY FOR OUTPUT ON CONSOLE, SAVING LATER IN GUI
 
     return error;
 }
