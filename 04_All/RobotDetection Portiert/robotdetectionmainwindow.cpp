@@ -1216,10 +1216,10 @@ void RobotDetectionMainWindow::on_pushButtonSaveContrast_clicked()
 void RobotDetectionMainWindow::on_pushButtonGetExtrinsics_clicked()
 {
     int success = -1;
-    if(imageSavedC.data)
-        success = cams.at(nr)->doCalibrationExtrinsics(ImageExtr);
-    else
-        ui->statusBar->showMessage("No Camera Matrix found, do intrinsic calibration first!", 3000);
+    success = cams.at(nr)->doCalibrationExtrinsics(ImageExtr);
+
+    if(success == -1) ui->statusBar->showMessage("No calibration pattern found!", 3000);
+     else if(success >0) ui->statusBar->showMessage("Extrinsic Calibration successfull!", 3000);
     qInfo() << "extrinsic success: " << success;
     if(success)
     {
