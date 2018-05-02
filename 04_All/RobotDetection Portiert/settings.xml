@@ -94,7 +94,7 @@
   <maxMarkerPerimeterRate>309.</maxMarkerPerimeterRate>
   <polygonalApproxAccuracyRate>11.</polygonalApproxAccuracyRate>
   <perspectiveRemovePixelPerCell>1</perspectiveRemovePixelPerCell>
-  <cameraImageThreshold>160</cameraImageThreshold>
+  <cameraImageThreshold>164</cameraImageThreshold>
   <MinSizeofRects>8000</MinSizeofRects>
   <cameraImageSize>
     640 480</cameraImageSize>

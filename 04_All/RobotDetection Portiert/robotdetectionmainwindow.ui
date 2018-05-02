@@ -412,7 +412,7 @@
                        <x>0</x>
                        <y>0</y>
                        <width>295</width>
-                       <height>631</height>
+                       <height>595</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1265,6 +1265,107 @@
                 <property name="text">
                  <string>-</string>
                 </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_ArucoBaseDict">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>DICT_4X4_50 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_4X4_100 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_4X4_250 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_4X4_1000 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_5X5_50 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_5X5_100 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_5X5_250 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_5X5_1000 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_6X6_50 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_6X6_100 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_6X6_250 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_6X6_1000 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_7X7_50 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_7X7_100 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_7X7_250 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_7X7_1000 </string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>DICT_ARUCO_ORIGINAL </string>
+                 </property>
+                </item>
                </widget>
               </item>
               <item>

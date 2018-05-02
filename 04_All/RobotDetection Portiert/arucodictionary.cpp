@@ -55,6 +55,15 @@ float ArucoDictionary::getHeightById(int ID) {
     }
 }
 
+void ArucoDictionary::setBaseDict(int baseDict) {
+    this->baseDict = baseDict;
+    generateDict();
+}
+
+int ArucoDictionary::getBaseDict() {
+    return this->baseDict;
+}
+
 int ArucoDictionary::getMarkerCount() {
     return this->markerCount;
 }

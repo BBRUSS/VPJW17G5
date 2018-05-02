@@ -28,6 +28,8 @@ public:
     void setHeightById(int ID, float Height);
     QString getNameById(int ID);
     float getHeightById(int ID);
+    void setBaseDict(int baseDict);
+    int getBaseDict();
 
     void setMarkerCount(int markerCount);
     int getMarkerCount();

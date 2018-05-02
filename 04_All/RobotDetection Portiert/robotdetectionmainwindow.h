@@ -43,6 +43,7 @@ private:
     ArucoDictionary defaultArucoDict;
     bool calibrateOffset_ON_OFF;
     bool mainloopIsActive;
+    bool displayActiveThreshod = false;
     ImageProcessingWorker* imgWorker;
     int fpsCount = 0;
     int timerMilSecs;
@@ -136,6 +137,12 @@ private slots:
     void on_pushButtonSettingsCancel_clicked();
 
     void on_pushButtonSaveToXML_clicked();
+
+    void on_slider_threshold_sliderPressed();
+
+    void on_slider_threshold_sliderReleased();
+
+    void on_comboBox_ArucoBaseDict_currentIndexChanged(int index);
 
 public slots:
     void updateGuiImage(const QList<cv::Mat> cameraImage, const QList<cv::Point3f> robotLocations, const QList<int> robotLocationsStd1d, const QList<QList<RobotPosition>> robotIDLocation, const QList<RobotPosition> detectedRobots);

@@ -214,6 +214,9 @@ void RobotDetectionMainWindow::updateGuiImage(const QList<cv::Mat> cameraImage, 
                 cv::Mat undistortedImage;
                 cv::Mat warpedImage;
                 cv::undistort(cameraImage[i], undistortedImage, cameraMatrix.at(i), distCoeffs.at(i));
+                if (displayActiveThreshod) {
+                    cv::threshold(undistortedImage, undistortedImage, ui->slider_threshold->value(), 200, cv::THRESH_TOZERO);//Definiert den Schwellwert auf 200
+                }
                 // Apply perspective Transformation
                 cv::warpPerspective(undistortedImage, warpedImage, guiTransfMatrix.at(i), programSettings.guiImageBase, cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
                 cv::addWeighted(guiImage, 1, warpedImage, 1, 0, guiImage, -1);
@@ -580,6 +583,7 @@ void RobotDetectionMainWindow::initArucoTab()
     }
 
     updateArucoTab(0);
+    this->ui->comboBox_ArucoBaseDict->setCurrentIndex(defaultArucoDict.getBaseDict());
 
     this->ui->tableWidget_Aruco->blockSignals(false);
 }
@@ -1408,4 +1412,20 @@ void RobotDetectionMainWindow::startCalibration()
 void RobotDetectionMainWindow::on_pushButtonSaveToXML_clicked()
 {
     cams.at(nr)->saveCameraCalibrationParameters();
+}
+
+void RobotDetectionMainWindow::on_slider_threshold_sliderPressed()
+{
+    displayActiveThreshod = true;
+}
+
+void RobotDetectionMainWindow::on_slider_threshold_sliderReleased()
+{
+    displayActiveThreshod = false;
+}
+
+void RobotDetectionMainWindow::on_comboBox_ArucoBaseDict_currentIndexChanged(int index)
+{
+    defaultArucoDict.setBaseDict(index);
+    initArucoTab();
 }
