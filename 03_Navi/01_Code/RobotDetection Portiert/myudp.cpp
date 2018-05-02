@@ -117,8 +117,7 @@ void MyUDP::sendUdpData( QList<cv::Point3f> robotLocations, QTime timeStamp)
     double x, y, phi,second,minute,hour,MSsMN;
     double reserve = 0.0;
 
-
-    for(int i = 0; i < 4; i++)
+    for(int i = 0; i < robotLocations.size(); i++)
     {
         x = robotLocations.at(i).x;
         y = robotLocations.at(i).y;
@@ -128,27 +127,13 @@ void MyUDP::sendUdpData( QList<cv::Point3f> robotLocations, QTime timeStamp)
         message.append( (const char*) &phi, sizeof(double));
     }
 
-//    for(int i = 0; i < 4; i++)
-//    {
-//        x = 6666;
-//        y = 1903;
-//        phi = -1.296; // orientation angle in radiant
-//        message.append( (const char*) &x, sizeof(double));
-//        message.append( (const char*) &y, sizeof(double));
-//        message.append( (const char*) &phi, sizeof(double));
-//    }
-
-
-
-
-
     /// fill message with more values ("robots 5-8") (to be consistent with the old Matlab solution)
     /// this is used as a special reserve to use more robots
-    for(int i = 0; i < 4; i++)
+    for(int i = robotLocations.size(); i < MAX_NR_OF_ROBOTS; i++)
     {
-        x = robotLocations.at(i).x;
-        y = robotLocations.at(i).y;
-        phi = robotLocations.at(i).z / 180.0 * CV_PI; // orientation angle in radiant
+        x = 0;
+        y = 0;
+        phi = 0; // orientation angle in radiant
         message.append( (const char*) &x, sizeof(double));
         message.append( (const char*) &y, sizeof(double));
         message.append( (const char*) &phi, sizeof(double));

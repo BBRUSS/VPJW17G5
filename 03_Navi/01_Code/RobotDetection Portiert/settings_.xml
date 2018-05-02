@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Settings>
+  <boardSize>
+    0 0</boardSize>
+  <camFieldSize>
+    0 0</camFieldSize>
+  <patternToUse>NOT_EXISTING</patternToUse>
+  <squareSize>0.</squareSize>
+  <nrFrames>10</nrFrames>
+  <UDPSettings>
+    <sendToIP>"192.168.0.255"</sendToIP>
+    <sendToPort>25000</sendToPort>
+    <sendToIp_SyncService>"192.168.0.255"</sendToIp_SyncService>
+    <sendToPort_SyncService>25110</sendToPort_SyncService>
+    <reciveIp_SyncService>"192.168.0.20"</reciveIp_SyncService>
+    <recivePort_SyncService>25111</recivePort_SyncService></UDPSettings>
+  <timerMilSecs>20</timerMilSecs>
+  <cornerRefinementMaxIterations>1</cornerRefinementMaxIterations>
+  <cornerRefinementMinAccuracy>10.</cornerRefinementMinAccuracy>
+  <errorCorrectionRate>511.</errorCorrectionRate>
+  <adaptiveThreshWinSizeMin>10</adaptiveThreshWinSizeMin>
+  <adaptiveThreshWinSizeStep>99</adaptiveThreshWinSizeStep>
+  <adaptiveThreshConstant>10</adaptiveThreshConstant>
+  <minMarkerPerimeterRate>91.</minMarkerPerimeterRate>
+  <slider_maxMarkerPerimeterRate>300.</slider_maxMarkerPerimeterRate>
+  <slider_polygonalApproxAccuracyRate>11.</slider_polygonalApproxAccuracyRate>
+  <slider_perspectiveRemovePixelPerCell>1</slider_perspectiveRemovePixelPerCell>
+  <threshold>160</threshold>
+  <MinSizeofRects>8000</MinSizeofRects></Settings>
+</opencv_storage>

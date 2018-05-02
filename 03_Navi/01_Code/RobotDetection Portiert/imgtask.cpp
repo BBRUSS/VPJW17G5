@@ -11,7 +11,7 @@
  ***************************************************************************/
 
 #include "imgtask.h"
-
+#include <QElapsedTimer>
 bool operator< (const RobotMarker & lhs, const RobotMarker & rhs)
 {
     return lhs.id < rhs.id;
@@ -19,11 +19,13 @@ bool operator< (const RobotMarker & lhs, const RobotMarker & rhs)
 
 void ImgTask::run()
 {
+    int lastTime = 0;
+    int currentTime = 0;
+
     if(image.cols < 1)
     {
         return;
     }
-
     //VARIABLES
     int t = 0;                                                  //Variable for Index of Vectors
 
@@ -44,7 +46,6 @@ void ImgTask::run()
 
     //FUNCTION
     //Use Aruco Dictionary (Original standard Dictionary) and Parameters
-    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
 
     //Clear Variables for this run
     detectedRobots.clear();
@@ -56,11 +57,11 @@ void ImgTask::run()
     cv::cvtColor(workImage, workImage, CV_BGR2GRAY);
 
     //Thresholding
-
     cv::threshold(workImage, workImage, threshold_max, 200, cv::THRESH_TOZERO);//Definiert den Schwellwert auf 200
 
     //Find Contours
     cv::findContours(workImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+    //cv::imwrite((QString("img/")+QString::number(QDateTime::currentMSecsSinceEpoch())+QString(".jpg")).toUtf8().constData(), workImage);
 
     cv::Rect rect;
     cv::Mat roi;
@@ -68,16 +69,19 @@ void ImgTask::run()
     {
         //Build Rect´s (AOI´s)
         rect = cv::boundingRect(contours[i]);
-
+        //cv::rectangle(workImage,rect, COLOR_WHITE, 2, CV_AA);
+        //cv::imwrite((QString("img/")+QString::number(QDateTime::currentMSecsSinceEpoch())+QString(".jpg")).toUtf8().constData(), workImage);
         //Filter the Rect´s by size
         if(rect.size().area() > 1000 && rect.size().area() < MinSizeofRects)
         {
             //Transfer relevant AOI´s to ARUCO Detection
             roi = cv::Mat(image, rect).clone();
-            cv::aruco::detectMarkers(roi, dictionary, tempmarkerCorners, tempmarkerIds, arucoParameters, rejectedCandidates);
+
+            cv::aruco::detectMarkers(roi, arucoDict, tempmarkerCorners, tempmarkerIds, arucoParameters, rejectedCandidates);
+
             cv::rectangle(image,rect,COLOR_BLUE, 1, CV_AA);
 
-            //Safe detected Marker´s
+            //Safe detected Markers
             for( unsigned int a = 0; a < tempmarkerCorners.size();a++)
             {
                 for(int b = 0; b < 4; b++)
@@ -90,7 +94,7 @@ void ImgTask::run()
             markerCorners.insert(markerCorners.end(), tempmarkerCorners.begin(), tempmarkerCorners.end());
             markerIds.insert(markerIds.end(), tempmarkerIds.begin(), tempmarkerIds.end());
 
-         }
+        }
     }
 
     for (unsigned int i=0; i< markerIds.size(); i++)
@@ -125,13 +129,7 @@ void ImgTask::run()
     {
         //Draw the detected Marker
         cv::aruco::drawDetectedMarkers(image, markerCorners, markerIds);
-
-        // Undistort Image
-        cv::Mat temp;
-        cv::undistort(image, temp, cameraMatrix, distCoeffs);
-
-        // Apply perspective Transformation
-        cv::warpPerspective(temp, warpedImage, guiTransfMatrix, cv::Size(GUI_WIDTH, GUI_HEIGTH), cv::INTER_NEAREST, cv::BORDER_CONSTANT, 0);
+        liveViewImage = image;
     }
 
     //CALCULATE ANGLE AND POSITION OF ALL DETECTED MARKER
@@ -142,7 +140,7 @@ void ImgTask::run()
         RobotMarker currentMarker = markerList[i];
 
         //find the detected ID (Each Robot have two Marker, that are all possible ID´s)
-        for( unsigned int a = 0; a<MAX_NR_OF_ROBOTS*2; a++)
+        for( unsigned int a = 0; a<robotCount*2; a++)
         {
             //Current MarkerID is in a
             if(currentMarker.id == a)
@@ -158,68 +156,68 @@ void ImgTask::run()
                 {
                     //If the second marker (paired from even Marker) also exists
                     t = i;
-                        if(t-1 >= 0 && markerList[t-1].id == a-1)
+                    if(t-1 >= 0 && markerList[t-1].id == a-1)
+                    {
+                        //Calculate additionally the Angle between booth marker
+                        tempangle = calculateanglebetweenmarker(markerList[i-1].warpedCornerPoints,currentMarker.warpedCornerPoints);
+                        angles.append(tempangle);
+
+                        //Calculate the Middlevalue with Prio for Angle between Marker
+                        angleMiddleValue = calculatemiddleangle(angles,angles.size());
+
+                        //Change Angle for old System
+                        if(angleMiddleValue > 180)
+                            angleMiddleValue = -(360-angleMiddleValue);
+
+                        //Calculate the Position of Robot, and Offsets for Marker
+                        Pointlist Pointinformation = calculatemiddlepointandOffset(markerList[i-1].warpedCornerPoints, currentMarker.warpedCornerPoints);
+                        position = Pointinformation.at(0);
+
+                        //Get the detected Robot ID (not Marker ID)
+                        int roboterID = getRobotId(a);
+
+                        //If the Robot with detect Marker exist,
+                        if(roboterID != InvalidRobotId)
                         {
-                            //Calculate additionally the Angle between booth marker
-                            tempangle = calculateanglebetweenmarker(markerList[i-1].warpedCornerPoints,currentMarker.warpedCornerPoints);
-                            angles.append(tempangle);
+                            //Copy detect Marker in detectRobot
+                            cv::Point3f coordinates = cv::Point3f(position.x, position.y, angleMiddleValue);
+                            RobotPosition temp = {roboterID, coordinates};
+                            detectedRobots.append(temp);
 
-                            //Calculate the Middlevalue with Prio for Angle between Marker
-                            angleMiddleValue = calculatemiddleangle(angles,angles.size());
-
-                            //Change Angle for old System
-                            if(angleMiddleValue > 180)
-                                angleMiddleValue = -(360-angleMiddleValue);
-
-                            //Calculate the Position of Robot, and Offsets for Marker
-                            Pointlist Pointinformation = calculatemiddlepointandOffset(markerList[i-1].warpedCornerPoints, currentMarker.warpedCornerPoints);
-                            position = Pointinformation.at(0);
-
-                            //Get the detected Robot ID (not Marker ID)
-                            int roboterID = getRobotId(a);
-
-                            //If the Robot with detect Marker exist,
-                            if(roboterID != InvalidRobotId)
+                            //If Offset should be set
+                            if(calibrateOffset && Pointinformation.size() > 0)
                             {
-                                //Copy detect Marker in detectRobot
-                                cv::Point3f coordinates = cv::Point3f(position.x, position.y, angleMiddleValue);
-                                RobotPosition temp = {roboterID, coordinates};
-                                detectedRobots.append(temp);
-
-                                //If Offset should be set
-                                if(calibrateOffset && Pointinformation.size() > 0)
-                                {
-                                    RobotOffset temp = {roboterID, std::sqrt(Pointinformation.at(1).x*Pointinformation.at(1).x+Pointinformation.at(1).y*Pointinformation.at(1).y), std::sqrt(Pointinformation.at(2).x*Pointinformation.at(2).x+Pointinformation.at(2).y*Pointinformation.at(2).y)};
-                                    NewRobotOffsets.append(temp);
-                                    RobotOffsets[roboterID] = temp;
-                                }
+                                RobotOffset temp = {roboterID, std::sqrt(Pointinformation.at(1).x*Pointinformation.at(1).x+Pointinformation.at(1).y*Pointinformation.at(1).y), std::sqrt(Pointinformation.at(2).x*Pointinformation.at(2).x+Pointinformation.at(2).y*Pointinformation.at(2).y)};
+                                NewRobotOffsets.append(temp);
+                                RobotOffsets[roboterID] = temp;
                             }
                         }
-                        //Otherwise (The second paired Marker does not exist), Add the Offset to get the correct Position of one Marker
-                        else
+                    }
+                    //Otherwise (The second paired Marker does not exist), Add the Offset to get the correct Position of one Marker
+                    else
+                    {
+                        //Calculate the Middlevalue
+                        angleMiddleValue = calculatemiddleangle(angles,0);
+
+                        //Get the detected Robot ID (not Marker ID)
+                        int roboterID = getRobotId(a);
+
+                        //Calculate the Position of Robot only with one Marker and a Offset
+                        position = calculatemiddlepoint(currentMarker.warpedCornerPoints,RobotOffsets.at(roboterID).offsetMarkerNotEven,angleMiddleValue);
+
+                        //Change Angle for old System
+                        if(angleMiddleValue > 180)
+                            angleMiddleValue = -(360-angleMiddleValue);
+
+                        //If the Robot with detect Marker exist,
+                        if(roboterID != InvalidRobotId)
                         {
-                            //Calculate the Middlevalue
-                            angleMiddleValue = calculatemiddleangle(angles,0);
-
-                            //Get the detected Robot ID (not Marker ID)
-                            int roboterID = getRobotId(a);
-
-                            //Calculate the Position of Robot only with one Marker and a Offset
-                            position = calculatemiddlepoint(currentMarker.warpedCornerPoints,RobotOffsets.at(roboterID).offsetMarkerNotEven,angleMiddleValue);
-
-                            //Change Angle for old System
-                            if(angleMiddleValue > 180)
-                                angleMiddleValue = -(360-angleMiddleValue);
-
-                            //If the Robot with detect Marker exist,
-                            if(roboterID != InvalidRobotId)
-                            {
-                                //Copy detect Marker in detectRobot
-                                cv::Point3f coordinates = cv::Point3f(position.x, position.y, angleMiddleValue);
-                                RobotPosition temp = {roboterID, coordinates};
-                                detectedRobots.append(temp);
-                            }
+                            //Copy detect Marker in detectRobot
+                            cv::Point3f coordinates = cv::Point3f(position.x, position.y, angleMiddleValue);
+                            RobotPosition temp = {roboterID, coordinates};
+                            detectedRobots.append(temp);
                         }
+                    }
 
                     //Clear the temporary Variables for next two Markers
                     angles.clear();
@@ -278,13 +276,6 @@ void ImgTask::setDistCoeffs(cv::Mat distCoeffs)
 void ImgTask::setPerspTransfMatrix(cv::Mat perspTransfMatrix)
 {
     this->perspTransfMatrix = perspTransfMatrix;
-
-    // calculate GUI Transformation Matrix by scaling down perspTransfMatrix
-   cv:: Mat scaleMatrix = cv::Mat::zeros(3, 3, CV_64F);
-    scaleMatrix.at<double>(0, 0) = 1.0 / GUI_SCALING;
-    scaleMatrix.at<double>(1, 1) = 1.0 / GUI_SCALING;
-    scaleMatrix.at<double>(2, 2) = 1.0;
-    guiTransfMatrix = scaleMatrix * perspTransfMatrix;
 }
 
 void ImgTask::setDebugMode(bool debugMode)
@@ -311,8 +302,12 @@ void ImgTask::setArucoParameters(cv::Ptr<cv::aruco::DetectorParameters> arucoPar
 {
     this->arucoParameters = arucoParameters;
 }
+void ImgTask::setArucoDict(cv::Ptr<cv::aruco::Dictionary> arucoDict)
+{
+    this->arucoDict = arucoDict;
+}
 
-void ImgTask::setthreshold(int threshold)
+void ImgTask::setThreshold(int threshold)
 {
     this->threshold_max = threshold;
 }
@@ -327,6 +322,10 @@ void ImgTask::clearNewRobotOffsets()
     this->NewRobotOffsets.clear();
 }
 
+void ImgTask::setRobotCount(int robotCount) {
+    this->robotCount = robotCount;
+}
+
 double ImgTask::calculateangle(Pointlist marker)
 ///This Function calculate the Angle between four Corners of marker.
 ///The calculation occurs clockwise and compute the middlevalue of all four Corners. See also in the documentation.
@@ -337,7 +336,7 @@ double ImgTask::calculateangle(Pointlist marker)
     std::vector<double> delta(4,0.0);   //Difference between corners. x. y
     QList<double> angles;               //Vector with all calculated Angles
     int a = 3;                          //a contain the Index for Vector for the second Corner. For example:
-                                        //for the Angle between Corner 0 and 1 is i=0, and a=3! Default Value is 3
+    //for the Angle between Corner 0 and 1 is i=0, and a=3! Default Value is 3
 
     //FUNCTION
     //Calculate Angle based on the Quadrant of Angles
@@ -510,20 +509,11 @@ double ImgTask::calculatemiddleangle(QList<double> angles, int prio)
 
 int ImgTask::getRobotId(int markerID)
 {
+    if (markerID >= robotCount*2) {
+        return InvalidRobotId;
+    }
 
-    if(markerID == 0||markerID == 1)
-        return 0;
-
-    if(markerID == 2||markerID == 3)
-        return 1;
-
-    if(markerID == 4||markerID == 5)
-        return 2;
-
-    if(markerID == 6||markerID == 7)
-        return 3;
-
-    return InvalidRobotId;
+    return markerID/2;
 }
 
 QList<RobotPosition> ImgTask::getdetectRobots()
@@ -531,9 +521,9 @@ QList<RobotPosition> ImgTask::getdetectRobots()
     return detectedRobots;
 }
 
-cv::Mat ImgTask::getWarpedImage()
+cv::Mat ImgTask::getLiveViewImage()
 {
-    return warpedImage;
+    return liveViewImage;
 }
 
 Pointlist ImgTask::stdVectorToPointlist(std::vector<cv::Point2f> vec)

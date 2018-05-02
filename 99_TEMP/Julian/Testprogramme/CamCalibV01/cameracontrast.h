@@ -7,6 +7,7 @@
 #include <QTimer>
 //#include "mainwindow.h"
 #include "camera.h"
+#include "settings.h"
 
 using namespace std;
 using namespace cv;
@@ -37,6 +38,8 @@ private slots:
 
     void on_pushButtonCloseCalibWindow_clicked();
 
+    //void on_checkBoxInvertGrayscale_stateChanged(int arg1);
+
 public:
     void setCams(vector<Camera*> cams)
     {
@@ -44,8 +47,10 @@ public:
     }
 private:
     Ui::CameraContrast *ui;
+    Settings* s;
     vector<Camera*> cams;
     int id;
+    int nr;
     Mat image,  imageOrig;
     VideoCapture capture;
     QTimer cameraTimer;

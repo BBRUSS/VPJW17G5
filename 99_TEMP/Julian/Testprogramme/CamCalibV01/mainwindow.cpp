@@ -11,31 +11,76 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Toggle switch (Calibration Pattern) only for testing purpose
     ui->horizontalSliderCalibPattern->setSingleStep(1);
-    ui->horizontalSliderCalibPattern->setRange(0,1);
-    ui->textEditCalibPattern->setText("Chessboard");
+    ui->horizontalSliderCalibPattern->setRange(0,2);
     connect(ui->horizontalSliderCalibPattern, SIGNAL(valueChanged(int)),this, SLOT(changedValue()));
-    s = new Settings();
-    s->calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
+
     ui->textEditCalibPattern->setText("Asym. Circlegrid");
-    ui->horizontalSliderCalibPattern->setValue(1);
-    s->boardSize.height = 11;    // number of corners in height
-    s->boardSize.width = 4;      // number of corners in width
-    s->squareSize = 15.0f;       // size of squares in mm
 
-    s->nrFrames = 10;
-    s->calibFlag |= CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_FOCAL_LENGTH | CV_CALIB_FIX_PRINCIPAL_POINT;
-    this->camID = 1;    // cam id chosen by user
+    // Config Settings
+    s = new Settings();
+    s->setCamFieldSize(Size(3,2));      // Set camera field size to 2x3 = 6 cameras
 
-    for(int id=0; id < 2/*MAX_CAMS*/; ++id)
+    //s->load()== ok ? calibrieren : frage user nach size -> s.cameraField;
+    s->load();
+    // TODO: Am Ende die Settings aus der XML laden und dementsprechend Kamerafeld etc. erzeugen
+
+    // Config calibration pattern
+    s->calibrationPattern = Settings::CHESSBOARD;
+
+    // Calibration Pattern at home (1)
+    if(s->calibrationPattern == Settings::CHESSBOARD)
     {
-        cams.push_back( new Camera(id, ui, s));
-        qInfo() << "created new cam object with id <" << id << ">" << endl;
+        s->boardSize.height = 9;                // number of corners in height
+        s->boardSize.width = 6;                 // number of corners in width
+        s->squareSize = 23.1f;                  // size of squares in mm
+        s->calibPatternWhiteOnBlack = false;    // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(false);
+    }
+    // Calibration Pattern at home (2)
+    else if(s->calibrationPattern == Settings::ASYMMETRIC_CIRCLES_GRID)
+    {
+        s->boardSize.height = 4;                // number of corners in height
+        s->boardSize.width = 5;                 // number of corners in width
+        s->squareSize = 15.0f;                  // size of squares in mm
+        s->calibPatternWhiteOnBlack = false;    // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(false);
+    }
+    // Calibration Pattern in VPJ-room
+    else if(s->calibrationPattern == Settings::CIRCLES_GRID)
+    {
+        s->boardSize.height = 4;                // number of corners in height
+        s->boardSize.width = 5;                 // number of corners in width
+        s->squareSize = 200.0f;                 // size of squares in mm
+        s->calibPatternWhiteOnBlack = true;     // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(true);
     }
 
-    //cam1 = new Camera(1, ui, s);
+    string out = to_string( s->boardSize.width);
+    out.append(" x ");
+    out.append(to_string(s->boardSize.height));
+    ui->labelSize->setText(QString::fromStdString(out));
+
+    s->nrFrames = 10;
+
+    for(int i = 0; i < s->camFieldSize.area(); i++)
+    {
+        s->cams.at(i)->calibFlag = CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_FOCAL_LENGTH | CV_CALIB_FIX_PRINCIPAL_POINT;
+    }
+
+    // Create camera objects
+
+    for(int nr = 0; nr < s->camFieldSize.area(); nr++)
+    {
+        s->cams.at(nr)->cameraID = nr;  // TESTING PURPOSE
+        cams.push_back( new Camera(nr, s->cams.at(nr)->cameraID, ui, s));
+        qInfo() << "created new cam object with id <" << cams.at(nr)->getID() << ">" << endl;
+    }
 
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -85,11 +130,16 @@ void MainWindow::on_pushButtonSetContrast_clicked()
     // other way to open new window:
     contrastWindow = new CameraContrast(this);
     contrastWindow->setCams(cams);
+    contrastWindow->setAttribute(Qt::WA_AlwaysShowToolTips);
     contrastWindow->show();
+
+
 }
 
 
-
+/** Used for toggle switch in test page
+ * @brief MainWindow::changedValue
+ */
 void MainWindow::changedValue()
 {
     if(ui->horizontalSliderCalibPattern->value()==0)
@@ -102,10 +152,49 @@ void MainWindow::changedValue()
     }
     else if(ui->horizontalSliderCalibPattern->value()==1)
     {
+        s->calibrationPattern = Settings::CIRCLES_GRID;
+        ui->textEditCalibPattern->setText("Circlegrid");
+        s->boardSize.height = 4;                // number of corners in height
+        s->boardSize.width = 5;                 // number of corners in width
+        s->squareSize = 200.0f;                 // size of squares in mm
+        s->calibPatternWhiteOnBlack = true;     // Calibration Pattern is white on black and will need to be inverted
+        ui->checkBoxWhiteOnBlack->setChecked(true);
+    }
+    else if(ui->horizontalSliderCalibPattern->value()==2)
+    {
         s->calibrationPattern = Settings::ASYMMETRIC_CIRCLES_GRID;
         ui->textEditCalibPattern->setText("Asym. Circlegrid");
         s->boardSize.height = 11;    // number of corners in height
         s->boardSize.width = 4;      // number of corners in width
         s->squareSize = 15.0f;       // size of squares in mm
+    }
+}
+
+
+void MainWindow::on_pushButtonSave_clicked()
+{
+    for(int id = 0; id < s->camFieldSize.area(); id++)
+    {
+        s->cams.at(id)->cameraID = id;
+    }
+    s->calibrationPattern = Settings::CIRCLES_GRID;
+    s->save();
+}
+
+
+void MainWindow::on_pushButtonLoad_clicked()
+{
+    s->load();
+}
+
+void MainWindow::on_checkBoxWhiteOnBlack_stateChanged(int arg1)
+{
+    if(ui->checkBoxWhiteOnBlack->isChecked())
+    {
+        s->calibPatternWhiteOnBlack = true;
+    }
+    else
+    {
+        s->calibPatternWhiteOnBlack = false;
     }
 }

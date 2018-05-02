@@ -35,7 +35,7 @@ class ImgTask : public QRunnable
 {
 
 public:
-
+    //explicit ImgTask();
     static const int InvalidRobotId = -1;
     void run();
     void setImage(cv::Mat image);
@@ -45,23 +45,26 @@ public:
     void setDebugMode(bool liveViewMode);
     void setCalibrateOffset(bool  setValue);
     void setArucoParameters(cv::Ptr<cv::aruco::DetectorParameters> arucoParameters);
-    void setthreshold(int threshold);
+    void setArucoDict(cv::Ptr<cv::aruco::Dictionary> arucoDict);
+    void setThreshold(int threshold);
     void setMinSizeofRects(int minSizeofRects);
+    void setRobotCount(int robotCount);
     QList<RobotOffset> getNewRobotOffsets();
     void setRobotOffsets(QList<RobotOffset> offsets);
     void clearNewRobotOffsets();
     QList<RobotPosition> getdetectRobots();
-    cv::Mat getWarpedImage();
+    cv::Mat getLiveViewImage();
     static Pointlist stdVectorToPointlist(std::vector<cv::Point2f> vec);
     static std::vector<cv::Point2f> PointlistToStdVector( Pointlist  vec);
+
 
 protected:
     cv::Mat image;
     cv::Mat cameraMatrix;
     cv::Mat distCoeffs;
     cv::Mat perspTransfMatrix;
-    cv::Mat guiTransfMatrix;
-    cv::Mat warpedImage;
+    cv::Mat liveViewImage;
+    cv::Ptr<cv::aruco::Dictionary> arucoDict;
     bool liveViewMode; // debug == LiveView mode...
     bool calibrateOffset;
     QList<RobotPosition> detectedRobots;
@@ -76,6 +79,8 @@ protected:
     int getRobotId(int markerID);
     int threshold_max;
     int MinSizeofRects;
+    int robotCount;
+    QThread warpedImageThread;
 
 signals:
 

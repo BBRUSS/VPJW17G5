@@ -9,9 +9,17 @@
 #define GUI_HEIGTH 640
 #define GUI_SCALING  6.25  // = 8000mm / 1280pixel
 
+#define PI 3.14159265359
+
 #define NR_OF_CAMS 6
-#define MAX_NR_OF_ROBOTS 4
+#define MAX_NR_OF_ROBOTS 8
 #define ROBOT_RADIUS 180.0 // millimeters
+#define ROBOT_STD_THRESH ROBOT_RADIUS/6
+#define ROBOT_STD_THRESH_MAX ROBOT_STD_THRESH*2
+#define ARUCO_DICT_NAME "StdArucoDict.yml"
+#define ARUCO_DICT_MARKER_SIZE 10
+#define ARUCO_DICT_MARKER_SIZE_PIXEL 1000
+#define ARUCO_ID_NAME_FILE "IdNameMap.txt"
 
 #define COLOR_RED        cv::Scalar(  0,  0,255)
 #define COLOR_GREEN      cv::Scalar(  0,255,  0)

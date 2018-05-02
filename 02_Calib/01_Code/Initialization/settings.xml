@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Settings>
+  <boardSize>
+    0 0</boardSize>
+  <camFieldSize>
+    3 2</camFieldSize>
+  <patternToUse>NOT_EXISTING</patternToUse>
+  <squareSize>0.</squareSize>
+  <nrFrames>10</nrFrames>
+  <calibPatternWhiteOnBlack>92</calibPatternWhiteOnBlack>
+  <cam_0>
+    <calibFixAspectratio>0</calibFixAspectratio>
+    <calibZeroTangentDist>0</calibZeroTangentDist>
+    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
+    <showUndistorsed>0</showUndistorsed>
+    <cameraID>0</cameraID>
+    <calibFlag>0</calibFlag>
+    <cameraMatrix type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></cameraMatrix>
+    <distCoeffs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></distCoeffs>
+    <rvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></rvecs>
+    <tvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></tvecs>
+    <blackWhiteThreshold>-1</blackWhiteThreshold>
+    <maxValue>-1</maxValue></cam_0>
+  <cam_1>
+    <calibFixAspectratio>0</calibFixAspectratio>
+    <calibZeroTangentDist>0</calibZeroTangentDist>
+    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
+    <showUndistorsed>0</showUndistorsed>
+    <cameraID>1</cameraID>
+    <calibFlag>0</calibFlag>
+    <cameraMatrix type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></cameraMatrix>
+    <distCoeffs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></distCoeffs>
+    <rvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></rvecs>
+    <tvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></tvecs>
+    <blackWhiteThreshold>-1</blackWhiteThreshold>
+    <maxValue>-1</maxValue></cam_1>
+  <cam_2>
+    <calibFixAspectratio>0</calibFixAspectratio>
+    <calibZeroTangentDist>0</calibZeroTangentDist>
+    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
+    <showUndistorsed>0</showUndistorsed>
+    <cameraID>2</cameraID>
+    <calibFlag>0</calibFlag>
+    <cameraMatrix type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></cameraMatrix>
+    <distCoeffs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></distCoeffs>
+    <rvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></rvecs>
+    <tvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></tvecs>
+    <blackWhiteThreshold>-1</blackWhiteThreshold>
+    <maxValue>-1</maxValue></cam_2>
+  <cam_3>
+    <calibFixAspectratio>0</calibFixAspectratio>
+    <calibZeroTangentDist>0</calibZeroTangentDist>
+    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
+    <showUndistorsed>0</showUndistorsed>
+    <cameraID>3</cameraID>
+    <calibFlag>0</calibFlag>
+    <cameraMatrix type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></cameraMatrix>
+    <distCoeffs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></distCoeffs>
+    <rvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></rvecs>
+    <tvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></tvecs>
+    <blackWhiteThreshold>-1</blackWhiteThreshold>
+    <maxValue>-1</maxValue></cam_3>
+  <cam_4>
+    <calibFixAspectratio>0</calibFixAspectratio>
+    <calibZeroTangentDist>0</calibZeroTangentDist>
+    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
+    <showUndistorsed>0</showUndistorsed>
+    <cameraID>4</cameraID>
+    <calibFlag>0</calibFlag>
+    <cameraMatrix type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></cameraMatrix>
+    <distCoeffs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></distCoeffs>
+    <rvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></rvecs>
+    <tvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></tvecs>
+    <blackWhiteThreshold>-1</blackWhiteThreshold>
+    <maxValue>-1</maxValue></cam_4>
+  <cam_5>
+    <calibFixAspectratio>0</calibFixAspectratio>
+    <calibZeroTangentDist>0</calibZeroTangentDist>
+    <calibFixPrincipalPoint>0</calibFixPrincipalPoint>
+    <showUndistorsed>0</showUndistorsed>
+    <cameraID>5</cameraID>
+    <calibFlag>0</calibFlag>
+    <cameraMatrix type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></cameraMatrix>
+    <distCoeffs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></distCoeffs>
+    <rvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></rvecs>
+    <tvecs type_id="opencv-matrix">
+      <rows>0</rows>
+      <cols>0</cols>
+      <dt>u</dt>
+      <data></data></tvecs>
+    <blackWhiteThreshold>-1</blackWhiteThreshold>
+    <maxValue>-1</maxValue></cam_5>
+  <UDPSettings>
+    <sendToIP>"192.168.0.255"</sendToIP>
+    <sendToPort>25000</sendToPort>
+    <sendToIp_SyncService>"192.168.0.255"</sendToIp_SyncService>
+    <sendToPort_SyncService>25110</sendToPort_SyncService>
+    <reciveIp_SyncService>"192.168.0.20"</reciveIp_SyncService>
+    <recivePort_SyncService>25111</recivePort_SyncService></UDPSettings>
+  <timerMilSecs>20</timerMilSecs>
+  <cornerRefinementMaxIterations>1</cornerRefinementMaxIterations>
+  <cornerRefinementMinAccuracy>10.</cornerRefinementMinAccuracy>
+  <errorCorrectionRate>511.</errorCorrectionRate>
+  <adaptiveThreshWinSizeMin>10</adaptiveThreshWinSizeMin>
+  <adaptiveThreshWinSizeStep>99</adaptiveThreshWinSizeStep>
+  <adaptiveThreshConstant>10</adaptiveThreshConstant>
+  <minMarkerPerimeterRate>91.</minMarkerPerimeterRate>
+  <maxMarkerPerimeterRate>300.</maxMarkerPerimeterRate>
+  <polygonalApproxAccuracyRate>11.</polygonalApproxAccuracyRate>
+  <perspectiveRemovePixelPerCell>1</perspectiveRemovePixelPerCell>
+  <cameraImageThreshold>160</cameraImageThreshold>
+  <MinSizeofRects>8000</MinSizeofRects>
+  <robotOffset0>6.1681100000000001e+01</robotOffset0>
+  <robotOffset1>6.0335700000000003e+01</robotOffset1>
+  <robotOffset2>5.9464599999999997e+01</robotOffset2>
+  <robotOffset3>5.7237200000000001e+01</robotOffset3>
+  <robotOffset4>60.</robotOffset4>
+  <robotOffset5>60.</robotOffset5>
+  <robotOffset6>60.</robotOffset6>
+  <robotOffset7>60.</robotOffset7></Settings>
+</opencv_storage>
