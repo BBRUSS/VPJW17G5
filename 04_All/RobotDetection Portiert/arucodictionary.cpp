@@ -2,7 +2,10 @@
 #include <QDebug>
 
 ArucoDictionary::ArucoDictionary() {
-
+    this->baseDict = cv::aruco::DICT_ARUCO_ORIGINAL;
+    cv::Ptr<cv::aruco::Dictionary> tempDict = cv::aruco::getPredefinedDictionary(this->baseDict);
+    this->markerBits = tempDict->markerSize;
+    generateDict();
 }
 ArucoDictionary::ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict) {
     this->baseDict = baseDict;
@@ -17,9 +20,7 @@ ArucoDictionary::ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict,
     this->markerBits = tempDict->markerSize;
     generateDict();
 }
-ArucoDictionary::ArucoDictionary(int markerBits){
-    this->markerBits = markerBits;
-}
+
 ArucoDictionary::ArucoDictionary(int markerBits, int markerCount){
     this->markerBits = markerBits;
     this->markerCount = markerCount;
@@ -93,7 +94,7 @@ cv::Ptr<cv::aruco::Dictionary> ArucoDictionary::get() {
 void ArucoDictionary::generateDict() {
     cv::Ptr<cv::aruco::Dictionary> tempDict = cv::aruco::getPredefinedDictionary(this->baseDict);
     dictionary = tempDict;
-    //dictionary = cv::aruco::generateCustomDictionary(markerCount, markerBits, tempDict);
+    dictionary = cv::aruco::generateCustomDictionary(markerCount, markerBits, tempDict);
 }
 
 bool ArucoDictionary::save(QString Path) {

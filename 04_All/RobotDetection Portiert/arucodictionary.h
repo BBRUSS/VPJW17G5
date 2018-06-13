@@ -12,10 +12,8 @@ class ArucoDictionary
 {
 public:
     ArucoDictionary();
-
     ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict);
     ArucoDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME baseDict, int markerCount);
-    ArucoDictionary(int markerBits);
     ArucoDictionary(int markerBits, int markerCount);
 
     bool save(QString Path);
@@ -44,8 +42,8 @@ private:
     cv::Ptr<cv::aruco::Dictionary> loadDict(QString Path);
 
     int defaultHeight = 300.0;
-    cv::Ptr<cv::aruco::Dictionary> dictionary;
 
+    cv::Ptr<cv::aruco::Dictionary> dictionary;
     QMap<int, QString> arucoIdNameMap;
     QMap<int, float> arucoIdHeightMap;
     int baseDict;

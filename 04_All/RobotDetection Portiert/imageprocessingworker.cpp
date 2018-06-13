@@ -204,35 +204,28 @@ void ImageProcessingWorker::startProcessing() {
             robotLocationStd1d.append(0);
         }
 
-
+        QList<QList<RobotPosition>> robotIDLocation;
         QVector<int> falseDetection = QVector<int>(detectedRobots.size());
-        for(int a = 0;a<robotCount;a++)
-        {
-            for(int i = 0; i < detectedRobots.size();i++)
-            {
-                if(detectedRobots[i].id == a)
-                {
-                    robotIDLocation[a].append(detectedRobots[i]);
-                    robotIDLocation[a].last().id = i;
-
-                    for(int b = 0; b < detectedRobots.size(); b++)
-                    {
-                        if (i == b) {
+        for(int a = 0 ;a<robotCount; a++){ //iterate through sorted robot ids
+            for(int i = 0; i < detectedRobots.size();i++){ //iterate through positon findings with i
+                if(detectedRobots[i].id == a){ //check if current position is for a specific robot
+                    robotIDLocation[a].append(detectedRobots[i]); //add to new list of list at location a
+                    for(int b = 0; b < detectedRobots.size(); b++){ // iterate through postion findings with b
+                        if (i == b) { // same index as outer loop
                             continue;
                         }
+                        //if two robot indizes at locations i and b do not match
                         if (detectedRobots[i].id != detectedRobots[b].id) {
+                            //check if the two robots where found at the same spot
                             if(abs(detectedRobots[i].coordinates.x - detectedRobots[b].coordinates.x) < 250
                                     && (abs(detectedRobots[i].coordinates.y - detectedRobots[b].coordinates.y) < 250))
                             {
-                                falseDetection[i] = 1;
+                                falseDetection[i] = 1; // indicate false detection. To be used in future releases
                             }
-                        } else {
-                            robotIDLocation[a].append(detectedRobots[b]);
-                            robotIDLocation[a].last().id = b;
+                        } else { //if same id
+                            robotIDLocation[a].append(detectedRobots[b]); //add position to new list at loction a
                         }
-
                     }
-
                 }
             }
         }

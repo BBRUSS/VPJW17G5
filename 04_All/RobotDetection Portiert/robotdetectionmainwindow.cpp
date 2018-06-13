@@ -475,17 +475,22 @@ void RobotDetectionMainWindow::on_pushButtonStartStop_clicked()
         Sleep(3000);
         //timer.start(timerMilSecs);#
 
-        imgWorker = new ImageProcessingWorker(programSettings.udpStruct, videoCapture, cameraMatrix, distCoeffs, perspTransfMatrix);
+        imgWorker = new ImageProcessingWorker(
+                    programSettings.udpStruct,
+                    videoCapture,
+                    cameraMatrix,
+                    distCoeffs,
+                    perspTransfMatrix);
         imgWorker->setTaskThreshold(ui->slider_threshold->value());
         imgWorker->setTaskRectMinSize(ui->slider_MinSizeofRects->value());
-        imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);
-        imgWorker->setDebugMode(this->ui->checkBoxLiveView->isChecked());
-        imgWorker->setMeasureData(this->ui->checkBox_Measurement->isChecked());
-        imgWorker->setArucoParameters(readArucoParameters());
-        imgWorker->setArucoDict(defaultArucoDict.get());
-        imgWorker->setRobotOffsets(robotOffsets);
-        imgWorker->setRobotMaxNumber(programSettings.robotMaxNumber);
-        imgWorker->setRobotStdThreshMax(programSettings.robotStdThreshMax);
+        imgWorker->setRobotCount(defaultArucoDict.getMarkerCount()/2);//
+        imgWorker->setDebugMode(this->ui->checkBoxLiveView->isChecked()); //
+        imgWorker->setMeasureData(this->ui->checkBox_Measurement->isChecked()); //
+        imgWorker->setArucoParameters(readArucoParameters()); //
+        imgWorker->setArucoDict(defaultArucoDict.get()); //
+        imgWorker->setRobotOffsets(robotOffsets); //
+        imgWorker->setRobotMaxNumber(programSettings.robotMaxNumber); //
+        imgWorker->setRobotStdThreshMax(programSettings.robotStdThreshMax); //
         imgWorker->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, imgWorker, &QObject::deleteLater);
